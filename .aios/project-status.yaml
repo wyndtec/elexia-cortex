@@ -1,0 +1,12 @@
+status:
+  branch: main
+  modifiedFiles: []
+  modifiedFilesTotalCount: 0
+  recentCommits:
+    - 'feat: elexia-cortex foundation — data lake + warehouse + proprietary AI architecture'
+  currentEpic: null
+  currentStory: null
+  lastUpdate: '2026-05-24T14:51:00.000Z'
+  isGitRepo: true
+timestamp: 1748100660000
+ttl: 60

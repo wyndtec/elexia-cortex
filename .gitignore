@@ -1,0 +1,45 @@
+# AIOS — não versionar (symlinks para machineAI)
+.aios-core
+squads
+.claude/agent-memory
+.claude/commands
+.claude/hooks
+.claude/rules
+.claude/setup
+.claude/skills
+.claude/CLAUDE.md
+
+# AIOS runtime
+.aios/current-session.yaml
+.aios/audit.log
+.aios/backups/
+
+# Node
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Data — nunca versionar dados reais
+src/lake/data/
+src/warehouse/data/
+*.parquet
+*.csv
+*.db
+*.sqlite
+
+# ML artifacts
+src/ai-engine/models/
+src/ai-engine/experiments/
+mlruns/
+
+# OS
+.DS_Store
+*.log

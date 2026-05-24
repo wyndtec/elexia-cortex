@@ -1,0 +1,23 @@
+# AIOS Project Configuration — Elexia Cortex
+version: 2.1.0
+project:
+  name: elexia-cortex
+  type: greenfield
+  created: 2026-05-24
+  description: Data Intelligence Infrastructure — Data Lake + Warehouse + Proprietary AI Engine
+
+environment:
+  bootstrapped: true
+  bootstrap_date: 2026-05-24T14:51:00
+  bootstrap_mode: yolo
+
+workflow:
+  current: greenfield-fullstack
+  phase: 0-bootstrap-complete
+
+permissions:
+  mode: ask
+
+settings:
+  auto_update_status: true
+  quality_gates_enabled: true
