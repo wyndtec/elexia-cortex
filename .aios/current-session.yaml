@@ -1,0 +1,39 @@
+session:
+  started_at: "2026-05-24T14:40:00"
+  active_agent: "aios-master"
+  agent_persona: "Cipher"
+
+  work_context:
+    project: "elexia-cortex"
+    project_path: "/Users/wyndsonoliveira/code/elexia-cortex"
+    story_id: null
+    branch: "main"
+    current_task: "Fundação do projeto — documentação de visão e arquitetura"
+
+  decisions:
+    - "Nome do projeto: elexia-cortex (referência ao córtex analítico)"
+    - "Arquitetura em 3 camadas: Data Lake (L1) → Data Warehouse (L2) → AI Engine (L3)"
+    - "Federated learning para saúde: dados de pacientes nunca saem do ambiente do município"
+    - "Stack: Kafka/Redpanda + MinIO + DuckDB + MLflow + Flower + Hono.js API"
+    - "Posicionamento público: AI governance framework para LatAm (LGPD-first)"
+    - "Serve todos os produtos Elexia como infraestrutura cross-cutting"
+    - "Prioridade de integração: Platform + Events (Fase 1) → MaisVIDA (Fase 2)"
+    - "Origem da demanda: projeto MaisVIDA Anderson revelou necessidade de Cosmos-BR"
+
+  files_touched:
+    - "README.md"
+    - "docs/architecture/overview.md"
+    - "docs/ai-principles/responsible-ai.md"
+    - "docs/integrations/elexia-ecosystem.md"
+
+  blockers: []
+
+  related_projects:
+    - path: "/Users/wyndsonoliveira/code/cliente-elexia/maisvida-anderson"
+      relation: "primeiro use case vertical (saúde pública SUS)"
+    - path: "/Users/wyndsonoliveira/code/elexia-platform"
+      relation: "primeiro produto a integrar (Fase 1)"
+    - path: "/Users/wyndsonoliveira/code/elexia-events"
+      relation: "primeiro produto a integrar (Fase 1)"
+
+  handoff_history: []
