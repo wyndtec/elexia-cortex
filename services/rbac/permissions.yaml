@@ -1,0 +1,54 @@
+# RBAC — Definição de roles e permissões do Elexia Cortex
+# Herança: owner → admin → manager → analyst → viewer
+# Permissão "*" = acesso total a qualquer recurso
+
+roles:
+  viewer:
+    description: "Acesso somente leitura a dashboards e relatórios publicados"
+    inherits: null
+    permissions:
+      - "dashboards:read"
+      - "reports:read"
+
+  analyst:
+    description: "Acesso de leitura expandido + execução de queries e criação de relatórios draft"
+    inherits: viewer
+    permissions:
+      - "queries:write"
+      - "queries:read"
+      - "reports:write"
+      - "reports:read"
+      - "dashboards:read"
+
+  manager:
+    description: "Gerencia conectores, dashboards e modelos de ML em produção (leitura)"
+    inherits: analyst
+    permissions:
+      - "reports:write"
+      - "dashboards:write"
+      - "connectors:read"
+      - "models:read"
+      - "customers:read"
+      - "segments:write"
+
+  admin:
+    description: "Administração completa exceto gestão de tenants e billing"
+    inherits: manager
+    permissions:
+      - "users:write"
+      - "users:read"
+      - "vault:write"
+      - "vault:read"
+      - "audit:read"
+      - "tokenization:detokenize"
+      - "connectors:write"
+      - "models:deploy"
+      - "models:write"
+      - "settings:write"
+      - "api_keys:write"
+
+  owner:
+    description: "Acesso irrestrito — fundador, C-level ou conta de serviço master"
+    inherits: admin
+    permissions:
+      - "*"

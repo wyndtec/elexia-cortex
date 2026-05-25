@@ -1,0 +1,123 @@
+# Helm values para hashicorp/vault chart v0.27+
+# Instalar: helm install vault hashicorp/vault -n cortex-infra -f vault-values.yaml
+
+global:
+  enabled: true
+  tlsDisable: false
+
+server:
+  image:
+    repository: hashicorp/vault
+    tag: "1.15.4"
+    pullPolicy: IfNotPresent
+
+  # HA mode com Raft storage — sem dependência de Consul
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          telemetry {
+            unauthenticated_metrics_access = "true"
+          }
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+          retry_join {
+            leader_api_addr = "http://vault-0.vault-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://vault-1.vault-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://vault-2.vault-internal:8200"
+          }
+        }
+
+        # Auto-unseal via AWS KMS — VAULT_AWSKMS_SEAL_KEY_ID injetado via env
+        seal "awskms" {
+          region     = "sa-east-1"
+        }
+
+        service_registration "kubernetes" {}
+
+  # IRSA — Vault assume role via ServiceAccount annotation
+  serviceAccount:
+    create: true
+    name: vault
+    annotations:
+      # ARN da vault-unseal-role gerada pelo módulo Terraform kms
+      eks.amazonaws.com/role-arn: "${VAULT_UNSEAL_ROLE_ARN}"
+
+  # Variável de ambiente para o key ID do KMS (injetada via Secret ou ConfigMap no deploy)
+  extraEnvironmentVars:
+    VAULT_AWSKMS_SEAL_KEY_ID: ""  # Sobrescrever com o KMS key ID no momento do deploy
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  # Distribuir pods em nodes diferentes para HA real
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: vault
+              component: server
+          topologyKey: kubernetes.io/hostname
+
+  # Storage persistente por pod (Raft precisa de storage local)
+  dataStorage:
+    enabled: true
+    size: 10Gi
+    storageClass: gp3
+    accessMode: ReadWriteOnce
+
+  auditStorage:
+    enabled: true
+    size: 5Gi
+    storageClass: gp3
+    accessMode: ReadWriteOnce
+
+  # Readiness/liveness probes
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+    periodSeconds: 10
+
+# UI interna apenas — acesso via kubectl port-forward
+ui:
+  enabled: true
+  publishNotReadyAddresses: true
+  serviceType: ClusterIP
+  serviceNodePort: null
+  externalPort: 8200
+
+# Injector desabilitado para simplicidade no ambiente demo
+injector:
+  enabled: false
+
+# CSI provider desabilitado (usar SDK direto)
+csi:
+  enabled: false

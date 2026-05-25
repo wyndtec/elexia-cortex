@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cortex-infra
+  labels:
+    app.kubernetes.io/managed-by: terraform
+    elexia.io/component: infra
+    elexia.io/environment: demo
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: cortex-infra-quota
+  namespace: cortex-infra
+spec:
+  hard:
+    # Vault HA (3 pods × 500m) + tokenization (2 pods × 200m) + headroom
+    requests.cpu: "4"
+    limits.cpu: "8"
+    requests.memory: 8Gi
+    limits.memory: 16Gi
+    pods: "20"
+    persistentvolumeclaims: "10"
+    services: "10"
+    secrets: "30"
+    configmaps: "20"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cortex-infra-limits
+  namespace: cortex-infra
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: 500m
+        memory: 512Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 128Mi
+      max:
+        cpu: "2"
+        memory: 2Gi
+      min:
+        cpu: 50m
+        memory: 64Mi
+    - type: Pod
+      max:
+        cpu: "4"
+        memory: 4Gi
+    - type: PersistentVolumeClaim
+      max:
+        storage: 20Gi
+      min:
+        storage: 1Gi

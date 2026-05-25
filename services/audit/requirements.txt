@@ -1,0 +1,4 @@
+duckdb==0.10.3
+asyncpg==0.29.0
+python-dotenv==1.0.1
+click==8.1.7

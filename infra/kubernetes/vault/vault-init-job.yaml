@@ -1,0 +1,95 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+  namespace: cortex-infra
+  labels:
+    app.kubernetes.io/name: vault-init
+    app.kubernetes.io/component: initialization
+spec:
+  # Remover o Job automaticamente 5 minutos após conclusão
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vault-init
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: vault-init-sa
+      containers:
+        - name: vault-init
+          image: hashicorp/vault:1.15.4
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault-0.vault-internal.cortex-infra.svc.cluster.local:8200"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Aguardando Vault estar disponível..."
+              until vault status 2>&1 | grep -q "Initialized"; do
+                echo "Vault ainda não disponível, aguardando 5s..."
+                sleep 5
+              done
+
+              # Verificar se já foi inicializado
+              if vault status 2>&1 | grep "Initialized.*true"; then
+                echo "Vault já inicializado, pulando."
+                exit 0
+              fi
+
+              echo "Inicializando Vault (auto-unseal via KMS)..."
+              # Com auto-unseal KMS, não há unseal keys manuais — apenas root token
+              vault operator init \
+                -recovery-shares=5 \
+                -recovery-threshold=3 \
+                -format=json > /tmp/vault-init-output.json
+
+              ROOT_TOKEN=$(cat /tmp/vault-init-output.json | grep -o '"root_token":"[^"]*"' | cut -d'"' -f4)
+              RECOVERY_KEYS=$(cat /tmp/vault-init-output.json)
+
+              echo "Salvando credenciais iniciais em Secret Kubernetes..."
+              kubectl create secret generic vault-init-keys \
+                --from-literal=root-token="${ROOT_TOKEN}" \
+                --from-literal=init-output="${RECOVERY_KEYS}" \
+                --namespace=cortex-infra \
+                --dry-run=client -o yaml | kubectl apply -f -
+
+              echo "Vault inicializado com sucesso."
+              echo "IMPORTANTE: Salve o root token de vault-init-keys em local seguro e delete o Secret."
+              rm -f /tmp/vault-init-output.json
+      volumes: []
+---
+# ServiceAccount com permissão mínima para criar Secrets no namespace cortex-infra
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-init-sa
+  namespace: cortex-infra
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-init-role
+  namespace: cortex-infra
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "update", "patch", "get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-init-rolebinding
+  namespace: cortex-infra
+subjects:
+  - kind: ServiceAccount
+    name: vault-init-sa
+    namespace: cortex-infra
+roleRef:
+  kind: Role
+  name: vault-init-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tokenization-service
+  namespace: cortex-infra
+  labels:
+    app: tokenization-service
+    app.kubernetes.io/component: security
+    app.kubernetes.io/part-of: elexia-cortex
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tokenization-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: tokenization-service
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: tokenization
+          image: tokenization-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: TOKENIZATION_DB_PATH
+              value: /data/tokens.duckdb
+          envFrom:
+            - secretRef:
+                name: tokenization-secrets
+                # Secret deve conter: TOKENIZATION_HMAC_KEY
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: tokenization-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false  # DuckDB precisa escrever em /data
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: tokenization-data
+          persistentVolumeClaim:
+            claimName: tokenization-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tokenization-data
+  namespace: cortex-infra
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tokenization-service
+  namespace: cortex-infra
+  labels:
+    app: tokenization-service
+spec:
+  type: ClusterIP
+  selector:
+    app: tokenization-service
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
