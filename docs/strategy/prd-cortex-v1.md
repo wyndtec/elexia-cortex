@@ -152,21 +152,39 @@ O Cortex é organizado em 4 camadas funcionais independentes mas interdependente
 - Schema registry para versionamento de contratos de dados
 - Transformações mínimas na ingestão (Bronze layer = dado bruto)
 
-**Conectores Wave 1 (lançamento):**
+**Estratégia de conectores — dois critérios de decisão:**
 
-| Prioridade | Conector | Justificativa |
-|-----------|---------|---------------|
-| P1 | HubSpot | API moderna, BR+US, CRM + marketing unificados |
-| P2 | TOTVS Protheus | 38% market share Brasil enterprise — insubstituível |
-| P3 | Salesforce | Standard global enterprise BR e US |
-| P4 | Shopify | E-commerce, API excelente, global |
-| P5 | QuickBooks / Omie | Dados financeiros críticos para Customer 360 real |
+1. **API pública confiável + Airbyte maduro** → construir agora, sem dependência de parceiro
+2. **Implementação variável por cliente** → construir com o primeiro cliente, junto ao parceiro especialista
 
-**Conectores Wave 2 (90 dias pós-lançamento):**
+---
+
+**Wave 1A — Construir agora (API pública estável, Airbyte battle-tested):**
+
+| Prioridade | Conector | Justificativa | Risco |
+|-----------|---------|---------------|-------|
+| P1 | HubSpot | API REST excelente, sandbox, versionada, Airbyte maduro | Muito baixo |
+| P2 | Shopify | REST + GraphQL, zero variação entre lojas, sandbox | Muito baixo |
+| P3 | Omie | API REST moderna, digital-first, PME BR crescendo — validação rápida de produto | Baixo |
+| P4 | QuickBooks Online | REST, OAuth 2.0, sandbox disponível — dados financeiros EUA | Baixo |
+| P5 | Salesforce | Bulk API + REST documentados; objetos padrão (Lead, Opportunity, Account) funcionam igual em toda instância | Médio (objetos custom variam por cliente) |
+
+**Wave 1B — Construir com o primeiro cliente + parceiro especialista:**
+
+| Conector | Por quê aguardar | Abordagem |
+|---------|-----------------|-----------|
+| TOTVS Protheus | Schema varia por versão (12.1, 12.1.33+) e por módulo customizado — o que funciona em uma empresa falha em outra | Parceiro TOTVS certificado mapeia os endpoints da instância + Elexia extrai o padrão para conector genérico |
+| SAP S/4HANA / ECC | OData documentado mas implementações on-premise vs. cloud são produtos diferentes; autorização SAP é complexa | Parceiro SAP certified conduz a integração; Elexia padroniza após primeira implantação |
+
+> **Demo environment:** enquanto Wave 1B não está pronto, o ambiente de demonstração usa dados sintéticos realistas por vertical (indústria, manufatura) — o cliente vê o destino antes de contratar.
+
+---
+
+**Wave 2 — 90 dias pós-lançamento:**
 RD Station, Pipedrive, NetSuite, Google Sheets, PostgreSQL, MySQL direto
 
-**Conectores Wave 3 (6 meses):**
-SAP B1/S4, VTEX, Zendesk, WhatsApp (via Elexia Platform), Meta Ads, Google Ads
+**Wave 3 — 6 meses:**
+VTEX, Zendesk, WhatsApp (via Elexia Platform), Meta Ads, Google Ads, SAP B1
 
 **Requisitos funcionais L1:**
 
@@ -733,7 +751,7 @@ Acesso direto a C-level de empresas bilionárias via relações do fundador e re
 | Minutos | Etapa | Conteúdo |
 |---------|-------|----------|
 | 0–2 | A Dor | Espelho: 5 sistemas sem integração, horas de planilha, nenhuma visão em tempo real |
-| 2–5 | A Conexão | Demo ao vivo: conectar HubSpot (ou TOTVS) em menos de 3 minutos sem código |
+| 2–5 | A Conexão | Demo ao vivo: conectar HubSpot ou Omie em menos de 3 minutos sem código (Wave 1A — API pública estável) |
 | 5–9 | O AHA Moment | Customer 360: timeline completa de um cliente — origem, compras, suporte, NPS, risco |
 | 9–12 | A Inteligência | Churn score + recomendação de ação. "A IA vai aprender os padrões do seu negócio" |
 | 12–14 | A Segurança | Mapa de residência de dados: "Seus dados ficam no Brasil. LGPD by design" |
@@ -743,42 +761,67 @@ Acesso direto a C-level de empresas bilionárias via relações do fundador e re
 
 ## 13. ROADMAP DE PRODUTO
 
-### Fase 0 — Fundação (Meses 1–3, Q3 2026)
-**Objetivo:** plataforma operacional para os primeiros 5–8 clientes
+### Fase 0 — Ambiente e Demo (Meses 1–3, Q3 2026)
+**Objetivo:** ambiente completo e demonstrável para vender — conectores Wave 1A funcionando, dados sintéticos para verticais sem conector real
 
-- [ ] L1: Conectores Wave 1 (HubSpot, TOTVS, Salesforce, Shopify, QuickBooks/Omie) via Airbyte
-- [ ] L2: Pipeline dbt Bronze/Silver/Gold + modelo Customer 360 básico
-- [ ] L3: IA Nível 1 — churn predictor + health score + anomaly detection
-- [ ] L4: Cube.dev semantic engine + dashboards pré-construídos por vertical
+**L4 — Experience (prioridade máxima: é o que o cliente vê):**
+- [ ] Cube.dev semantic engine configurado com métricas pré-definidas por vertical
+- [ ] Dashboards pré-construídos: CRM/Vendas, Varejo/E-commerce, SaaS B2B, Financeiro
+- [ ] Cortex Intelligence (AI Chat em linguagem natural) — Nível 1
+- [ ] Ambiente de demo com dados sintéticos realistas por setor
+
+**L3 — AI Engine Nível 1:**
+- [ ] Churn predictor + health score + anomaly detection (modelos pré-treinados)
+- [ ] Operacional com dados sintéticos de demo e com dados reais via Wave 1A
+
+**L2 — Lakehouse / Customer 360:**
+- [ ] Pipeline dbt Bronze/Silver/Gold funcional
+- [ ] Modelo Customer 360 básico (identidade + jornada + financeiro + comportamento)
+- [ ] Identity resolution por email e CPF/CNPJ
+
+**L1 — Conectores Wave 1A (API pública confiável, Airbyte):**
+- [ ] HubSpot — conector Airbyte configurado e testado
+- [ ] Shopify — conector Airbyte configurado e testado
+- [ ] Omie — conector Airbyte configurado e testado (cliente BR de validação rápida)
+- [ ] QuickBooks Online — conector Airbyte configurado e testado
+- [ ] Salesforce (objetos padrão: Lead, Opportunity, Contact, Account, Activity)
+
+**Infraestrutura e compliance:**
 - [ ] Segurança: TDE + tokenização PII + RBAC + audit log imutável
-- [ ] Compliance: DPA/SCCs/CCPA prontos + controles SOC 2 básicos + Vanta ativo
-- [ ] Deploy: Managed BR (sa-east-1) + BYOC AWS com Terraform
+- [ ] Compliance: DPA/SCCs/CCPA prontos + Vanta ativo + controles SOC 2 básicos
+- [ ] Deploy: Managed BR (sa-east-1) operacional
 
-**Critério de saída:** 1 cliente piloto rodando com Customer 360 real e IA Nível 1
+**Critério de saída:** ambiente de demo funcionando ao vivo com dados reais (HubSpot ou Omie), Customer 360 visível, IA Nível 1 gerando predições
 
-### Fase 1 — Go-to-Market (Meses 4–9, Q4 2026 – Q1 2027)
-**Objetivo:** 5–8 clientes pagantes, ARR R$4M–R$8M
+---
 
-- [ ] L1: Conectores Wave 2 (RD Station, Pipedrive, NetSuite, Google Sheets, DB direto)
-- [ ] L3: IA Nível 2 — fine-tuning automático após 1.000 eventos
-- [ ] L4: Cortex Intelligence (AI Chat em linguagem natural)
+### Fase 1 — Primeiros Clientes + Conectores Wave 1B (Meses 4–9, Q4 2026 – Q1 2027)
+**Objetivo:** 5–8 clientes pagantes, ARR R$4M–R$8M, TOTVS e SAP funcionando com parceiros
+
+- [ ] L1: TOTVS Protheus — com parceiro TOTVS certificado no primeiro cliente enterprise
+- [ ] L1: SAP S/4HANA — com parceiro SAP no primeiro cliente SAP
+- [ ] L1: Wave 2 (RD Station, Pipedrive, NetSuite, Google Sheets, PostgreSQL/MySQL)
+- [ ] L3: IA Nível 2 — fine-tuning automático após 1.000 eventos do cliente
+- [ ] L4: Cortex Intelligence evoluído — respostas com dados do próprio cliente
 - [ ] Segurança: DLP completo (canary records + watermarking + UEBA)
 - [ ] Compliance: SOC 2 Type I publicado + pentest report independente
-- [ ] Deploy: BYOC Azure + GCP (via Terraform modules)
-- [ ] Comercial: Time de AEs contratado + parceiros TOTVS ativos
+- [ ] Deploy: BYOC AWS + Azure via Terraform modules
+- [ ] Comercial: Time de AEs contratado + acordos formais com parceiros TOTVS/SAP
 
 **Critério de saída:** 5 clientes pagantes, NPS > 50, churn < 5%
+
+---
 
 ### Fase 2 — Escala Brasil + Entrada EUA (Meses 10–18, Q2 2027 – Q4 2027)
 **Objetivo:** 15–20 clientes, ARR R$15M–R$25M, entrada US validada
 
-- [ ] L1: Conectores Wave 3 (SAP B1/S4, VTEX, Zendesk, Meta Ads, Google Ads)
+- [ ] L1: Conectores Wave 3 (VTEX, Zendesk, Meta Ads, Google Ads, WhatsApp via Elexia Platform)
 - [ ] L3: Federated Learning (BYOC) + modelos verticais avançados
 - [ ] L4: White-label API para parceiros (Big 4, implantadores)
 - [ ] Segurança: Pirâmide completa (HSM + TPM + attestation + TEE)
 - [ ] Compliance: SOC 2 Type II + ISO 27001 iniciado
 - [ ] Deploy: Managed US (us-east-1) operacional
-- [ ] GTM: Primeiros 2–3 clientes US fechados via parceiros SAP/Big 4
+- [ ] GTM: Primeiros 2–3 clientes US via parceiros SAP/Big 4
 
 **Critério de saída:** ARR R$15M, NRR > 130%, pelo menos 2 clientes US em produção
 
