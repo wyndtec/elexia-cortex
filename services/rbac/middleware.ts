@@ -128,8 +128,22 @@ function extractRoleFromJwt(authHeader: string | undefined): string | null {
  * Cria um middleware Hono que verifica se o JWT do request contém uma role
  * com a permissão requerida.
  *
- * A verificação de ASSINATURA do JWT deve ocorrer em middleware anterior
- * (ex: Clerk, Auth0, ou verificador interno). Este middleware apenas lê o claim 'role'.
+ * SECURITY NOTE — Dependência de arquitetura:
+ * Este middleware NÃO verifica a assinatura criptográfica do JWT.
+ * Ele confia que um middleware de autenticação anterior (Clerk, Auth0,
+ * Keycloak, ou verificador interno com `jose`/`jsonwebtoken`) já validou
+ * a assinatura RS256/ES256 e que a requisição não pode chegar aqui sem
+ * passar pelo API Gateway.
+ *
+ * RISCO: se o serviço for acessível diretamente (sem API Gateway), qualquer
+ * caller pode forjar um JWT com a role desejada e bypassar a autorização.
+ *
+ * PRODUÇÃO OBRIGATÓRIO:
+ *   1. Garantir que NetworkPolicy bloqueia acesso direto ao serviço fora do gateway, OU
+ *   2. Adicionar verificação de assinatura JWT neste middleware usando a lib `jose`:
+ *      import { createRemoteJWKSet, jwtVerify } from "jose"
+ *      const JWKS = createRemoteJWKSet(new URL(process.env.JWT_JWKS_URI!))
+ *      const { payload } = await jwtVerify(token, JWKS, { algorithms: ["RS256"] })
  *
  * @example
  * app.get("/admin/users", createRbacMiddleware("users:read"), handler)

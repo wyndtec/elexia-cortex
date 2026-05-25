@@ -26,6 +26,35 @@ logger = logging.getLogger(__name__)
 DB_PATH = os.getenv("TOKENIZATION_DB_PATH", "/data/tokens.duckdb")
 HMAC_KEY = os.getenv("TOKENIZATION_HMAC_KEY", "")
 
+# ---------------------------------------------------------------------------
+# JWT verification mode
+# ---------------------------------------------------------------------------
+# SECURITY NOTE — Layered defense gap:
+# Por padrão (SKIP_JWT_VERIFY=true), este serviço confia que o API Gateway
+# upstream já verificou a assinatura do JWT. A role é lida diretamente do
+# payload base64, SEM verificar a assinatura criptográfica localmente.
+#
+# RISCO: qualquer pod no cluster com acesso direto ao serviço (sem passar pelo
+# API Gateway) pode forjar um JWT com role=owner e acessar /detokenize,
+# expondo PII em texto plano.
+#
+# PRODUÇÃO OBRIGATÓRIO: definir SKIP_JWT_VERIFY=false e configurar
+# JWT_JWKS_URI com o endpoint JWKS do provedor de identidade (Clerk, Auth0,
+# Keycloak, etc.). Neste modo, python-jose ou authlib verifica a assinatura
+# RS256/ES256 antes de qualquer autorização.
+#
+# O flag SKIP_JWT_VERIFY=true é EXCLUSIVO para ambiente demo/dev onde o
+# serviço não é exposto fora do cluster e não há PII real.
+# ---------------------------------------------------------------------------
+SKIP_JWT_VERIFY = os.getenv("SKIP_JWT_VERIFY", "true").lower() == "true"
+JWT_JWKS_URI = os.getenv("JWT_JWKS_URI", "")  # ex: https://your-domain/.well-known/jwks.json
+
+if not SKIP_JWT_VERIFY and not JWT_JWKS_URI:
+    raise RuntimeError(
+        "JWT_JWKS_URI é obrigatório quando SKIP_JWT_VERIFY=false. "
+        "Configure o endpoint JWKS do seu provedor de identidade."
+    )
+
 # Roles autorizadas a chamar /detokenize
 DETOKENIZE_ALLOWED_ROLES = {"owner", "admin"}
 
@@ -100,14 +129,44 @@ class DetokenizeResponse(BaseModel):
 def _get_role_from_request(request: Request) -> str | None:
     """
     Extrai a role do JWT no header Authorization Bearer.
-    A verificação de assinatura JWT ocorre no API Gateway upstream —
-    aqui apenas lemos o claim 'role' do payload (já validado).
+
+    Modo SKIP_JWT_VERIFY=true (demo/dev):
+      Lê o claim 'role' diretamente do payload base64. A verificação de
+      assinatura é delegada ao API Gateway upstream. NÃO usar com PII real.
+
+    Modo SKIP_JWT_VERIFY=false (produção):
+      Verifica a assinatura criptográfica do JWT contra o JWKS endpoint
+      antes de ler qualquer claim. Requer JWT_JWKS_URI configurada.
+      Instalar: pip install python-jose[cryptography] ou authlib.
     """
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
         return None
 
     token = auth_header.removeprefix("Bearer ")
+
+    if not SKIP_JWT_VERIFY:
+        # Modo produção: verificar assinatura antes de ler claims
+        # Implementação com python-jose (adicionar à requirements.txt):
+        #
+        #   from jose import jwt as jose_jwt, jwk, JWTError
+        #   import httpx
+        #
+        #   try:
+        #       jwks = httpx.get(JWT_JWKS_URI, timeout=5).json()
+        #       claims = jose_jwt.decode(token, jwks, algorithms=["RS256", "ES256"])
+        #       return claims.get("role")
+        #   except JWTError:
+        #       return None
+        #
+        # TODO: implementar antes de usar em produção com PII real.
+        logger.error(
+            "SKIP_JWT_VERIFY=false mas verificação de assinatura não implementada. "
+            "Bloqueando requisição por segurança."
+        )
+        return None
+
+    # Modo demo: decodificar payload sem verificar assinatura
     try:
         import base64
         import json

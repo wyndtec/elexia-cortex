@@ -64,15 +64,42 @@ spec:
                 exit 1
               fi
 
-              echo "Salvando credenciais em Secret Kubernetes..."
+              echo "Salvando credenciais em Secret Kubernetes (TTL: deletar imediatamente após uso)..."
               kubectl create secret generic vault-init-keys \
                 --from-literal=root-token="${ROOT_TOKEN}" \
                 --from-literal=init-output="${INIT_OUTPUT}" \
                 --namespace=cortex-infra \
                 --dry-run=client -o yaml | kubectl apply -f -
 
+              # ---------------------------------------------------------------
+              # SEGURANÇA: Bootstrap mínimo com root token — configurar auth
+              # methods e policies via API antes de revogar.
+              # Em produção, adicionar aqui os comandos de bootstrap (AppRole,
+              # PKI, políticas de acesso) e então revogar o root token:
+              #
+              #   VAULT_TOKEN="${ROOT_TOKEN}" vault auth enable approle
+              #   VAULT_TOKEN="${ROOT_TOKEN}" vault policy write <name> <path>
+              #   VAULT_TOKEN="${ROOT_TOKEN}" vault token revoke "${ROOT_TOKEN}"
+              #
+              # O root token NÃO deve existir além do tempo de bootstrap.
+              # Referência: https://developer.hashicorp.com/vault/docs/concepts/tokens#root-tokens
+              # ---------------------------------------------------------------
+
+              # AVISO CRÍTICO: O Secret vault-init-keys contém o root token em
+              # base64 (NÃO criptografado). Deve ser deletado imediatamente após
+              # extrair e armazenar o token em local seguro (ex: cofre offline).
+              #
+              #   kubectl delete secret vault-init-keys -n cortex-infra
+              #
+              # Se o etcd do cluster NÃO tiver encryption-at-rest habilitado,
+              # o root token está exposto no disco do nó control-plane.
+              echo ""
+              echo "====================================================================="
+              echo " ACAO OBRIGATORIA: delete o Secret apos salvar o root token:"
+              echo "   kubectl delete secret vault-init-keys -n cortex-infra"
+              echo " Em producao: revogar root token apos bootstrap de auth methods."
+              echo "====================================================================="
               echo "Vault inicializado com sucesso."
-              echo "IMPORTANTE: Faça backup do Secret vault-init-keys e delete-o após salvar o root token."
       volumes: []
 ---
 # ServiceAccount com permissão mínima para criar Secrets no namespace cortex-infra

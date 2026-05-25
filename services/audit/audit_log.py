@@ -38,6 +38,21 @@ class AuditLog:
     """
     Audit log persistente com hash-chaining.
     Thread-safe para uso em servidor async via asyncio.Lock.
+
+    LIMITAÇÃO DE ESCALA — single-writer por processo:
+    O asyncio.Lock garante serialização apenas dentro de um único processo
+    Python (single-replica). Em ambiente multi-replica (Deployment com
+    replicas > 1), múltiplas instâncias competem pelo mesmo arquivo DuckDB,
+    o que causa corrupção de dados (DuckDB não suporta writes concorrentes
+    entre processos distintos).
+
+    Para produção multi-replica, substituir DuckDB por:
+      - PostgreSQL com INSERT ... RETURNING e locking via advisory locks, OU
+      - Serviço de audit dedicado com réplica única (deployment replicas: 1
+        com PodDisruptionBudget e persistência em PVC ReadWriteOnce), OU
+      - Fila de eventos (Kafka/SQS) com consumer single-threaded que persiste.
+
+    No ambiente demo (single-pod), este design é correto e suficiente.
     """
 
     def __init__(self, db_path: str = _DEFAULT_DB_PATH) -> None:
