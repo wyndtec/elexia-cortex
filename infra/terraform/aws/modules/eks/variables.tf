@@ -35,6 +35,12 @@ variable "cluster_endpoint_public_access" {
   default     = true
 }
 
+variable "cluster_endpoint_public_access_cidrs" {
+  description = "Lista de CIDRs autorizados a acessar o endpoint público do API server. [] = qualquer IP (default para demo; restringir em prod)"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "node_instance_types" {
   description = "Lista de tipos de instância para o node group (mistura aumenta disponibilidade Spot)"
   type        = list(string)
@@ -78,8 +84,19 @@ variable "environment" {
 
 variable "cluster_access_entries" {
   description = "Mapa de entradas de acesso ao cluster (usuários/roles IAM que podem usar kubectl)"
-  type        = any
-  default     = {}
+  type = map(object({
+    principal_arn     = string
+    type              = optional(string, "STANDARD")
+    kubernetes_groups = optional(list(string), [])
+    policy_associations = optional(map(object({
+      policy_arn = string
+      access_scope = object({
+        type       = string
+        namespaces = optional(list(string), [])
+      })
+    })), {})
+  }))
+  default = {}
 }
 
 variable "tags" {

@@ -69,3 +69,34 @@ spec:
       max:
         cpu: "8"
         memory: "16Gi"
+
+---
+# NetworkPolicy: isolamento de tráfego entre namespaces.
+# Bloqueia ingress de outros namespaces (ex: cortex-demo) por padrão.
+# Permite apenas: tráfego interno ao namespace + ingress do ingress-nginx.
+# NOTA: requer que o CNI do cluster suporte NetworkPolicy (aws-vpc-cni + Calico,
+# ou Cilium). O aws-vpc-cni padrão NÃO enforça NetworkPolicy sem policy engine.
+# Instalar Calico ou Cilium é pré-requisito para esta policy ter efeito.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cortex-prod-default-deny
+  namespace: cortex-prod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Permite tráfego interno ao namespace cortex-prod
+    - from:
+        - podSelector: {}
+    # Permite ingress do namespace ingress-nginx (NGINX Ingress Controller)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+  egress:
+    # Permite tráfego de saída irrestrito (DNS, ECR, CloudWatch, etc.)
+    # Restringir egress requer mapeamento completo de dependências externas
+    - {}

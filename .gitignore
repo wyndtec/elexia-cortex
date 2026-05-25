@@ -40,6 +40,14 @@ src/ai-engine/models/
 src/ai-engine/experiments/
 mlruns/
 
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.auto.tfvars
+!terraform.tfvars
+
 # OS
 .DS_Store
 *.log

@@ -141,11 +141,18 @@ resource "aws_iam_policy" "github_actions_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        # ECR: autenticar e fazer push de imagens
+        # ecr:GetAuthorizationToken exige Resource "*" obrigatoriamente (não aceita ARN de repositório)
+        Sid    = "ECRAuthToken"
+        Effect = "Allow"
+        Action = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
+        # ECR: operações de push/pull restritas aos repositórios do projeto (cortex-*)
+        # Evita que credenciais comprometidas façam push em outros repositórios da conta
         Sid    = "ECRPush"
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
@@ -157,7 +164,7 @@ resource "aws_iam_policy" "github_actions_policy" {
           "ecr:ListImages",
           "ecr:DescribeImages"
         ]
-        Resource = "*"
+        Resource = "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/cortex-*"
       },
       {
         # EKS: apenas descrever e atualizar kubeconfig (kubectl apply via kubeconfig)

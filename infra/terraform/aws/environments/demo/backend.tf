@@ -27,6 +27,9 @@ terraform {
     key            = "environments/demo/terraform.tfstate"
     region         = "sa-east-1"
     encrypt        = true
+    # NOTA DE SEGURANÇA: encrypt=true usa SSE-S3 (AES-256 gerenciado pela AWS).
+    # Para produção, adicionar kms_key_id com uma CMK para auditoria granular via CloudTrail.
+    # Exemplo: kms_key_id = "arn:aws:kms:sa-east-1:ACCOUNT:key/KEY-ID"
 
     # DynamoDB para lock — previne apply concorrentes (state corruption)
     dynamodb_table = "elexia-cortex-terraform-lock"

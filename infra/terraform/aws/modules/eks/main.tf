@@ -31,9 +31,13 @@ module "eks" {
   subnet_ids = var.private_subnet_ids
 
   # Endpoint privado: kubectl só funciona dentro da VPC ou via VPN/bastion
-  # Endpoint público habilitado para facilitar deploy do CI/CD via OIDC
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = var.cluster_endpoint_public_access
+  # Endpoint público habilitado para CI/CD via OIDC (GitHub Actions)
+  # SECURITY NOTE: cluster_endpoint_public_access_cidrs restringe quais IPs podem
+  # acessar o API server público. Default ["0.0.0.0/0"] em demo; restringir em prod
+  # para os IPs do escritório/VPN + range do GitHub Actions (meta.github.com/meta).
+  cluster_endpoint_private_access      = true
+  cluster_endpoint_public_access       = var.cluster_endpoint_public_access
+  cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs
 
   # IRSA: permite que pods assumam roles IAM via service accounts
   # Necessário para serviços como ALB Controller, ExternalDNS, etc.

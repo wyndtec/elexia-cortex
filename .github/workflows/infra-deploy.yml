@@ -7,9 +7,10 @@
 # para este repositório e branch.
 #
 # Secrets necessários no GitHub (Settings → Secrets and variables → Actions):
-#   AWS_ROLE_ARN: ARN da role GitHub Actions (output do Terraform)
-#   AWS_REGION:   sa-east-1
-#   EKS_CLUSTER_NAME: elexia-cortex-demo
+#   AWS_ROLE_ARN:      ARN da role GitHub Actions (output do Terraform: github_actions_role_arn)
+#   AWS_REGION:        sa-east-1
+#   EKS_CLUSTER_NAME:  elexia-cortex-demo
+#   AWS_ACCOUNT_ID:    ID da conta AWS (sem hífens) — usado como variável no terraform plan
 # =============================================================================
 
 name: Infra Deploy
@@ -92,7 +93,6 @@ jobs:
       - name: Terraform Format Check
         run: |
           terraform fmt -check -recursive
-        continue-on-error: true
 
       - name: Terraform Plan
         id: plan
@@ -106,13 +106,22 @@ jobs:
           echo "exitcode=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
         # exitcode 0 = sem mudanças, 1 = erro, 2 = mudanças detectadas
 
+      # Calcula SHA256 do plan binário para verificação de integridade no job apply
+      - name: Calculate plan checksum
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          sha256sum tfplan > tfplan.sha256
+          echo "Plan SHA256: $(cat tfplan.sha256)"
+
       # Salva o plan para uso no job apply (apenas em push para main)
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           name: terraform-plan
-          path: ${{ env.TF_WORKING_DIR }}/tfplan
+          path: |
+            ${{ env.TF_WORKING_DIR }}/tfplan
+            ${{ env.TF_WORKING_DIR }}/tfplan.sha256
           retention-days: 1
 
       # Posta resultado do plan como comentário no PR
@@ -178,6 +187,12 @@ jobs:
         with:
           name: terraform-plan
           path: ${{ env.TF_WORKING_DIR }}
+
+      # Verifica integridade do plan binário antes de aplicar
+      - name: Verify plan checksum
+        run: |
+          sha256sum -c tfplan.sha256
+          echo "Checksum verificado: plan nao foi modificado entre jobs"
 
       - name: Terraform Apply
         run: |
