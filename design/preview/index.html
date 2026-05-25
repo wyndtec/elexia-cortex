@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elexia Cortex — Design Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: '#0A0A0C',
+            surface1: '#111114',
+            surface2: '#18181C',
+            surface3: '#1F1F24',
+            border: '#26262B',
+            'border-subtle': '#1C1C21',
+            'text-primary': '#F4F4F5',
+            'text-secondary': '#A1A1AA',
+            'text-muted': '#71717A',
+            emerald: {
+              DEFAULT: '#059669',
+              light: '#10B981',
+              dim: '#064E3B',
+            },
+            amber: { DEFAULT: '#D97706', dim: '#78350F' },
+            red: { DEFAULT: '#DC2626', dim: '#7F1D1D' },
+            blue: { DEFAULT: '#3B82F6', dim: '#1E3A5F' },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    body { background-color: #0A0A0C; }
+    .card-hover {
+      transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    }
+    .card-hover:hover {
+      border-color: rgba(16, 185, 129, 0.3);
+      background-color: #1F1F24;
+      transform: translateY(-2px);
+    }
+    .card-hover:hover .card-icon {
+      color: #10B981;
+    }
+  </style>
+</head>
+<body class="font-sans text-text-primary bg-base min-h-screen flex flex-col items-center justify-center p-8">
+
+  <!-- Header -->
+  <div class="text-center mb-12">
+    <div class="flex items-center justify-center gap-3 mb-4">
+      <div class="w-px h-8 bg-border"></div>
+      <span class="font-mono font-semibold text-4xl tracking-widest text-emerald-light">CORTEX</span>
+      <div class="w-px h-8 bg-border"></div>
+    </div>
+    <p class="text-text-secondary text-base font-light tracking-wide">Enterprise Data Intelligence</p>
+    <div class="flex items-center justify-center gap-2 mt-3">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
+      <span class="text-text-muted text-xs font-mono">Design Preview &mdash; Maio 2026</span>
+    </div>
+  </div>
+
+  <!-- Card Grid -->
+  <div class="grid grid-cols-3 gap-4 w-full max-w-3xl">
+
+    <a href="dashboard.html" class="card-hover bg-surface2 border border-border rounded-xl p-6 flex flex-col gap-4 no-underline">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-lg bg-surface3 border border-border flex items-center justify-center">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 text-text-muted card-icon"></i>
+        </div>
+        <i data-lucide="arrow-up-right" class="w-4 h-4 text-text-muted"></i>
+      </div>
+      <div>
+        <p class="text-text-primary font-semibold text-sm mb-1">Customer 360</p>
+        <p class="text-text-muted text-xs leading-relaxed">Visao geral de clientes, KPIs, health scores e tabela com risco de churn.</p>
+      </div>
+    </a>
+
+    <a href="customer-profile.html" class="card-hover bg-surface2 border border-border rounded-xl p-6 flex flex-col gap-4 no-underline">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-lg bg-surface3 border border-border flex items-center justify-center">
+          <i data-lucide="user" class="w-5 h-5 text-text-muted card-icon"></i>
+        </div>
+        <i data-lucide="arrow-up-right" class="w-4 h-4 text-text-muted"></i>
+      </div>
+      <div>
+        <p class="text-text-primary font-semibold text-sm mb-1">Perfil de Cliente</p>
+        <p class="text-text-muted text-xs leading-relaxed">Grupo Tavares Alimentos — health ring, timeline de eventos, painel de IA.</p>
+      </div>
+    </a>
+
+    <a href="connectors.html" class="card-hover bg-surface2 border border-border rounded-xl p-6 flex flex-col gap-4 no-underline">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-lg bg-surface3 border border-border flex items-center justify-center">
+          <i data-lucide="plug" class="w-5 h-5 text-text-muted card-icon"></i>
+        </div>
+        <i data-lucide="arrow-up-right" class="w-4 h-4 text-text-muted"></i>
+      </div>
+      <div>
+        <p class="text-text-primary font-semibold text-sm mb-1">Conectores</p>
+        <p class="text-text-muted text-xs leading-relaxed">HubSpot, Omie conectados. Shopify, Salesforce disponiveis. Modal de conexao.</p>
+      </div>
+    </a>
+
+    <a href="intelligence.html" class="card-hover bg-surface2 border border-border rounded-xl p-6 flex flex-col gap-4 no-underline">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-lg bg-surface3 border border-border flex items-center justify-center">
+          <i data-lucide="message-square" class="w-5 h-5 text-text-muted card-icon"></i>
+        </div>
+        <i data-lucide="arrow-up-right" class="w-4 h-4 text-text-muted"></i>
+      </div>
+      <div>
+        <p class="text-text-primary font-semibold text-sm mb-1">Intelligence</p>
+        <p class="text-text-muted text-xs leading-relaxed">Chat IA com dados mock. Tabela de churn, breakdown de receita por segmento.</p>
+      </div>
+    </a>
+
+    <a href="compliance.html" class="card-hover bg-surface2 border border-border rounded-xl p-6 flex flex-col gap-4 no-underline">
+      <div class="flex items-center justify-between">
+        <div class="w-10 h-10 rounded-lg bg-surface3 border border-border flex items-center justify-center">
+          <i data-lucide="shield" class="w-5 h-5 text-text-muted card-icon"></i>
+        </div>
+        <i data-lucide="arrow-up-right" class="w-4 h-4 text-text-muted"></i>
+      </div>
+      <div>
+        <p class="text-text-primary font-semibold text-sm mb-1">Compliance</p>
+        <p class="text-text-muted text-xs leading-relaxed">LGPD, SOC 2, audit log hash-chained, inventario PII, alertas de seguranca.</p>
+      </div>
+    </a>
+
+    <!-- Info card -->
+    <div class="bg-surface1 border border-border-subtle rounded-xl p-6 flex flex-col justify-between">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-text-muted"></i>
+          <span class="text-text-muted text-xs">100% standalone</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="wifi-off" class="w-3.5 h-3.5 text-text-muted"></i>
+          <span class="text-text-muted text-xs">Sem servidor necessario</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="database" class="w-3.5 h-3.5 text-text-muted"></i>
+          <span class="text-text-muted text-xs">Dados 100% mock inline</span>
+        </div>
+      </div>
+      <div class="mt-4 pt-4 border-t border-border-subtle">
+        <p class="text-text-muted text-xs font-mono">Tailwind CDN + Lucide</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-12 text-center">
+    <p class="text-text-muted text-xs">
+      Elexia Cortex &nbsp;&middot;&nbsp; Design Preview &nbsp;&middot;&nbsp; Maio 2026
+    </p>
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

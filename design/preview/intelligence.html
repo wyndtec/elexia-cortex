@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cortex Intelligence — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: '#0A0A0C',
+            surface1: '#111114',
+            surface2: '#18181C',
+            surface3: '#1F1F24',
+            border: '#26262B',
+            'border-subtle': '#1C1C21',
+            'text-primary': '#F4F4F5',
+            'text-secondary': '#A1A1AA',
+            'text-muted': '#71717A',
+            emerald: {
+              DEFAULT: '#059669',
+              light: '#10B981',
+              dim: '#064E3B',
+            },
+            amber: { DEFAULT: '#D97706', dim: '#78350F' },
+            red: { DEFAULT: '#DC2626', dim: '#7F1D1D' },
+            blue: { DEFAULT: '#3B82F6', dim: '#1E3A5F' },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    body { background-color: #0A0A0C; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111114; }
+    ::-webkit-scrollbar-thumb { background: #26262B; border-radius: 3px; }
+    .chat-scroll { scroll-behavior: smooth; }
+    .response-table { border-collapse: collapse; width: 100%; }
+    .response-table th, .response-table td {
+      border: 1px solid #26262B;
+      padding: 6px 12px;
+      text-align: left;
+      font-size: 12px;
+    }
+    .response-table th { color: #71717A; background: #1F1F24; }
+    .response-table td { color: #A1A1AA; }
+  </style>
+</head>
+<body class="font-sans text-text-primary bg-base min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-56 bg-surface1 border-r border-border flex flex-col fixed h-full z-10">
+    <div class="px-5 py-5 border-b border-border">
+      <span class="font-mono font-semibold text-lg tracking-widest text-emerald-light">CORTEX</span>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="layout-dashboard" class="w-4 h-4 flex-shrink-0"></i>
+        Customer 360
+      </a>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="users" class="w-4 h-4 flex-shrink-0"></i>
+        Clientes
+      </a>
+      <a href="connectors.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="plug" class="w-4 h-4 flex-shrink-0"></i>
+        Conectores
+      </a>
+      <a href="intelligence.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface3 border-l-2 border-emerald text-text-primary text-sm font-medium">
+        <i data-lucide="message-square" class="w-4 h-4 text-emerald-light flex-shrink-0"></i>
+        Intelligence
+      </a>
+      <a href="compliance.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="shield" class="w-4 h-4 flex-shrink-0"></i>
+        Compliance
+      </a>
+    </nav>
+    <div class="px-4 py-4 border-t border-border flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-emerald-dim flex items-center justify-center flex-shrink-0">
+        <span class="text-emerald-light text-xs font-semibold">WO</span>
+      </div>
+      <div class="min-w-0">
+        <p class="text-text-primary text-xs font-medium truncate">Wyndson O.</p>
+        <p class="text-text-muted text-xs">Admin</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="ml-56 flex-1 flex flex-col min-h-screen">
+
+    <!-- Top bar -->
+    <header class="bg-surface1 border-b border-border px-6 py-3 flex items-center gap-4 sticky top-0 z-10">
+      <h1 class="text-text-primary font-semibold text-base">Cortex Intelligence</h1>
+      <div class="flex items-center gap-3 ml-auto">
+        <button class="text-text-muted hover:text-text-secondary transition-colors">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+        </button>
+        <button class="text-text-muted hover:text-text-secondary transition-colors">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content: 2 columns -->
+    <div class="flex-1 flex overflow-hidden" style="height: calc(100vh - 57px);">
+
+      <!-- Chat column (70%) -->
+      <div class="flex-1 flex flex-col" style="flex: 0 0 70%;">
+
+        <!-- Chat messages -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 chat-scroll">
+
+          <!-- User message 1 -->
+          <div class="flex justify-end">
+            <div class="max-w-lg">
+              <div class="bg-emerald-dim border border-emerald/20 rounded-2xl rounded-tr-sm px-5 py-3">
+                <p class="text-text-primary text-sm">Quais clientes tem maior risco de churn este mes?</p>
+              </div>
+              <p class="text-text-muted text-xs mt-1.5 text-right">Wyndson O. &nbsp;·&nbsp; 14:18</p>
+            </div>
+          </div>
+
+          <!-- AI response 1 -->
+          <div class="flex gap-3">
+            <div class="w-8 h-8 rounded-full bg-surface3 border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-light"></i>
+            </div>
+            <div class="max-w-2xl flex-1">
+              <div class="bg-surface2 border border-border rounded-2xl rounded-tl-sm px-5 py-4 space-y-3">
+                <p class="text-text-secondary text-sm leading-relaxed">
+                  Identifiquei <span class="text-text-primary font-medium">23 clientes</span> com churn score acima de 60%. Os 5 de maior risco:
+                </p>
+                <div class="overflow-hidden rounded-lg border border-border">
+                  <table class="response-table">
+                    <thead>
+                      <tr>
+                        <th>Cliente</th>
+                        <th>Score</th>
+                        <th>Ultimo contato</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="font-medium" style="color: #F4F4F5;">Varejo Nordeste S.A.</td>
+                        <td style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">67%</td>
+                        <td>8 dias</td>
+                      </tr>
+                      <tr>
+                        <td class="font-medium" style="color: #F4F4F5;">Construtora Avila</td>
+                        <td style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">74%</td>
+                        <td>12 dias</td>
+                      </tr>
+                      <tr>
+                        <td class="font-medium" style="color: #F4F4F5;">Distribuidora Leal</td>
+                        <td style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">71%</td>
+                        <td>9 dias</td>
+                      </tr>
+                      <tr>
+                        <td class="font-medium" style="color: #F4F4F5;">Grupo Ferreira Moveis</td>
+                        <td style="color: #D97706; font-family: 'JetBrains Mono', monospace;">63%</td>
+                        <td>15 dias</td>
+                      </tr>
+                      <tr>
+                        <td class="font-medium" style="color: #F4F4F5;">Sul Industrial Ltda</td>
+                        <td style="color: #D97706; font-family: 'JetBrains Mono', monospace;">61%</td>
+                        <td>11 dias</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="text-text-secondary text-sm leading-relaxed">
+                  Principal fator: <span class="text-text-primary">ausencia de contato executivo</span> por mais de 7 dias.
+                  Acao recomendada: agendar reuniao com os 5 na proxima semana.
+                </p>
+              </div>
+              <p class="text-text-muted text-xs mt-1.5">Cortex IA &nbsp;·&nbsp; 14:18</p>
+            </div>
+          </div>
+
+          <!-- User message 2 -->
+          <div class="flex justify-end">
+            <div class="max-w-lg">
+              <div class="bg-emerald-dim border border-emerald/20 rounded-2xl rounded-tr-sm px-5 py-3">
+                <p class="text-text-primary text-sm">Qual foi a receita total em maio?</p>
+              </div>
+              <p class="text-text-muted text-xs mt-1.5 text-right">Wyndson O. &nbsp;·&nbsp; 14:21</p>
+            </div>
+          </div>
+
+          <!-- AI response 2 -->
+          <div class="flex gap-3">
+            <div class="w-8 h-8 rounded-full bg-surface3 border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-light"></i>
+            </div>
+            <div class="max-w-2xl flex-1">
+              <div class="bg-surface2 border border-border rounded-2xl rounded-tl-sm px-5 py-4 space-y-4">
+                <div>
+                  <p class="text-text-secondary text-sm">Receita de maio:</p>
+                  <p class="text-text-primary text-3xl font-semibold mt-1">R$ 8.247.320</p>
+                  <p class="text-emerald-light text-sm mt-1 flex items-center gap-1.5">
+                    <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                    +14,3% vs abril (R$ 7.216.080)
+                  </p>
+                </div>
+                <div>
+                  <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Por segmento</p>
+                  <div class="space-y-2.5">
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-text-secondary text-xs">Varejo Enterprise</span>
+                        <span class="text-text-primary text-xs font-medium font-mono">R$ 3.1M &nbsp;·&nbsp; 38%</span>
+                      </div>
+                      <div class="w-full bg-surface3 rounded-full h-1.5">
+                        <div class="bg-emerald-light h-1.5 rounded-full" style="width: 38%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-text-secondary text-xs">Financeiro</span>
+                        <span class="text-text-primary text-xs font-medium font-mono">R$ 2.4M &nbsp;·&nbsp; 29%</span>
+                      </div>
+                      <div class="w-full bg-surface3 rounded-full h-1.5">
+                        <div class="bg-blue h-1.5 rounded-full" style="width: 29%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-text-secondary text-xs">SaaS B2B</span>
+                        <span class="text-text-primary text-xs font-medium font-mono">R$ 1.6M &nbsp;·&nbsp; 19%</span>
+                      </div>
+                      <div class="w-full bg-surface3 rounded-full h-1.5">
+                        <div class="bg-amber h-1.5 rounded-full" style="width: 19%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-text-secondary text-xs">Outros</span>
+                        <span class="text-text-primary text-xs font-medium font-mono">R$ 1.1M &nbsp;·&nbsp; 14%</span>
+                      </div>
+                      <div class="w-full bg-surface3 rounded-full h-1.5">
+                        <div class="bg-text-muted h-1.5 rounded-full" style="width: 14%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-text-muted text-xs mt-1.5">Cortex IA &nbsp;·&nbsp; 14:22</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Input area -->
+        <div class="border-t border-border p-4">
+          <div class="relative bg-surface2 border border-border rounded-xl flex items-center">
+            <input type="text" placeholder="Pergunte sobre seus dados..." class="flex-1 bg-transparent text-text-secondary text-sm px-5 py-3.5 placeholder-text-muted focus:outline-none" />
+            <button class="mr-3 w-8 h-8 rounded-lg bg-emerald flex items-center justify-center hover:bg-emerald-light transition-colors flex-shrink-0">
+              <i data-lucide="send" class="w-3.5 h-3.5 text-white"></i>
+            </button>
+          </div>
+          <p class="text-text-muted text-xs text-center mt-2">Cortex Intelligence analisa HubSpot + Omie em tempo real</p>
+        </div>
+
+      </div>
+
+      <!-- Context panel (30%) -->
+      <div class="border-l border-border bg-surface1 overflow-y-auto" style="flex: 0 0 30%;">
+        <div class="p-5 space-y-5">
+
+          <!-- Active context -->
+          <div>
+            <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Contexto ativo</p>
+            <div class="bg-surface2 border border-border rounded-xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-text-muted text-xs">Periodo</span>
+                <span class="text-text-secondary text-xs font-medium">Ultimos 30 dias</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-text-muted text-xs">Clientes</span>
+                <span class="text-text-secondary text-xs font-medium">1.847 ativos</span>
+              </div>
+              <div class="border-t border-border pt-2">
+                <p class="text-text-muted text-xs mb-2">Fontes</p>
+                <div class="flex gap-2">
+                  <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-surface3 text-text-secondary text-xs border border-border">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
+                    HubSpot
+                  </span>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-surface3 text-text-secondary text-xs border border-border">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
+                    Omie
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Suggested questions -->
+          <div>
+            <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Perguntas sugeridas</p>
+            <div class="space-y-2">
+              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
+                Clientes com maior risco de churn
+              </button>
+              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
+                Receita de maio por segmento
+              </button>
+              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
+                Top 10 clientes por LTV
+              </button>
+              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
+                Clientes sem contato ha 30d+
+              </button>
+              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
+                NPS medio por segmento
+              </button>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div>
+            <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Historico</p>
+            <div class="space-y-1">
+              <div class="px-3 py-2 rounded-lg hover:bg-surface2 cursor-pointer transition-colors">
+                <p class="text-text-secondary text-xs truncate">Clientes com maior risco...</p>
+                <p class="text-text-muted text-xs">Hoje 14:18</p>
+              </div>
+              <div class="px-3 py-2 rounded-lg hover:bg-surface2 cursor-pointer transition-colors">
+                <p class="text-text-secondary text-xs truncate">Receita total em maio</p>
+                <p class="text-text-muted text-xs">Hoje 14:21</p>
+              </div>
+              <div class="px-3 py-2 rounded-lg hover:bg-surface2 cursor-pointer transition-colors">
+                <p class="text-text-secondary text-xs truncate">Top clientes por LTV Q1</p>
+                <p class="text-text-muted text-xs">Ontem 11:04</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

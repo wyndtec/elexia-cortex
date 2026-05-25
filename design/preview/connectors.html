@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conectores — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base: '#0A0A0C',
+            surface1: '#111114',
+            surface2: '#18181C',
+            surface3: '#1F1F24',
+            border: '#26262B',
+            'border-subtle': '#1C1C21',
+            'text-primary': '#F4F4F5',
+            'text-secondary': '#A1A1AA',
+            'text-muted': '#71717A',
+            emerald: {
+              DEFAULT: '#059669',
+              light: '#10B981',
+              dim: '#064E3B',
+            },
+            amber: { DEFAULT: '#D97706', dim: '#78350F' },
+            red: { DEFAULT: '#DC2626', dim: '#7F1D1D' },
+            blue: { DEFAULT: '#3B82F6', dim: '#1E3A5F' },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    body { background-color: #0A0A0C; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111114; }
+    ::-webkit-scrollbar-thumb { background: #26262B; border-radius: 3px; }
+  </style>
+</head>
+<body class="font-sans text-text-primary bg-base min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-56 bg-surface1 border-r border-border flex flex-col fixed h-full z-10">
+    <div class="px-5 py-5 border-b border-border">
+      <span class="font-mono font-semibold text-lg tracking-widest text-emerald-light">CORTEX</span>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="layout-dashboard" class="w-4 h-4 flex-shrink-0"></i>
+        Customer 360
+      </a>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="users" class="w-4 h-4 flex-shrink-0"></i>
+        Clientes
+      </a>
+      <a href="connectors.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface3 border-l-2 border-emerald text-text-primary text-sm font-medium">
+        <i data-lucide="plug" class="w-4 h-4 text-emerald-light flex-shrink-0"></i>
+        Conectores
+      </a>
+      <a href="intelligence.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="message-square" class="w-4 h-4 flex-shrink-0"></i>
+        Intelligence
+      </a>
+      <a href="compliance.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
+        <i data-lucide="shield" class="w-4 h-4 flex-shrink-0"></i>
+        Compliance
+      </a>
+    </nav>
+    <div class="px-4 py-4 border-t border-border flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-emerald-dim flex items-center justify-center flex-shrink-0">
+        <span class="text-emerald-light text-xs font-semibold">WO</span>
+      </div>
+      <div class="min-w-0">
+        <p class="text-text-primary text-xs font-medium truncate">Wyndson O.</p>
+        <p class="text-text-muted text-xs">Admin</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="ml-56 flex-1 flex flex-col min-h-screen">
+
+    <!-- Top bar -->
+    <header class="bg-surface1 border-b border-border px-6 py-3 flex items-center gap-4 sticky top-0 z-10">
+      <h1 class="text-text-primary font-semibold text-base">Conectores</h1>
+      <div class="flex items-center gap-3 ml-auto">
+        <button class="text-text-muted hover:text-text-secondary transition-colors">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+        </button>
+        <button class="text-text-muted hover:text-text-secondary transition-colors">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-6 space-y-6">
+
+      <!-- Tabs -->
+      <div class="flex items-center gap-1 border-b border-border">
+        <button class="px-4 py-2.5 text-sm font-medium text-text-primary border-b-2 border-emerald -mb-px">Todos</button>
+        <button class="px-4 py-2.5 text-sm font-medium text-text-muted hover:text-text-secondary transition-colors -mb-px border-b-2 border-transparent">
+          Conectados
+          <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full bg-emerald-dim text-emerald-light text-xs">2</span>
+        </button>
+        <button class="px-4 py-2.5 text-sm font-medium text-text-muted hover:text-text-secondary transition-colors -mb-px border-b-2 border-transparent">Disponiveis</button>
+        <button class="px-4 py-2.5 text-sm font-medium text-text-muted hover:text-text-secondary transition-colors -mb-px border-b-2 border-transparent">Em breve</button>
+      </div>
+
+      <!-- Connected -->
+      <div>
+        <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Conectados</p>
+        <div class="grid grid-cols-3 gap-4">
+
+          <div class="bg-surface2 border border-emerald/20 rounded-xl p-5">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                <span class="text-orange-400 font-bold text-sm font-mono">Hs</span>
+              </div>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-dim text-emerald-light text-xs font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
+                Conectado
+              </span>
+            </div>
+            <h3 class="text-text-primary font-semibold text-sm mb-1">HubSpot</h3>
+            <p class="text-text-muted text-xs mb-3">CRM &amp; Marketing Automation</p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center justify-between">
+                <span class="text-text-muted text-xs">Ultima sync</span>
+                <span class="text-text-secondary text-xs font-mono">5 min atras</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-text-muted text-xs">Registros</span>
+                <span class="text-text-secondary text-xs font-mono">12.847</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button class="flex-1 px-3 py-1.5 bg-surface3 border border-border text-text-secondary text-xs rounded-lg hover:text-text-primary transition-colors">Configurar</button>
+              <button class="flex-1 px-3 py-1.5 bg-surface3 border border-border text-text-secondary text-xs rounded-lg hover:text-text-primary transition-colors">Ver logs</button>
+            </div>
+          </div>
+
+          <div class="bg-surface2 border border-emerald/20 rounded-xl p-5">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-10 h-10 rounded-lg bg-blue/10 border border-blue/20 flex items-center justify-center">
+                <span class="text-blue font-bold text-sm font-mono">Om</span>
+              </div>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-dim text-emerald-light text-xs font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
+                Conectado
+              </span>
+            </div>
+            <h3 class="text-text-primary font-semibold text-sm mb-1">Omie</h3>
+            <p class="text-text-muted text-xs mb-3">ERP &amp; Gestao Financeira</p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center justify-between">
+                <span class="text-text-muted text-xs">Ultima sync</span>
+                <span class="text-text-secondary text-xs font-mono">22 min atras</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-text-muted text-xs">Registros</span>
+                <span class="text-text-secondary text-xs font-mono">3.291</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button class="flex-1 px-3 py-1.5 bg-surface3 border border-border text-text-secondary text-xs rounded-lg hover:text-text-primary transition-colors">Configurar</button>
+              <button class="flex-1 px-3 py-1.5 bg-surface3 border border-border text-text-secondary text-xs rounded-lg hover:text-text-primary transition-colors">Ver logs</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Available -->
+      <div>
+        <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Disponiveis para conectar</p>
+        <div class="grid grid-cols-3 gap-4">
+
+          <div class="bg-surface2 border border-border rounded-xl p-5">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                <span class="text-green-400 font-bold text-sm font-mono">Sh</span>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface3 text-text-muted text-xs font-medium border border-border">Disponivel</span>
+            </div>
+            <h3 class="text-text-primary font-semibold text-sm mb-1">Shopify</h3>
+            <p class="text-text-muted text-xs mb-4">CRM E-commerce</p>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="w-full px-3 py-2 bg-emerald text-white text-xs font-medium rounded-lg hover:bg-emerald-light transition-colors flex items-center justify-center gap-1.5">
+              <i data-lucide="plus" class="w-3 h-3"></i>
+              Conectar
+            </button>
+          </div>
+
+          <div class="bg-surface2 border border-border rounded-xl p-5">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-10 h-10 rounded-lg bg-blue/10 border border-blue/20 flex items-center justify-center">
+                <span class="text-blue font-bold text-xs font-mono">QB</span>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface3 text-text-muted text-xs font-medium border border-border">Disponivel</span>
+            </div>
+            <h3 class="text-text-primary font-semibold text-sm mb-1">QuickBooks Online</h3>
+            <p class="text-text-muted text-xs mb-4">Financeiro EUA</p>
+            <button class="w-full px-3 py-2 bg-emerald text-white text-xs font-medium rounded-lg hover:bg-emerald-light transition-colors flex items-center justify-center gap-1.5">
+              <i data-lucide="plus" class="w-3 h-3"></i>
+              Conectar
+            </button>
+          </div>
+
+          <div class="bg-surface2 border border-border rounded-xl p-5">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
+                <span class="text-sky-400 font-bold text-xs font-mono">SF</span>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface3 text-text-muted text-xs font-medium border border-border">Disponivel</span>
+            </div>
+            <h3 class="text-text-primary font-semibold text-sm mb-1">Salesforce</h3>
+            <p class="text-text-muted text-xs mb-4">CRM Enterprise</p>
+            <button class="w-full px-3 py-2 bg-emerald text-white text-xs font-medium rounded-lg hover:bg-emerald-light transition-colors flex items-center justify-center gap-1.5">
+              <i data-lucide="plus" class="w-3 h-3"></i>
+              Conectar
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Coming Soon -->
+      <div>
+        <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Em breve</p>
+        <div class="grid grid-cols-6 gap-3">
+          <div class="bg-surface2 border border-border rounded-xl p-4 opacity-50">
+            <p class="text-text-muted text-xs font-medium mb-1">TOTVS Protheus</p>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs text-text-muted bg-surface3">Em breve</span>
+          </div>
+          <div class="bg-surface2 border border-border rounded-xl p-4 opacity-50">
+            <p class="text-text-muted text-xs font-medium mb-1">SAP S/4HANA</p>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs text-text-muted bg-surface3">Em breve</span>
+          </div>
+          <div class="bg-surface2 border border-border rounded-xl p-4 opacity-50">
+            <p class="text-text-muted text-xs font-medium mb-1">RD Station</p>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs text-text-muted bg-surface3">Em breve</span>
+          </div>
+          <div class="bg-surface2 border border-border rounded-xl p-4 opacity-50">
+            <p class="text-text-muted text-xs font-medium mb-1">Pipedrive</p>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs text-text-muted bg-surface3">Em breve</span>
+          </div>
+          <div class="bg-surface2 border border-border rounded-xl p-4 opacity-50">
+            <p class="text-text-muted text-xs font-medium mb-1">NetSuite</p>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs text-text-muted bg-surface3">Em breve</span>
+          </div>
+          <div class="bg-surface2 border border-border rounded-xl p-4 opacity-50">
+            <p class="text-text-muted text-xs font-medium mb-1">VTEX</p>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs text-text-muted bg-surface3">Em breve</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal Shopify Connection -->
+  <div id="modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-surface2 border border-border rounded-2xl w-full max-w-lg mx-4">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+            <span class="text-green-400 font-bold text-xs font-mono">Sh</span>
+          </div>
+          <h2 class="text-text-primary font-semibold text-sm">Conectar Shopify</h2>
+        </div>
+        <button onclick="document.getElementById('modal').classList.add('hidden')" class="text-text-muted hover:text-text-secondary transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Steps indicator -->
+      <div class="flex items-center px-6 py-4 border-b border-border gap-2">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-emerald flex items-center justify-center flex-shrink-0">
+            <span class="text-white text-xs font-semibold">1</span>
+          </div>
+          <span class="text-text-primary text-xs font-medium">Autenticacao</span>
+        </div>
+        <div class="flex-1 h-px bg-border"></div>
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-surface3 border border-border flex items-center justify-center flex-shrink-0">
+            <span class="text-text-muted text-xs font-semibold">2</span>
+          </div>
+          <span class="text-text-muted text-xs">Configuracao</span>
+        </div>
+        <div class="flex-1 h-px bg-border"></div>
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-surface3 border border-border flex items-center justify-center flex-shrink-0">
+            <span class="text-text-muted text-xs font-semibold">3</span>
+          </div>
+          <span class="text-text-muted text-xs">Mapeamento</span>
+        </div>
+      </div>
+
+      <!-- Modal body - Step 1 -->
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <label class="text-text-muted text-xs font-medium uppercase tracking-wider block mb-2">API Key</label>
+          <input type="password" placeholder="shpat_xxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-surface3 border border-border text-text-secondary text-sm rounded-lg px-4 py-2.5 placeholder-text-muted focus:outline-none focus:border-emerald transition-colors font-mono" />
+        </div>
+        <div>
+          <label class="text-text-muted text-xs font-medium uppercase tracking-wider block mb-2">URL da Loja</label>
+          <input type="text" placeholder="minha-loja.myshopify.com" class="w-full bg-surface3 border border-border text-text-secondary text-sm rounded-lg px-4 py-2.5 placeholder-text-muted focus:outline-none focus:border-emerald transition-colors" />
+        </div>
+        <div class="pt-1">
+          <div class="flex items-center gap-2 p-3 bg-surface3 border border-border rounded-lg">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-text-muted flex-shrink-0"></i>
+            <p class="text-text-muted text-xs">Ou autentique diretamente via OAuth sem expor suas credenciais.</p>
+          </div>
+        </div>
+        <button class="w-full px-4 py-2.5 bg-blue/10 border border-blue/20 text-blue text-sm font-medium rounded-lg hover:bg-blue/20 transition-colors flex items-center justify-center gap-2">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          Autorizar via OAuth
+        </button>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between px-6 py-4 border-t border-border">
+        <button onclick="document.getElementById('modal').classList.add('hidden')" class="px-4 py-2 text-text-muted text-sm hover:text-text-secondary transition-colors">Cancelar</button>
+        <button class="px-5 py-2 bg-emerald text-white text-sm font-medium rounded-lg hover:bg-emerald-light transition-colors flex items-center gap-2">
+          Proximo
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
