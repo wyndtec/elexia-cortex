@@ -1,0 +1,71 @@
+# =============================================================================
+# Namespace: cortex-prod
+# Ambiente de produção do Elexia Cortex.
+# Quotas mais generosas que demo; ajuste conforme crescimento real.
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cortex-prod
+  labels:
+    app.kubernetes.io/part-of: elexia-cortex
+    environment: prod
+    tenant: prod
+
+---
+# ResourceQuota: limites de produção — mais espaço que demo,
+# mas ainda com guardrail para evitar gastos inesperados.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: cortex-prod-quota
+  namespace: cortex-prod
+spec:
+  hard:
+    # CPU: 16 cores requests; 32 cores limits
+    requests.cpu: "16"
+    limits.cpu: "32"
+
+    # Memória: 32Gi requests; 64Gi limits
+    requests.memory: 32Gi
+    limits.memory: 64Gi
+
+    # Armazenamento
+    requests.storage: 200Gi
+
+    # Objetos
+    pods:                    "50"
+    services:                "20"
+    persistentvolumeclaims:  "20"
+    configmaps:              "50"
+    secrets:                 "50"
+    replicationcontrollers:  "0"
+
+---
+# LimitRange: padrões mais altos para produção
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cortex-prod-limits
+  namespace: cortex-prod
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: "1"
+        memory: "1Gi"
+      defaultRequest:
+        cpu: "250m"
+        memory: "256Mi"
+      max:
+        cpu: "4"
+        memory: "8Gi"
+      min:
+        cpu: "50m"
+        memory: "64Mi"
+
+    - type: Pod
+      max:
+        cpu: "8"
+        memory: "16Gi"

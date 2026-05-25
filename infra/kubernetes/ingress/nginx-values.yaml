@@ -1,0 +1,106 @@
+# =============================================================================
+# Helm Values: NGINX Ingress Controller
+# Chart: ingress-nginx/ingress-nginx
+# Referência: https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
+#
+# Instalação:
+#   helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+#   helm repo update
+#   helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+#     --namespace ingress-nginx \
+#     --create-namespace \
+#     --values infra/kubernetes/ingress/nginx-values.yaml
+# =============================================================================
+
+controller:
+  # Réplicas: 2 para HA; ajuste para 1 em demo se custo for prioridade
+  replicaCount: 2
+
+  # Tipo de serviço: LoadBalancer cria um NLB (Network Load Balancer) na AWS
+  service:
+    type: LoadBalancer
+    annotations:
+      # NLB na AWS: mais eficiente que CLB para TCP/TLS
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+      # Subnets públicas para o LB — serão descobertas pelas tags configuradas
+      # no módulo VPC (kubernetes.io/role/elb = 1)
+
+  # TLS: habilita terminação TLS no ingress (AC4)
+  # Certificados gerenciados via cert-manager ou AWS ACM annotations
+  extraArgs:
+    default-ssl-certificate: "ingress-nginx/default-tls-cert"
+
+  # Configurações de performance e segurança
+  config:
+    # Force HTTPS: redireciona HTTP para HTTPS automaticamente
+    force-ssl-redirect: "true"
+    # HSTS: informa ao browser para sempre usar HTTPS por 1 ano
+    hsts: "true"
+    hsts-max-age: "31536000"
+    hsts-include-subdomains: "true"
+    # Remove X-Powered-By e Server headers para reduzir fingerprinting
+    hide-headers: "Server,X-Powered-By"
+    # Timeout padrão: adequado para APIs de ML que podem demorar
+    proxy-connect-timeout: "30"
+    proxy-read-timeout: "120"
+    proxy-send-timeout: "120"
+    # Tamanho máximo de body: 100MB para uploads de datasets
+    proxy-body-size: "100m"
+    # Enable real IP forwarding
+    use-forwarded-headers: "true"
+    compute-full-forwarded-for: "true"
+
+  # Resources: sizing adequado para demo
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Métricas Prometheus: habilitado para observabilidade futura (Fase 1)
+  metrics:
+    enabled: true
+    serviceMonitor:
+      # Habilitar quando Prometheus Operator estiver instalado (Fase 1)
+      enabled: false
+
+  # Pod Disruption Budget: garante pelo menos 1 réplica durante upgrades
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  # Affinity: distribui pods entre AZs para HA
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - controller
+            topologyKey: topology.kubernetes.io/zone
+
+  # Logs estruturados para CloudWatch
+  extraEnvs:
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+
+# Default backend: responde 404 quando nenhuma rule do ingress bate
+defaultBackend:
+  enabled: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi

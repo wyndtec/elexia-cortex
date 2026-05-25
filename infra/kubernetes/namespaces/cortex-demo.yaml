@@ -1,0 +1,74 @@
+# =============================================================================
+# Namespace: cortex-demo
+# Ambiente de demonstração do Elexia Cortex.
+# Resource Quotas conservadoras — ajustáveis pós-deploy conforme necessidade.
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cortex-demo
+  labels:
+    app.kubernetes.io/part-of: elexia-cortex
+    environment: demo
+    tenant: demo
+
+---
+# ResourceQuota: limita o consumo total de CPU, memória e objetos no namespace.
+# Evita que o ambiente de demo consuma todos os recursos do cluster.
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: cortex-demo-quota
+  namespace: cortex-demo
+spec:
+  hard:
+    # CPU: 4 cores no total (requests); 8 cores (limits)
+    requests.cpu: "4"
+    limits.cpu: "8"
+
+    # Memória: 8Gi requests; 16Gi limits
+    requests.memory: 8Gi
+    limits.memory: 16Gi
+
+    # Armazenamento
+    requests.storage: 50Gi
+
+    # Objetos: limites para prevenir proliferação acidental
+    pods:                    "20"
+    services:                "10"
+    persistentvolumeclaims:  "10"
+    configmaps:              "20"
+    secrets:                 "20"
+    replicationcontrollers:  "0"
+
+---
+# LimitRange: define defaults e limites por container/pod.
+# Garante que pods sem requests/limits explícitos recebam valores razoáveis.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cortex-demo-limits
+  namespace: cortex-demo
+spec:
+  limits:
+    # Limites por container
+    - type: Container
+      default:
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+      max:
+        cpu: "2"
+        memory: "4Gi"
+      min:
+        cpu: "50m"
+        memory: "64Mi"
+
+    # Limites por pod (soma de todos os containers)
+    - type: Pod
+      max:
+        cpu: "4"
+        memory: "8Gi"
