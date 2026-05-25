@@ -152,7 +152,8 @@ async def tokenize(body: TokenizeRequest) -> TokenizeResponse:
     Tokeniza um valor PII. Idempotente — mesmo campo+valor retorna o mesmo token.
     Não requer autenticação especial (qualquer serviço interno pode tokenizar).
     """
-    assert _tokenizer is not None
+    if _tokenizer is None:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço não inicializado")
     try:
         token = _tokenizer.tokenize(field=body.field, value=body.value)
     except InvalidFieldError as exc:
@@ -174,7 +175,8 @@ async def detokenize(body: DetokenizeRequest, request: Request) -> DetokenizeRes
     Requer role 'admin' ou 'owner' no JWT (verificado pelo API Gateway upstream).
     """
     _require_detokenize_permission(request)
-    assert _tokenizer is not None
+    if _tokenizer is None:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Serviço não inicializado")
 
     try:
         value = _tokenizer.detokenize(field=body.field, token=body.token)

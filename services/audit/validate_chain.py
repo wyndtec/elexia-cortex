@@ -95,7 +95,15 @@ def validate(db_path: str, verbose: bool) -> None:
 
     for row in rows:
         event_id, stored_previous_hash, stored_current_hash, seq, timestamp, user_id, action, resource = row
-        timestamp_str = str(timestamp)
+
+        # Normalizar para o mesmo formato ISO usado na inserção (isoformat com T e timezone)
+        # str(timestamp) retorna "2026-05-25 20:00:00+00:00" (espaço) enquanto
+        # datetime.isoformat() retorna "2026-05-25T20:00:00+00:00" (T) — formatos diferentes
+        # que produziriam hashes distintos e quebrariam toda a validação.
+        if hasattr(timestamp, "isoformat"):
+            timestamp_str = timestamp.isoformat()
+        else:
+            timestamp_str = str(timestamp)
 
         expected_current_hash = _compute_hash(
             previous_hash=previous_hash_in_chain,

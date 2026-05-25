@@ -17,50 +17,62 @@ spec:
     spec:
       restartPolicy: OnFailure
       serviceAccountName: vault-init-sa
+      # NOTA: imagem hashicorp/vault NÃO inclui kubectl. Usamos bitnami/kubectl
+      # que inclui curl, kubectl e jq para inicializar via HTTP API + salvar Secret.
       containers:
         - name: vault-init
-          image: hashicorp/vault:1.15.4
+          image: bitnami/kubectl:1.29
           env:
             - name: VAULT_ADDR
               value: "http://vault-0.vault-internal.cortex-infra.svc.cluster.local:8200"
           command:
-            - /bin/sh
+            - /bin/bash
             - -c
             - |
-              set -e
+              set -euo pipefail
 
-              echo "Aguardando Vault estar disponível..."
-              until vault status 2>&1 | grep -q "Initialized"; do
+              echo "Aguardando Vault API estar disponível..."
+              until curl -sf "${VAULT_ADDR}/v1/sys/health" > /dev/null 2>&1 || \
+                    curl -sf "${VAULT_ADDR}/v1/sys/health" 2>&1 | grep -q "initialized"; do
                 echo "Vault ainda não disponível, aguardando 5s..."
                 sleep 5
               done
 
-              # Verificar se já foi inicializado
-              if vault status 2>&1 | grep "Initialized.*true"; then
+              # Verificar se já foi inicializado via HTTP API
+              INIT_STATUS=$(curl -sf "${VAULT_ADDR}/v1/sys/init" | grep -o '"initialized":[^,}]*' | cut -d: -f2 | tr -d ' ')
+              if [ "${INIT_STATUS}" = "true" ]; then
                 echo "Vault já inicializado, pulando."
                 exit 0
               fi
 
-              echo "Inicializando Vault (auto-unseal via KMS)..."
-              # Com auto-unseal KMS, não há unseal keys manuais — apenas root token
-              vault operator init \
-                -recovery-shares=5 \
-                -recovery-threshold=3 \
-                -format=json > /tmp/vault-init-output.json
+              echo "Inicializando Vault via HTTP API (auto-unseal via KMS)..."
+              # recovery-shares/threshold para auto-unseal KMS (não são unseal keys manuais)
+              INIT_OUTPUT=$(curl -sf \
+                --request POST \
+                --data '{"recovery_shares":5,"recovery_threshold":3}' \
+                "${VAULT_ADDR}/v1/sys/init")
 
-              ROOT_TOKEN=$(cat /tmp/vault-init-output.json | grep -o '"root_token":"[^"]*"' | cut -d'"' -f4)
-              RECOVERY_KEYS=$(cat /tmp/vault-init-output.json)
+              if [ -z "${INIT_OUTPUT}" ]; then
+                echo "ERRO: Vault init retornou resposta vazia" >&2
+                exit 1
+              fi
 
-              echo "Salvando credenciais iniciais em Secret Kubernetes..."
+              ROOT_TOKEN=$(echo "${INIT_OUTPUT}" | grep -o '"root_token":"[^"]*"' | cut -d'"' -f4)
+
+              if [ -z "${ROOT_TOKEN}" ]; then
+                echo "ERRO: root_token não encontrado na resposta de init" >&2
+                exit 1
+              fi
+
+              echo "Salvando credenciais em Secret Kubernetes..."
               kubectl create secret generic vault-init-keys \
                 --from-literal=root-token="${ROOT_TOKEN}" \
-                --from-literal=init-output="${RECOVERY_KEYS}" \
+                --from-literal=init-output="${INIT_OUTPUT}" \
                 --namespace=cortex-infra \
                 --dry-run=client -o yaml | kubectl apply -f -
 
               echo "Vault inicializado com sucesso."
-              echo "IMPORTANTE: Salve o root token de vault-init-keys em local seguro e delete o Secret."
-              rm -f /tmp/vault-init-output.json
+              echo "IMPORTANTE: Faça backup do Secret vault-init-keys e delete-o após salvar o root token."
       volumes: []
 ---
 # ServiceAccount com permissão mínima para criar Secrets no namespace cortex-infra

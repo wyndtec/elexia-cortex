@@ -68,7 +68,9 @@ resource "aws_kms_key" "cortex" {
         ]
         Resource = "*"
       },
-      # GitHub Actions OIDC role — permite aplicar Terraform que referencia esta chave
+      # GitHub Actions OIDC role — leitura + grants para Terraform plan/apply
+      # Ações destrutivas (Delete*, Disable*, ScheduleKeyDeletion) são EXCLUÍDAS
+      # por princípio de menor privilégio: CI/CD NÃO deve poder deletar a CMK.
       {
         Sid    = "AllowGitHubActionsIaC"
         Effect = "Allow"
@@ -77,19 +79,15 @@ resource "aws_kms_key" "cortex" {
         }
         Action = [
           "kms:CreateGrant",
-          "kms:Describe*",
-          "kms:Enable*",
-          "kms:List*",
-          "kms:Put*",
-          "kms:Update*",
-          "kms:Revoke*",
-          "kms:Disable*",
-          "kms:Get*",
-          "kms:Delete*",
+          "kms:DescribeKey",
+          "kms:ListAliases",
+          "kms:ListGrants",
+          "kms:ListKeyPolicies",
+          "kms:ListKeys",
+          "kms:GetKeyPolicy",
+          "kms:GetKeyRotationStatus",
           "kms:TagResource",
           "kms:UntagResource",
-          "kms:ScheduleKeyDeletion",
-          "kms:CancelKeyDeletion",
         ]
         Resource = "*"
       },
