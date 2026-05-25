@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Lineage — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 10; }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 14px 12px 6px; }
+
+    /* Lineage tree */
+    .lineage-block {
+      background: var(--bg-s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .lineage-tree { font-size: 13px; line-height: 2; }
+    .ln-source { color: var(--accent-l); font-weight: 600; font-size: 14px; }
+    .ln-node { color: var(--text-p); }
+    .ln-note { color: var(--text-m); font-size: 12px; }
+    .ln-secure { color: var(--warning); font-size: 11px; font-weight: 600; }
+    .ln-layer { padding-left: 24px; border-left: 1px dashed var(--border); margin-left: 8px; }
+    .ln-dest { display: inline-flex; align-items: center; gap: 6px; background: var(--data-d); border: 1px solid rgba(34,211,238,0.15); color: var(--data); font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 3px; margin-left: 8px; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border);">
+      <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
+    </div>
+    <nav style="flex: 1; padding: 8px 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="intelligence.html" class="nav-item"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="data-fabric.html" class="nav-item"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item active"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
+    </nav>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
+      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="padding: 18px 28px; border-bottom: 1px solid var(--border); background: var(--bg-s1); position: sticky; top: 0; z-index: 5;">
+      <span style="font-size: 15px; font-weight: 600; color: var(--text-p);">Data Lineage</span>
+      <span style="font-size: 13px; color: var(--text-m); margin-left: 10px;">Rastreabilidade campo a campo · da origem ao consumo</span>
+    </div>
+
+    <div style="padding: 28px;">
+
+      <!-- Search -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+        <i data-lucide="search" style="width: 16px; height: 16px; color: var(--text-m); flex-shrink: 0;"></i>
+        <input type="text" value="receita_liquida_mrr" style="flex: 1; background: none; border: none; outline: none; font-size: 14px; color: var(--text-p); font-family: 'JetBrains Mono', monospace;" placeholder="Buscar campo, métrica ou tabela..." />
+        <div style="display: flex; gap: 6px;">
+          <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Impacto</button>
+          <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Dependentes</button>
+        </div>
+      </div>
+
+      <!-- Lineage: receita_liquida_mrr -->
+      <div class="lineage-block">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+          <i data-lucide="git-branch" style="width: 16px; height: 16px; color: var(--accent);"></i>
+          <span style="font-size: 13px; font-weight: 600; color: var(--text-p);">Lineage: <span class="mono" style="color: var(--accent);">receita_liquida_mrr</span></span>
+          <span style="font-size: 11px; color: var(--text-m);">· 4 transformações · 3 consumidores</span>
+        </div>
+
+        <div class="lineage-tree">
+          <div><span class="ln-source">Omie ERP</span> <span class="ln-note">(fonte primária)</span></div>
+          <div class="ln-layer">
+            <div><span style="color: var(--text-m);">└──</span> <span class="mono ln-node">Bronze.omie_pedidos.valor_total</span> <span class="ln-note">· raw, sem transformação</span></div>
+            <div class="ln-layer">
+              <div><span style="color: var(--text-m);">└──</span> <span class="mono ln-node">Silver.stg_omie_pedidos.pedido_valor</span> <span class="ln-note">· limpeza + tipagem + dedup</span></div>
+              <div class="ln-layer">
+                <div><span style="color: var(--text-m);">└──</span> <span class="mono ln-node">Gold.fct_revenue_summary.receita_bruta</span> <span class="ln-note">· agrupamento por cliente+mês</span></div>
+                <div class="ln-layer">
+                  <div><span style="color: var(--text-m);">└──</span> <span class="mono" style="color: var(--accent-l); font-weight: 600;">Semantic.receita_liquida_mrr</span> <span class="ln-note">· subtrai devoluções + cancelamentos</span></div>
+                  <div class="ln-layer" style="border-color: rgba(34,211,238,0.2);">
+                    <div style="margin-top: 4px;"><span style="color: var(--text-m);">├──</span> <span class="ln-dest"><i data-lucide="bar-chart-2" style="width:11px;height:11px;"></i>Dashboard: Revenue Overview</span></div>
+                    <div><span style="color: var(--text-m);">├──</span> <span class="ln-dest"><i data-lucide="cpu" style="width:11px;height:11px;"></i>AI: churn_features.revenue_trend</span></div>
+                    <div><span style="color: var(--text-m);">└──</span> <span class="ln-dest"><i data-lucide="code-2" style="width:11px;height:11px;"></i>API: GET /metrics/receita_liquida_mrr</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lineage: email (PII) -->
+      <div class="lineage-block" style="border-color: rgba(217,119,6,0.2);">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+          <i data-lucide="lock" style="width: 16px; height: 16px; color: var(--accent);"></i>
+          <span style="font-size: 13px; font-weight: 600; color: var(--text-p);">Lineage: <span class="mono" style="color: var(--accent);">email</span></span>
+          <span style="background: var(--accent-d); border: 1px solid rgba(217,119,6,0.2); color: var(--accent-l); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px;">Campo PII · Tokenizado</span>
+        </div>
+
+        <div class="lineage-tree">
+          <div><span class="ln-source">HubSpot CRM</span> <span class="ln-note">(Contacts.email · valor original)</span></div>
+          <div class="ln-layer">
+            <div><span style="color: var(--text-m);">└──</span> <span style="background: var(--accent-d); border: 1px solid rgba(217,119,6,0.2); color: var(--accent-l); font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; margin-right: 8px;">TOKENIZADO pelo Vault antes da ingestão</span><span class="ln-note">· email real nunca entra no lakehouse</span></div>
+            <div class="ln-layer">
+              <div><span style="color: var(--text-m);">└──</span> <span class="mono ln-node">Bronze.hubspot_contacts.email_token</span> <span class="ln-note">· token opaco, não reversível sem Vault</span></div>
+              <div class="ln-layer">
+                <div><span style="color: var(--text-m);">└──</span> <span class="mono ln-node">Silver.int_customer_identity.email_token</span> <span class="ln-note">· identity resolution via token</span></div>
+                <div class="ln-layer">
+                  <div><span style="color: var(--text-m);">└──</span> <span class="mono ln-node">Gold.fct_customer_360.email_token</span> <span class="ln-note">· disponível para joins</span></div>
+                  <div class="ln-layer" style="border-color: rgba(217,119,6,0.2);">
+                    <div style="margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+                      <span style="color: var(--text-m);">└──</span>
+                      <span style="background: var(--danger-d); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
+                        <i data-lucide="shield" style="width:11px;height:11px;"></i>
+                        Detokenização SOMENTE com permissão Owner + MFA verificado
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Impact Analysis -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+          <i data-lucide="alert-circle" style="width: 15px; height: 15px; color: var(--warning);"></i>
+          <span style="font-size: 13px; font-weight: 600; color: var(--text-p);">Análise de Impacto — mudança upstream</span>
+          <span style="background: var(--warning-d); border: 1px solid rgba(245,158,11,0.2); color: var(--warning); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px;">1 mudança pendente</span>
+        </div>
+        <div style="background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.15); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px;">
+          <div style="font-size: 13px; color: var(--warning); font-weight: 500; margin-bottom: 6px;">HubSpot: campo 'email' renomeado para 'contact_email' (v4)</div>
+          <div style="font-size: 12px; color: var(--text-s);">Modelos downstream afetados:</div>
+          <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
+            <div class="mono" style="font-size: 12px; color: var(--text-s);">→ <span style="color: var(--danger);">models/silver/customer_unified.sql</span> — line 47: email_token</div>
+            <div class="mono" style="font-size: 12px; color: var(--text-s);">→ <span style="color: var(--warning);">models/silver/int_customer_identity.sql</span> — line 12: email match</div>
+            <div class="mono" style="font-size: 12px; color: var(--text-s);">→ <span style="color: var(--text-s);">models/gold/fct_customer_360.sql</span> — herda de int_customer_identity</div>
+          </div>
+        </div>
+        <button style="background: var(--accent); border: none; color: #09090B; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="wrench" style="width:13px;height:13px;"></i>
+          Criar PR de correção automática
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('cortex-theme', next);
+      document.getElementById('sun-icon').style.display = next === 'light' ? 'inline-block' : 'none';
+      document.getElementById('moon-icon').style.display = next === 'dark' ? 'inline-block' : 'none';
+    }
+    const saved = localStorage.getItem('cortex-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('sun-icon').style.display = saved === 'light' ? 'inline-block' : 'none';
+    document.getElementById('moon-icon').style.display = saved === 'dark' ? 'inline-block' : 'none';
+  </script>
+</body>
+</html>

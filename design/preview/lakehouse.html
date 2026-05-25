@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lakehouse — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 10; }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 14px 12px 6px; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 4px; }
+    .badge-success { background: var(--success-d); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+    .badge-warning { background: var(--warning-d); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-data { background: var(--data-d); color: var(--data); border: 1px solid rgba(34,211,238,0.15); }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead th { text-align: left; padding: 9px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-sub); }
+    .data-table tbody tr:hover { background: var(--bg-s2); }
+    .data-table tbody td { padding: 11px 16px; color: var(--text-s); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border);">
+      <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
+    </div>
+    <nav style="flex: 1; padding: 8px 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="intelligence.html" class="nav-item"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="data-fabric.html" class="nav-item"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item active"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
+    </nav>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
+      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="padding: 18px 28px; border-bottom: 1px solid var(--border); background: var(--bg-s1); position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <span style="font-size: 15px; font-weight: 600; color: var(--text-p);">Lakehouse</span>
+        <span style="font-size: 13px; color: var(--text-m); margin-left: 10px;">Bronze → Silver → Gold → Semantic</span>
+      </div>
+      <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 12px; padding: 7px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i data-lucide="play" style="width:13px;height:13px;"></i>
+        Executar dbt
+      </button>
+    </div>
+
+    <div style="padding: 28px;">
+
+      <!-- Layer Diagram -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 20px;">ARQUITETURA DE CAMADAS</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;">
+
+          <div style="padding: 16px 20px; background: var(--bg-s2); border: 1px solid var(--border); border-radius: 8px 0 0 8px; position: relative;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-m); margin-bottom: 10px;">BRONZE</div>
+            <div style="font-size: 12px; color: var(--text-s); margin-bottom: 6px;">Raw data</div>
+            <div class="mono" style="font-size: 20px; font-weight: 700; color: var(--text-p);">12</div>
+            <div style="font-size: 11px; color: var(--text-m);">tabelas</div>
+            <div style="margin-top: 10px; font-size: 11px; color: var(--data);" class="mono">18.1k rows</div>
+            <div style="position: absolute; right: -14px; top: 50%; transform: translateY(-50%); z-index: 1; color: var(--text-m); font-size: 16px;">→</div>
+          </div>
+
+          <div style="padding: 16px 20px; background: var(--bg-s2); border: 1px solid var(--border); border-left: none; position: relative;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;">SILVER</div>
+            <div style="font-size: 12px; color: var(--text-s); margin-bottom: 6px;">Cleaned + joined</div>
+            <div class="mono" style="font-size: 20px; font-weight: 700; color: var(--text-p);">8</div>
+            <div style="font-size: 11px; color: var(--text-m);">modelos</div>
+            <div style="margin-top: 10px; font-size: 11px; color: var(--data);" class="mono">17.9k rows</div>
+            <div style="position: absolute; right: -14px; top: 50%; transform: translateY(-50%); z-index: 1; color: var(--text-m); font-size: 16px;">→</div>
+          </div>
+
+          <div style="padding: 16px 20px; background: var(--bg-s2); border: 1px solid var(--border); border-left: none; position: relative;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--success); margin-bottom: 10px;">GOLD</div>
+            <div style="font-size: 12px; color: var(--text-s); margin-bottom: 6px;">Business-ready</div>
+            <div class="mono" style="font-size: 20px; font-weight: 700; color: var(--text-p);">3</div>
+            <div style="font-size: 11px; color: var(--text-m);">data marts</div>
+            <div style="margin-top: 10px; font-size: 11px; color: var(--data);" class="mono">17.8k rows</div>
+            <div style="position: absolute; right: -14px; top: 50%; transform: translateY(-50%); z-index: 1; color: var(--text-m); font-size: 16px;">→</div>
+          </div>
+
+          <div style="padding: 16px 20px; background: rgba(217,119,6,0.04); border: 1px solid rgba(217,119,6,0.2); border-radius: 0 8px 8px 0; border-left: none;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-l); margin-bottom: 10px;">SEMANTIC</div>
+            <div style="font-size: 12px; color: var(--text-s); margin-bottom: 6px;">47 metrics</div>
+            <div class="mono" style="font-size: 20px; font-weight: 700; color: var(--accent);">API</div>
+            <div style="font-size: 11px; color: var(--text-m);">REST + GraphQL</div>
+            <div style="margin-top: 10px; font-size: 11px; color: var(--success);">
+              &lt; 500ms query
+            </div>
+          </div>
+
+        </div>
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-sub); display: flex; gap: 24px; font-size: 11px; color: var(--text-m);">
+          <span>Armazenamento total: <span class="mono" style="color: var(--text-s);">4.6 GB</span></span>
+          <span>Bronze: <span class="mono" style="color: var(--text-s);">2.4 GB</span></span>
+          <span>Silver: <span class="mono" style="color: var(--text-s);">1.8 GB</span></span>
+          <span>Gold: <span class="mono" style="color: var(--text-s);">420 MB</span></span>
+        </div>
+      </div>
+
+      <!-- dbt Pipeline -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">dbt Pipeline</span>
+            <span class="badge badge-success"><i data-lucide="check" style="width:11px;height:11px;"></i>Run #2847 · 8/8 OK</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-m);">há 18 minutos · duração: <span class="mono" style="color: var(--text-s);">4m32s</span></div>
+        </div>
+        <div style="padding: 8px 0;">
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; gap: 0; align-items: center; font-size: 13px; border-bottom: 1px solid var(--border); padding: 4px 0;">
+            <div style="padding: 0 20px; font-size: 10px; font-weight: 600; color: var(--text-m);">#</div>
+            <div style="padding: 0 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-m);">MODELO</div>
+            <div style="padding: 0 10px; font-size: 10px; font-weight: 600; color: var(--text-m);">DURAÇÃO</div>
+            <div style="padding: 0 10px; font-size: 10px; font-weight: 600; color: var(--text-m);">LINHAS</div>
+            <div style="padding: 0 10px; font-size: 10px; font-weight: 600; color: var(--text-m);">STATUS</div>
+          </div>
+
+          <!-- rows -->
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">1</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">stg_hubspot_contacts</span><span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">staging</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m12s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">12.847</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">2</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">stg_omie_clientes</span><span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">staging</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m08s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">3.291</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">3</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">stg_omie_pedidos</span><span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">staging</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m15s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">8.847</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">4</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">int_customer_identity</span><span style="font-size: 11px; color: var(--accent); margin-left: 8px;">identity resolution</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m34s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">14.203</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">5</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">int_customer_events</span><span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">intermediate</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">1m12s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">28.441</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub); background: rgba(217,119,6,0.03);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">6</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--accent);">fct_customer_360</span><span style="font-size: 11px; color: var(--accent-l); margin-left: 8px;">tabela principal</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m44s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">14.203</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-sub);">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">7</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">fct_revenue_summary</span><span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">fact</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m18s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">1.847</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 32px 1fr 72px 80px 80px; align-items: center; padding: 10px 0;">
+            <div style="padding: 0 20px; color: var(--text-m); font-size: 12px;" class="mono">8</div>
+            <div style="padding: 0 10px;"><span class="mono" style="font-size: 13px; color: var(--text-p);">fct_churn_features</span><span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">fact</span></div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--text-s);">0m29s</div>
+            <div style="padding: 0 10px;" class="mono" style="font-size: 12px; color: var(--data);">14.203</div>
+            <div style="padding: 0 10px;"><span class="badge badge-success">OK</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Freshness -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
+          <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">Data Freshness</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ENTIDADE</th>
+              <th>ÚLTIMA ATUALIZAÇÃO</th>
+              <th>SLA</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="mono" style="font-size: 13px; color: var(--text-p);">customer_profile</span></td>
+              <td style="color: var(--success);">3 min atrás</td>
+              <td style="color: var(--text-m);">15 min</td>
+              <td><span class="badge badge-success">Fresh</span></td>
+            </tr>
+            <tr>
+              <td><span class="mono" style="font-size: 13px; color: var(--text-p);">revenue_summary</span></td>
+              <td style="color: var(--text-s);">18 min atrás</td>
+              <td style="color: var(--text-m);">1 hora</td>
+              <td><span class="badge badge-success">Fresh</span></td>
+            </tr>
+            <tr>
+              <td><span class="mono" style="font-size: 13px; color: var(--text-p);">churn_features</span></td>
+              <td style="color: var(--text-s);">18 min atrás</td>
+              <td style="color: var(--text-m);">1 hora</td>
+              <td><span class="badge badge-success">Fresh</span></td>
+            </tr>
+            <tr>
+              <td><span class="mono" style="font-size: 13px; color: var(--text-p);">order_summary</span></td>
+              <td style="color: var(--text-s);">22 min atrás</td>
+              <td style="color: var(--text-m);">1 hora</td>
+              <td><span class="badge badge-success">Fresh</span></td>
+            </tr>
+            <tr>
+              <td><span class="mono" style="font-size: 13px; color: var(--text-p);">nfe_events</span></td>
+              <td style="color: var(--text-s);">1h 4min atrás</td>
+              <td style="color: var(--text-m);">2 horas</td>
+              <td><span class="badge badge-success">Fresh</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('cortex-theme', next);
+      document.getElementById('sun-icon').style.display = next === 'light' ? 'inline-block' : 'none';
+      document.getElementById('moon-icon').style.display = next === 'dark' ? 'inline-block' : 'none';
+    }
+    const saved = localStorage.getItem('cortex-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('sun-icon').style.display = saved === 'light' ? 'inline-block' : 'none';
+    document.getElementById('moon-icon').style.display = saved === 'dark' ? 'inline-block' : 'none';
+  </script>
+</body>
+</html>

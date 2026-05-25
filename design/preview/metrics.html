@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metric Catalog — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 10; }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 14px 12px 6px; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 4px; }
+    .badge-cat { background: var(--bg-s3); border: 1px solid var(--border); color: var(--text-s); font-size: 10px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead th { text-align: left; padding: 9px 14px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-sub); cursor: pointer; }
+    .data-table tbody tr:hover { background: var(--bg-s2); }
+    .data-table tbody td { padding: 11px 14px; color: var(--text-s); }
+    .code-block { background: var(--bg-s2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-s); line-height: 1.7; overflow-x: auto; }
+    .code-key { color: var(--data); }
+    .code-val { color: var(--success); }
+    .code-str { color: var(--accent-l); }
+    .code-comment { color: var(--text-m); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border);">
+      <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
+    </div>
+    <nav style="flex: 1; padding: 8px 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="intelligence.html" class="nav-item"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="data-fabric.html" class="nav-item"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item active"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
+    </nav>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
+      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="padding: 18px 28px; border-bottom: 1px solid var(--border); background: var(--bg-s1); position: sticky; top: 0; z-index: 5;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <span style="font-size: 15px; font-weight: 600; color: var(--text-p);">Metric Catalog</span>
+            <span style="background: var(--accent-d); border: 1px solid rgba(217,119,6,0.25); color: var(--accent); font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 4px;">47 métricas</span>
+          </div>
+          <p style="font-size: 12px; color: var(--text-m); margin: 0;">Single source of truth — qualquer dashboard, API ou pergunta ao Cortex Intelligence usa as mesmas definições · Powered by Cube.dev</p>
+        </div>
+        <button style="background: var(--accent); border: none; color: #09090B; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; margin-top: 2px;">
+          <i data-lucide="plus" style="width:13px;height:13px;"></i>
+          Nova métrica
+        </button>
+      </div>
+    </div>
+
+    <div style="padding: 28px;">
+
+      <!-- Metrics Table -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px;">
+        <div style="padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+          <div style="flex: 1; position: relative;">
+            <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--text-m);"></i>
+            <input type="text" placeholder="Buscar métrica..." style="width: 100%; max-width: 300px; background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-p); font-size: 13px; padding: 7px 10px 7px 30px; border-radius: 6px; outline: none; font-family: inherit;" />
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button style="background: var(--accent-d); border: 1px solid rgba(217,119,6,0.25); color: var(--accent); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Financeiro</button>
+            <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Retenção</button>
+            <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Pipeline</button>
+            <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Cliente</button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>MÉTRICA</th>
+                <th>CATEGORIA</th>
+                <th>DEFINIÇÃO</th>
+                <th>FONTES</th>
+                <th>ÚLTIMA QUERY</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">receita_liquida_mrr</span></td>
+                <td><span class="badge badge-cat">Financeiro</span></td>
+                <td style="font-size: 12px; max-width: 220px;">SUM(nfe_valor) menos devoluções e cancelamentos</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">Omie</span></td>
+                <td style="font-size: 11px; color: var(--success);">2 min atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">ltv_cliente</span></td>
+                <td><span class="badge badge-cat">Cliente</span></td>
+                <td style="font-size: 12px; max-width: 220px;">SUM(pedidos.total) agrupado por CNPJ desde início</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">Omie · HubSpot</span></td>
+                <td style="font-size: 11px; color: var(--success);">5 min atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">churn_rate_30d</span></td>
+                <td><span class="badge badge-cat">Retenção</span></td>
+                <td style="font-size: 12px; max-width: 220px;">Clientes perdidos no período / total no início</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">fct_churn</span></td>
+                <td style="font-size: 11px; color: var(--text-s);">18 min atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">nrr_mensal</span></td>
+                <td><span class="badge badge-cat">Retenção</span></td>
+                <td style="font-size: 12px; max-width: 220px;">Receita atual / receita mês anterior × 100</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">Omie</span></td>
+                <td style="font-size: 11px; color: var(--text-s);">1h atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">health_score_medio</span></td>
+                <td><span class="badge badge-cat">Cliente</span></td>
+                <td style="font-size: 12px; max-width: 220px;">AVG(health_score) ponderado por LTV</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">AI Engine</span></td>
+                <td style="font-size: 11px; color: var(--text-s);">18 min atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">ticket_medio</span></td>
+                <td><span class="badge badge-cat">Vendas</span></td>
+                <td style="font-size: 12px; max-width: 220px;">AVG(pedido_valor) excluindo devoluções</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">Omie</span></td>
+                <td style="font-size: 11px; color: var(--text-s);">1h atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">ciclo_venda_dias</span></td>
+                <td><span class="badge badge-cat">Pipeline</span></td>
+                <td style="font-size: 12px; max-width: 220px;">AVG(deal.close_date - deal.created_at) em dias</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">HubSpot</span></td>
+                <td style="font-size: 11px; color: var(--text-s);">3h atrás</td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">pipeline_valor_total</span></td>
+                <td><span class="badge badge-cat">Pipeline</span></td>
+                <td style="font-size: 12px; max-width: 220px;">SUM(deal.amount) where stage != 'closed lost'</td>
+                <td><span style="font-size: 11px; color: var(--text-s);">HubSpot</span></td>
+                <td style="font-size: 11px; color: var(--text-s);">3h atrás</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding: 11px 18px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-m);">Mostrando 8 de 47 métricas · <span style="color: var(--accent); cursor: pointer;">Ver todas</span></div>
+      </div>
+
+      <!-- API Preview -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+        <div style="padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="code-2" style="width: 15px; height: 15px; color: var(--data);"></i>
+          <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">APIs geradas automaticamente</span>
+          <span style="font-size: 12px; color: var(--text-m); margin-left: 4px;">Cada métrica gera REST e GraphQL instantaneamente</span>
+        </div>
+        <div style="padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 10px;">REST API</div>
+            <div class="code-block">
+<span class="code-comment">GET /api/v1/metrics/receita_liquida_mrr</span>
+    ?period=last_30_days
+    &tenant=grupo-tavares
+
+<span class="code-comment">→ 200 OK</span>
+{
+  <span class="code-key">"metric"</span>: <span class="code-str">"receita_liquida_mrr"</span>,
+  <span class="code-key">"value"</span>: <span class="code-val">8247320</span>,
+  <span class="code-key">"currency"</span>: <span class="code-str">"BRL"</span>,
+  <span class="code-key">"period"</span>: <span class="code-str">"2026-05-01/2026-05-31"</span>,
+  <span class="code-key">"freshness"</span>: <span class="code-str">"2026-05-25T14:22:11Z"</span>
+}
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 10px;">GRAPHQL</div>
+            <div class="code-block">
+<span class="code-comment">POST /graphql</span>
+
+<span class="code-key">query</span> {
+  <span class="code-val">metricValue</span>(
+    <span class="code-key">name</span>: <span class="code-str">"ltv_cliente"</span>,
+    <span class="code-key">filters</span>: {
+      <span class="code-key">segmento</span>: <span class="code-str">"varejo"</span>
+    }
+  ) {
+    <span class="code-key">value</span>
+    <span class="code-key">unit</span>
+    <span class="code-key">count</span>
+    <span class="code-key">`freshness`</span>
+  }
+}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('cortex-theme', next);
+      document.getElementById('sun-icon').style.display = next === 'light' ? 'inline-block' : 'none';
+      document.getElementById('moon-icon').style.display = next === 'dark' ? 'inline-block' : 'none';
+    }
+    const saved = localStorage.getItem('cortex-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('sun-icon').style.display = saved === 'light' ? 'inline-block' : 'none';
+    document.getElementById('moon-icon').style.display = saved === 'dark' ? 'inline-block' : 'none';
+  </script>
+</body>
+</html>

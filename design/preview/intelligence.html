@@ -1,357 +1,278 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cortex Intelligence — Elexia Cortex</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>Intelligence — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            base: '#0A0A0C',
-            surface1: '#111114',
-            surface2: '#18181C',
-            surface3: '#1F1F24',
-            border: '#26262B',
-            'border-subtle': '#1C1C21',
-            'text-primary': '#F4F4F5',
-            'text-secondary': '#A1A1AA',
-            'text-muted': '#71717A',
-            emerald: {
-              DEFAULT: '#059669',
-              light: '#10B981',
-              dim: '#064E3B',
-            },
-            amber: { DEFAULT: '#D97706', dim: '#78350F' },
-            red: { DEFAULT: '#DC2626', dim: '#7F1D1D' },
-            blue: { DEFAULT: '#3B82F6', dim: '#1E3A5F' },
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          }
-        }
-      }
-    }
-  </script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
-    body { background-color: #0A0A0C; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #111114; }
-    ::-webkit-scrollbar-thumb { background: #26262B; border-radius: 3px; }
-    .chat-scroll { scroll-behavior: smooth; }
-    .response-table { border-collapse: collapse; width: 100%; }
-    .response-table th, .response-table td {
-      border: 1px solid #26262B;
-      padding: 6px 12px;
-      text-align: left;
-      font-size: 12px;
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
     }
-    .response-table th { color: #71717A; background: #1F1F24; }
-    .response-table td { color: #A1A1AA; }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; height: 100vh; overflow: hidden; display: flex; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 14px 12px 6px; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+    .msg-user { align-self: flex-end; max-width: 60%; }
+    .msg-user-bubble { background: var(--accent-d); border: 1px solid rgba(217,119,6,0.25); border-radius: 10px 10px 2px 10px; padding: 11px 15px; font-size: 13px; color: var(--text-p); }
+    .msg-ai { align-self: flex-start; max-width: 90%; }
+    .msg-ai-bubble { background: var(--bg-s2); border: 1px solid var(--border); border-radius: 10px 10px 10px 2px; padding: 14px 18px; font-size: 13px; color: var(--text-s); }
+    .cortex-badge { background: var(--accent-d); border: 1px solid rgba(217,119,6,0.2); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.06em; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+    .mini-table thead th { text-align: left; padding: 6px 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .mini-table tbody tr { border-bottom: 1px solid var(--border-sub); }
+    .mini-table tbody td { padding: 7px 10px; color: var(--text-s); }
+    .chip { display: inline-flex; align-items: center; gap: 5px; background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 5px 10px; border-radius: 16px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .chip:hover { border-color: var(--accent); color: var(--text-p); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
 </head>
-<body class="font-sans text-text-primary bg-base min-h-screen flex">
+<body>
 
-  <!-- Sidebar -->
-  <aside class="w-56 bg-surface1 border-r border-border flex flex-col fixed h-full z-10">
-    <div class="px-5 py-5 border-b border-border">
-      <span class="font-mono font-semibold text-lg tracking-widest text-emerald-light">CORTEX</span>
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border);">
+      <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
     </div>
-    <nav class="flex-1 px-3 py-4 space-y-1">
-      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
-        <i data-lucide="layout-dashboard" class="w-4 h-4 flex-shrink-0"></i>
-        Customer 360
-      </a>
-      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
-        <i data-lucide="users" class="w-4 h-4 flex-shrink-0"></i>
-        Clientes
-      </a>
-      <a href="connectors.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
-        <i data-lucide="plug" class="w-4 h-4 flex-shrink-0"></i>
-        Conectores
-      </a>
-      <a href="intelligence.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface3 border-l-2 border-emerald text-text-primary text-sm font-medium">
-        <i data-lucide="message-square" class="w-4 h-4 text-emerald-light flex-shrink-0"></i>
-        Intelligence
-      </a>
-      <a href="compliance.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-muted hover:text-text-secondary text-sm font-medium transition-colors">
-        <i data-lucide="shield" class="w-4 h-4 flex-shrink-0"></i>
-        Compliance
-      </a>
+    <nav style="flex: 1; padding: 8px 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="intelligence.html" class="nav-item active"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="data-fabric.html" class="nav-item"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
     </nav>
-    <div class="px-4 py-4 border-t border-border flex items-center gap-3">
-      <div class="w-8 h-8 rounded-full bg-emerald-dim flex items-center justify-center flex-shrink-0">
-        <span class="text-emerald-light text-xs font-semibold">WO</span>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
       </div>
-      <div class="min-w-0">
-        <p class="text-text-primary text-xs font-medium truncate">Wyndson O.</p>
-        <p class="text-text-muted text-xs">Admin</p>
-      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
     </div>
   </aside>
 
-  <!-- Main -->
-  <div class="ml-56 flex-1 flex flex-col min-h-screen">
+  <!-- Chat area + right panel -->
+  <div style="flex: 1; display: flex; overflow: hidden;">
 
-    <!-- Top bar -->
-    <header class="bg-surface1 border-b border-border px-6 py-3 flex items-center gap-4 sticky top-0 z-10">
-      <h1 class="text-text-primary font-semibold text-base">Cortex Intelligence</h1>
-      <div class="flex items-center gap-3 ml-auto">
-        <button class="text-text-muted hover:text-text-secondary transition-colors">
-          <i data-lucide="bell" class="w-4 h-4"></i>
-        </button>
-        <button class="text-text-muted hover:text-text-secondary transition-colors">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-        </button>
+    <!-- Chat -->
+    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+
+      <!-- Top bar -->
+      <div style="padding: 13px 24px; border-bottom: 1px solid var(--border); background: var(--bg-s1); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">Cortex Intelligence</span>
+          <span style="background: var(--success-d); border: 1px solid rgba(34,197,94,0.2); color: var(--success); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px;">Nível 1 ativo · 85% para Nível 2</span>
+        </div>
+        <span style="font-size: 12px; color: var(--text-m);">Grupo Tavares · contexto ativo</span>
       </div>
-    </header>
 
-    <!-- Content: 2 columns -->
-    <div class="flex-1 flex overflow-hidden" style="height: calc(100vh - 57px);">
+      <div class="chat-messages">
 
-      <!-- Chat column (70%) -->
-      <div class="flex-1 flex flex-col" style="flex: 0 0 70%;">
-
-        <!-- Chat messages -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-6 chat-scroll">
-
-          <!-- User message 1 -->
-          <div class="flex justify-end">
-            <div class="max-w-lg">
-              <div class="bg-emerald-dim border border-emerald/20 rounded-2xl rounded-tr-sm px-5 py-3">
-                <p class="text-text-primary text-sm">Quais clientes tem maior risco de churn este mes?</p>
-              </div>
-              <p class="text-text-muted text-xs mt-1.5 text-right">Wyndson O. &nbsp;·&nbsp; 14:18</p>
-            </div>
-          </div>
-
-          <!-- AI response 1 -->
-          <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-surface3 border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
-              <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-light"></i>
-            </div>
-            <div class="max-w-2xl flex-1">
-              <div class="bg-surface2 border border-border rounded-2xl rounded-tl-sm px-5 py-4 space-y-3">
-                <p class="text-text-secondary text-sm leading-relaxed">
-                  Identifiquei <span class="text-text-primary font-medium">23 clientes</span> com churn score acima de 60%. Os 5 de maior risco:
-                </p>
-                <div class="overflow-hidden rounded-lg border border-border">
-                  <table class="response-table">
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Score</th>
-                        <th>Ultimo contato</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="font-medium" style="color: #F4F4F5;">Varejo Nordeste S.A.</td>
-                        <td style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">67%</td>
-                        <td>8 dias</td>
-                      </tr>
-                      <tr>
-                        <td class="font-medium" style="color: #F4F4F5;">Construtora Avila</td>
-                        <td style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">74%</td>
-                        <td>12 dias</td>
-                      </tr>
-                      <tr>
-                        <td class="font-medium" style="color: #F4F4F5;">Distribuidora Leal</td>
-                        <td style="color: #DC2626; font-family: 'JetBrains Mono', monospace;">71%</td>
-                        <td>9 dias</td>
-                      </tr>
-                      <tr>
-                        <td class="font-medium" style="color: #F4F4F5;">Grupo Ferreira Moveis</td>
-                        <td style="color: #D97706; font-family: 'JetBrains Mono', monospace;">63%</td>
-                        <td>15 dias</td>
-                      </tr>
-                      <tr>
-                        <td class="font-medium" style="color: #F4F4F5;">Sul Industrial Ltda</td>
-                        <td style="color: #D97706; font-family: 'JetBrains Mono', monospace;">61%</td>
-                        <td>11 dias</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p class="text-text-secondary text-sm leading-relaxed">
-                  Principal fator: <span class="text-text-primary">ausencia de contato executivo</span> por mais de 7 dias.
-                  Acao recomendada: agendar reuniao com os 5 na proxima semana.
-                </p>
-              </div>
-              <p class="text-text-muted text-xs mt-1.5">Cortex IA &nbsp;·&nbsp; 14:18</p>
-            </div>
-          </div>
-
-          <!-- User message 2 -->
-          <div class="flex justify-end">
-            <div class="max-w-lg">
-              <div class="bg-emerald-dim border border-emerald/20 rounded-2xl rounded-tr-sm px-5 py-3">
-                <p class="text-text-primary text-sm">Qual foi a receita total em maio?</p>
-              </div>
-              <p class="text-text-muted text-xs mt-1.5 text-right">Wyndson O. &nbsp;·&nbsp; 14:21</p>
-            </div>
-          </div>
-
-          <!-- AI response 2 -->
-          <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-surface3 border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
-              <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-light"></i>
-            </div>
-            <div class="max-w-2xl flex-1">
-              <div class="bg-surface2 border border-border rounded-2xl rounded-tl-sm px-5 py-4 space-y-4">
-                <div>
-                  <p class="text-text-secondary text-sm">Receita de maio:</p>
-                  <p class="text-text-primary text-3xl font-semibold mt-1">R$ 8.247.320</p>
-                  <p class="text-emerald-light text-sm mt-1 flex items-center gap-1.5">
-                    <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-                    +14,3% vs abril (R$ 7.216.080)
-                  </p>
-                </div>
-                <div>
-                  <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Por segmento</p>
-                  <div class="space-y-2.5">
-                    <div>
-                      <div class="flex items-center justify-between mb-1">
-                        <span class="text-text-secondary text-xs">Varejo Enterprise</span>
-                        <span class="text-text-primary text-xs font-medium font-mono">R$ 3.1M &nbsp;·&nbsp; 38%</span>
-                      </div>
-                      <div class="w-full bg-surface3 rounded-full h-1.5">
-                        <div class="bg-emerald-light h-1.5 rounded-full" style="width: 38%"></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex items-center justify-between mb-1">
-                        <span class="text-text-secondary text-xs">Financeiro</span>
-                        <span class="text-text-primary text-xs font-medium font-mono">R$ 2.4M &nbsp;·&nbsp; 29%</span>
-                      </div>
-                      <div class="w-full bg-surface3 rounded-full h-1.5">
-                        <div class="bg-blue h-1.5 rounded-full" style="width: 29%"></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex items-center justify-between mb-1">
-                        <span class="text-text-secondary text-xs">SaaS B2B</span>
-                        <span class="text-text-primary text-xs font-medium font-mono">R$ 1.6M &nbsp;·&nbsp; 19%</span>
-                      </div>
-                      <div class="w-full bg-surface3 rounded-full h-1.5">
-                        <div class="bg-amber h-1.5 rounded-full" style="width: 19%"></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex items-center justify-between mb-1">
-                        <span class="text-text-secondary text-xs">Outros</span>
-                        <span class="text-text-primary text-xs font-medium font-mono">R$ 1.1M &nbsp;·&nbsp; 14%</span>
-                      </div>
-                      <div class="w-full bg-surface3 rounded-full h-1.5">
-                        <div class="bg-text-muted h-1.5 rounded-full" style="width: 14%"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p class="text-text-muted text-xs mt-1.5">Cortex IA &nbsp;·&nbsp; 14:22</p>
-            </div>
-          </div>
-
+        <div class="msg-user">
+          <div style="font-size: 11px; color: var(--text-m); text-align: right; margin-bottom: 5px;">14:10</div>
+          <div class="msg-user-bubble">Quais são os 5 clientes com maior risco de churn agora?</div>
         </div>
 
-        <!-- Input area -->
-        <div class="border-t border-border p-4">
-          <div class="relative bg-surface2 border border-border rounded-xl flex items-center">
-            <input type="text" placeholder="Pergunte sobre seus dados..." class="flex-1 bg-transparent text-text-secondary text-sm px-5 py-3.5 placeholder-text-muted focus:outline-none" />
-            <button class="mr-3 w-8 h-8 rounded-lg bg-emerald flex items-center justify-center hover:bg-emerald-light transition-colors flex-shrink-0">
-              <i data-lucide="send" class="w-3.5 h-3.5 text-white"></i>
-            </button>
+        <div class="msg-ai">
+          <div class="msg-ai-bubble">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <span class="cortex-badge">CORTEX</span>
+              <span style="font-size: 11px; color: var(--text-m);">14:10 · fct_customer_360 + churn_predictor_v2</span>
+            </div>
+            <p style="color: var(--text-s); line-height: 1.6; margin: 0 0 10px;">Identifiquei 5 clientes com risco acima de 29% com base no modelo atualizado há 3 dias. Fator dominante: redução de frequência de compra + engajamento baixo com o time comercial.</p>
+            <table class="mini-table">
+              <thead><tr><th>CLIENTE</th><th>CHURN</th><th>HEALTH</th><th>ÚLTIMO CONTATO</th><th>LTV</th></tr></thead>
+              <tbody>
+                <tr><td style="color:var(--text-p);">Construtora Ávila</td><td style="color:var(--danger);font-weight:600;">74%</td><td style="color:var(--danger);">38%</td><td style="color:var(--danger);">12 dias</td><td>R$ 210k</td></tr>
+                <tr><td style="color:var(--text-p);">Varejo Nordeste</td><td style="color:var(--warning);font-weight:600;">67%</td><td style="color:var(--warning);">44%</td><td style="color:var(--warning);">8 dias</td><td>R$ 280k</td></tr>
+                <tr><td style="color:var(--text-p);">Fintech Crédito</td><td style="color:var(--warning);font-weight:600;">58%</td><td style="color:var(--warning);">55%</td><td style="color:var(--warning);">5 dias</td><td>R$ 390k</td></tr>
+                <tr><td style="color:var(--text-p);">Infralog Trans.</td><td style="color:var(--warning);font-weight:600;">41%</td><td style="color:var(--warning);">62%</td><td>3 dias</td><td>R$ 520k</td></tr>
+                <tr><td style="color:var(--text-p);">Agro Cerrado</td><td style="color:var(--warning);font-weight:600;">29%</td><td style="color:var(--success);">71%</td><td>6 horas</td><td>R$ 1.1M</td></tr>
+              </tbody>
+            </table>
+            <p style="margin: 10px 0 0; font-size: 12px; color: var(--text-m);">Prioridade: contato com Construtora Ávila e Varejo Nordeste nas próximas 24h. Impacto potencial: <span style="color: var(--accent);">R$ 490k retidos</span>.</p>
           </div>
-          <p class="text-text-muted text-xs text-center mt-2">Cortex Intelligence analisa HubSpot + Omie em tempo real</p>
+        </div>
+
+        <div class="msg-user">
+          <div style="font-size: 11px; color: var(--text-m); text-align: right; margin-bottom: 5px;">14:15</div>
+          <div class="msg-user-bubble">Receita líquida de maio, breakdown por segmento?</div>
+        </div>
+
+        <div class="msg-ai">
+          <div class="msg-ai-bubble">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <span class="cortex-badge">CORTEX</span>
+              <span style="font-size: 11px; color: var(--text-m);">14:15 · receita_liquida_mrr · Omie</span>
+            </div>
+            <p style="color: var(--text-s); line-height: 1.6; margin: 0 0 10px;">Total maio/2026: <span style="color:var(--text-p);font-weight:600;">R$ 8.247.320</span></p>
+            <table class="mini-table">
+              <thead><tr><th>SEGMENTO</th><th>RECEITA</th><th>% TOTAL</th><th>VS ABRIL</th></tr></thead>
+              <tbody>
+                <tr><td style="color:var(--text-p);">Varejo Enterprise</td><td class="mono">R$ 2.84M</td><td>34.4%</td><td style="color:var(--success);">+8%</td></tr>
+                <tr><td style="color:var(--text-p);">Agronegócio</td><td class="mono">R$ 1.92M</td><td>23.3%</td><td style="color:var(--success);">+14%</td></tr>
+                <tr><td style="color:var(--text-p);">SaaS B2B</td><td class="mono">R$ 1.41M</td><td>17.1%</td><td style="color:var(--success);">+22%</td></tr>
+                <tr><td style="color:var(--text-p);">Saúde Privada</td><td class="mono">R$ 1.08M</td><td>13.1%</td><td style="color:var(--danger);">-3%</td></tr>
+                <tr><td style="color:var(--text-p);">Outros</td><td class="mono">R$ 1.00M</td><td>12.1%</td><td>+1%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="msg-user">
+          <div style="font-size: 11px; color: var(--text-m); text-align: right; margin-bottom: 5px;">14:18</div>
+          <div class="msg-user-bubble">Como está o pipeline dbt? Algum modelo com problema?</div>
+        </div>
+
+        <div class="msg-ai">
+          <div class="msg-ai-bubble">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <span class="cortex-badge">CORTEX</span>
+              <span style="font-size: 11px; color: var(--text-m);">14:18 · metadata Lakehouse</span>
+            </div>
+            <p style="color: var(--text-s); line-height: 1.6; margin: 0 0 10px;">Pipeline saudável. Run <span style="color:var(--text-p);font-weight:600;">#2847</span> há 18 min — 8/8 modelos OK em 4m32s.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+              <div style="background:var(--success-d);border:1px solid rgba(34,197,94,0.2);border-radius:6px;padding:8px;text-align:center;">
+                <div class="mono" style="font-size:18px;font-weight:700;color:var(--success);">8/8</div>
+                <div style="font-size:10px;color:var(--text-m);">modelos OK</div>
+              </div>
+              <div style="background:var(--bg-s3);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;">
+                <div class="mono" style="font-size:18px;font-weight:700;color:var(--text-p);">4m32s</div>
+                <div style="font-size:10px;color:var(--text-m);">duração</div>
+              </div>
+              <div style="background:var(--bg-s3);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;">
+                <div class="mono" style="font-size:18px;font-weight:700;color:var(--data);">14.2k</div>
+                <div style="font-size:10px;color:var(--text-m);">customer_360</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--warning);display:flex;align-items:center;gap:6px;">
+              <i data-lucide="alert-circle" style="width:13px;height:13px;flex-shrink:0;"></i>
+              Schema Alert: campo 'email' renomeado no HubSpot pode afetar 3 modelos no próximo run.
+            </div>
+          </div>
         </div>
 
       </div>
 
-      <!-- Context panel (30%) -->
-      <div class="border-l border-border bg-surface1 overflow-y-auto" style="flex: 0 0 30%;">
-        <div class="p-5 space-y-5">
-
-          <!-- Active context -->
-          <div>
-            <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Contexto ativo</p>
-            <div class="bg-surface2 border border-border rounded-xl p-4 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-text-muted text-xs">Periodo</span>
-                <span class="text-text-secondary text-xs font-medium">Ultimos 30 dias</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-text-muted text-xs">Clientes</span>
-                <span class="text-text-secondary text-xs font-medium">1.847 ativos</span>
-              </div>
-              <div class="border-t border-border pt-2">
-                <p class="text-text-muted text-xs mb-2">Fontes</p>
-                <div class="flex gap-2">
-                  <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-surface3 text-text-secondary text-xs border border-border">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
-                    HubSpot
-                  </span>
-                  <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-surface3 text-text-secondary text-xs border border-border">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-light"></span>
-                    Omie
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Suggested questions -->
-          <div>
-            <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Perguntas sugeridas</p>
-            <div class="space-y-2">
-              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
-                Clientes com maior risco de churn
-              </button>
-              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
-                Receita de maio por segmento
-              </button>
-              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
-                Top 10 clientes por LTV
-              </button>
-              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
-                Clientes sem contato ha 30d+
-              </button>
-              <button class="w-full text-left px-3 py-2.5 bg-surface2 border border-border rounded-lg text-text-secondary text-xs hover:border-emerald/30 hover:text-text-primary transition-colors">
-                NPS medio por segmento
-              </button>
-            </div>
-          </div>
-
-          <!-- History -->
-          <div>
-            <p class="text-text-muted text-xs font-medium uppercase tracking-wider mb-3">Historico</p>
-            <div class="space-y-1">
-              <div class="px-3 py-2 rounded-lg hover:bg-surface2 cursor-pointer transition-colors">
-                <p class="text-text-secondary text-xs truncate">Clientes com maior risco...</p>
-                <p class="text-text-muted text-xs">Hoje 14:18</p>
-              </div>
-              <div class="px-3 py-2 rounded-lg hover:bg-surface2 cursor-pointer transition-colors">
-                <p class="text-text-secondary text-xs truncate">Receita total em maio</p>
-                <p class="text-text-muted text-xs">Hoje 14:21</p>
-              </div>
-              <div class="px-3 py-2 rounded-lg hover:bg-surface2 cursor-pointer transition-colors">
-                <p class="text-text-secondary text-xs truncate">Top clientes por LTV Q1</p>
-                <p class="text-text-muted text-xs">Ontem 11:04</p>
-              </div>
-            </div>
-          </div>
-
+      <!-- Input -->
+      <div style="padding: 14px 20px; border-top: 1px solid var(--border); background: var(--bg-s1); flex-shrink: 0;">
+        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+          <button class="chip"><i data-lucide="git-branch" style="width:11px;height:11px;"></i>Status dos conectores</button>
+          <button class="chip"><i data-lucide="alert-triangle" style="width:11px;height:11px;"></i>Clientes sem contato há 30d</button>
+          <button class="chip"><i data-lucide="trending-up" style="width:11px;height:11px;"></i>Previsão de receita junho</button>
+          <button class="chip"><i data-lucide="cpu" style="width:11px;height:11px;"></i>Modelos com performance abaixo de 0.80</button>
         </div>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg-s2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;">
+          <input type="text" placeholder="Pergunte qualquer coisa sobre seus dados..." style="flex:1;background:none;border:none;outline:none;font-size:13px;color:var(--text-p);font-family:inherit;" />
+          <button style="background:var(--accent);border:none;color:#09090B;width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i data-lucide="send" style="width:14px;height:14px;"></i>
+          </button>
+        </div>
+        <div style="margin-top:7px;font-size:11px;color:var(--text-m);text-align:center;">Nenhum dado sai do seu tenant — Intelligence opera exclusivamente sobre seu Metric Catalog e Lakehouse.</div>
       </div>
 
     </div>
+
+    <!-- Right panel -->
+    <div style="width:260px;border-left:1px solid var(--border);background:var(--bg-s1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;">
+      <div style="padding:14px;border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--text-m);margin-bottom:10px;">CONTEXTO</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;padding:9px 11px;">
+            <div style="font-size:10px;font-weight:500;color:var(--text-p);margin-bottom:1px;">Tenant</div>
+            <div style="font-size:11px;color:var(--text-m);">Grupo Tavares Alimentos</div>
+          </div>
+          <div style="background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;padding:9px 11px;">
+            <div style="font-size:10px;font-weight:500;color:var(--text-p);margin-bottom:1px;">Dados</div>
+            <div style="font-size:11px;color:var(--text-m);">47 métricas · 1.847 clientes</div>
+          </div>
+          <div style="background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;padding:9px 11px;">
+            <div style="font-size:10px;font-weight:500;color:var(--text-p);margin-bottom:1px;">Atualização</div>
+            <div style="font-size:11px;color:var(--success);">3 min atrás</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px;border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--text-m);margin-bottom:10px;">HISTÓRICO</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="background:var(--accent-d);border:1px solid rgba(217,119,6,0.15);border-radius:5px;padding:7px 9px;cursor:pointer;">
+            <div style="font-size:11px;font-weight:500;color:var(--accent-l);">Top 5 churn risk</div>
+            <div style="font-size:10px;color:var(--text-m);">14:10</div>
+          </div>
+          <div style="background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;padding:7px 9px;cursor:pointer;">
+            <div style="font-size:11px;color:var(--text-s);">Receita maio por segmento</div>
+            <div style="font-size:10px;color:var(--text-m);">14:15</div>
+          </div>
+          <div style="background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;padding:7px 9px;cursor:pointer;">
+            <div style="font-size:11px;color:var(--text-s);">Status pipeline dbt</div>
+            <div style="font-size:10px;color:var(--text-m);">14:18</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--text-m);margin-bottom:10px;">SUGESTÕES</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="font-size:11px;color:var(--text-m);padding:7px 9px;background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;cursor:pointer;line-height:1.4;">Previsão de receita junho (3 cenários)</div>
+          <div style="font-size:11px;color:var(--text-m);padding:7px 9px;background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;cursor:pointer;line-height:1.4;">Clientes com NRR abaixo de 100% em Q2</div>
+          <div style="font-size:11px;color:var(--text-m);padding:7px 9px;background:var(--bg-s2);border:1px solid var(--border-sub);border-radius:5px;cursor:pointer;line-height:1.4;">Pipeline HubSpot em risco de não fechar</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <script>lucide.createIcons();</script>
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('cortex-theme', next);
+      document.getElementById('sun-icon').style.display = next === 'light' ? 'inline-block' : 'none';
+      document.getElementById('moon-icon').style.display = next === 'dark' ? 'inline-block' : 'none';
+    }
+    const saved = localStorage.getItem('cortex-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('sun-icon').style.display = saved === 'light' ? 'inline-block' : 'none';
+    document.getElementById('moon-icon').style.display = saved === 'dark' ? 'inline-block' : 'none';
+  </script>
 </body>
 </html>

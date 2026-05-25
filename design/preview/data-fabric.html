@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Fabric — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 10; }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 14px 12px 6px; }
+    .connector-card { background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+    .connector-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .connector-body { padding: 16px 20px; }
+    .flow-row { display: flex; align-items: center; gap: 0; margin-bottom: 8px; font-size: 13px; }
+    .flow-source { color: var(--text-p); font-weight: 500; min-width: 200px; }
+    .flow-source span { font-size: 12px; color: var(--text-m); }
+    .flow-arrow { color: var(--text-m); margin: 0 10px; font-size: 12px; }
+    .flow-method { background: var(--data-d); border: 1px solid rgba(34,211,238,0.15); color: var(--data); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; margin: 0 10px; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+    .flow-dest { color: var(--text-s); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .connector-footer { padding: 10px 20px; background: var(--bg-s2); border-top: 1px solid var(--border-sub); display: flex; gap: 24px; font-size: 11px; color: var(--text-m); }
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 4px; }
+    .badge-success { background: var(--success-d); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+    .badge-warning { background: var(--warning-d); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-data { background: var(--data-d); color: var(--data); border: 1px solid rgba(34,211,238,0.15); }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead th { text-align: left; padding: 9px 14px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-sub); }
+    .data-table tbody tr:hover { background: var(--bg-s2); }
+    .data-table tbody td { padding: 10px 14px; color: var(--text-s); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @keyframes progress-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .progress-animated { animation: progress-pulse 2s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border);">
+      <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
+    </div>
+    <nav style="flex: 1; padding: 8px 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="intelligence.html" class="nav-item"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="data-fabric.html" class="nav-item active"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
+    </nav>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
+      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="padding: 18px 28px; border-bottom: 1px solid var(--border); background: var(--bg-s1); position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <span style="font-size: 15px; font-weight: 600; color: var(--text-p);">Data Fabric</span>
+        <span style="font-size: 13px; color: var(--text-m); margin-left: 10px;">Conectando suas fontes de dados em tempo real</span>
+      </div>
+      <button style="background: var(--accent); border: none; color: #09090B; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <i data-lucide="plus" style="width:13px;height:13px;"></i>
+        Adicionar conector
+      </button>
+    </div>
+
+    <div style="padding: 28px;">
+
+      <!-- Status geral -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 32px;">
+          <div>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">CONECTORES</span>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+              <span class="mono" style="font-size: 20px; font-weight: 700; color: var(--text-p);">5</span>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge badge-success">3 ativos</span>
+                <span class="badge" style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s);">2 disponíveis</span>
+                <span class="badge badge-success">0 erros</span>
+              </div>
+            </div>
+          </div>
+          <div style="width: 1px; height: 36px; background: var(--border);"></div>
+          <div>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">HOJE</span>
+            <div style="font-size: 14px; font-weight: 500; color: var(--text-p); margin-top: 4px;"><span class="mono">18.138</span> registros sincronizados · <span class="mono">2.4 GB</span> transferidos</div>
+          </div>
+          <div style="width: 1px; height: 36px; background: var(--border);"></div>
+          <div>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">LATÊNCIA MÉDIA</span>
+            <div class="mono" style="font-size: 14px; font-weight: 500; color: var(--success); margin-top: 4px;">8 min</div>
+          </div>
+        </div>
+        <span style="font-size: 12px; color: var(--text-m);">Atualizado: agora mesmo</span>
+      </div>
+
+      <!-- HubSpot -->
+      <div class="connector-card">
+        <div class="connector-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(255,122,89,0.1); border: 1px solid rgba(255,122,89,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #FF7A59;">HS</div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">HubSpot CRM</div>
+              <div style="font-size: 11px; color: var(--text-m); margin-top: 1px;">OAuth 2.0 · Airbyte</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="badge badge-success"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--success);"></span>Ativo · CDC em tempo real</span>
+            <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Configurar</button>
+          </div>
+        </div>
+        <div class="connector-body">
+          <div class="flow-row">
+            <span class="flow-source">Contacts <span>(12.847)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Airbyte CDC</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.hubspot_contacts</span>
+          </div>
+          <div class="flow-row">
+            <span class="flow-source">Deals <span>(3.291)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Airbyte CDC</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.hubspot_deals</span>
+          </div>
+          <div class="flow-row">
+            <span class="flow-source">Companies <span>(847)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Airbyte CDC</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.hubspot_companies</span>
+          </div>
+          <div class="flow-row">
+            <span class="flow-source">Activities <span>(28.4k)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Batch 1h</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.hubspot_activities</span>
+          </div>
+        </div>
+        <div class="connector-footer">
+          <span>Última sync: <strong style="color: var(--text-s);">3 min atrás</strong></span>
+          <span>Latência CDC: <strong style="color: var(--success);">45s</strong></span>
+          <span>Erros hoje: <strong style="color: var(--success);">0</strong></span>
+          <span>Registros: <strong style="color: var(--text-s);">45.385</strong></span>
+        </div>
+      </div>
+
+      <!-- Omie -->
+      <div class="connector-card">
+        <div class="connector-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #22C55E;">OM</div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">Omie ERP</div>
+              <div style="font-size: 11px; color: var(--text-m); margin-top: 1px;">API Key · REST API</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="badge badge-success"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--success);"></span>Ativo · Sync a cada 15 min</span>
+            <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">Configurar</button>
+          </div>
+        </div>
+        <div class="connector-body">
+          <div class="flow-row">
+            <span class="flow-source">Clientes <span>(3.291)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Batch 15min</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.omie_clientes</span>
+          </div>
+          <div class="flow-row">
+            <span class="flow-source">Pedidos <span>(8.847)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Batch 15min</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.omie_pedidos</span>
+          </div>
+          <div class="flow-row">
+            <span class="flow-source">NF-e <span>(2.104)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Batch 1h</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.omie_nfe</span>
+          </div>
+          <div class="flow-row">
+            <span class="flow-source">Financeiro <span>(4.200)</span></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-method">Batch 1h</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-dest">Bronze.omie_financeiro</span>
+          </div>
+        </div>
+        <div class="connector-footer">
+          <span>Última sync: <strong style="color: var(--text-s);">22 min atrás</strong></span>
+          <span>Próxima: <strong style="color: var(--accent);">8 min</strong></span>
+          <span>Erros hoje: <strong style="color: var(--success);">0</strong></span>
+          <span>Registros: <strong style="color: var(--text-s);">18.442</strong></span>
+        </div>
+      </div>
+
+      <!-- Shopify — conectando -->
+      <div class="connector-card" style="border-color: rgba(245,158,11,0.2);">
+        <div class="connector-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(149,191,71,0.1); border: 1px solid rgba(149,191,71,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #95BF47;">SH</div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">Shopify</div>
+              <div style="font-size: 11px; color: var(--text-m); margin-top: 1px;">OAuth 2.0 · Airbyte</div>
+            </div>
+          </div>
+          <span class="badge badge-warning"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--warning); animation: progress-pulse 1.5s ease infinite;"></span>Conectando... Step 2/3</span>
+        </div>
+        <div class="connector-body">
+          <div style="font-size: 13px; color: var(--text-s); margin-bottom: 14px;">Aguardando autorização OAuth · Callback URL configurada</div>
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 12px; color: var(--text-m);">Progresso da configuração</span>
+              <span class="mono" style="font-size: 12px; color: var(--warning);">60%</span>
+            </div>
+            <div style="height: 4px; background: var(--bg-s3); border-radius: 4px; overflow: hidden;">
+              <div class="progress-animated" style="height: 100%; width: 60%; background: linear-gradient(90deg, var(--warning), var(--accent-l)); border-radius: 4px;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-m);">
+              <span style="color: var(--success);">✓ Credenciais</span>
+              <span style="color: var(--success);">✓ Webhook URL</span>
+              <span style="color: var(--warning);">→ OAuth callback</span>
+              <span style="color: var(--text-m);">○ Teste de sync</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schema Registry -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 8px;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">Schema Registry</span>
+            <span style="font-size: 12px; color: var(--text-m); margin-left: 10px;">Contratos de dados ativos — 47 campos monitorados</span>
+          </div>
+          <span class="badge badge-warning"><i data-lucide="alert-triangle" style="width:12px;height:12px;"></i>1 mudança detectada</span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>CAMPO</th>
+                <th>ORIGEM</th>
+                <th>TIPO</th>
+                <th>VERSÃO</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">customer_id</span></td>
+                <td><span style="font-size: 12px; color: var(--text-s);">HubSpot</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--data);">STRING</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--text-m);">v3</span></td>
+                <td><span class="badge badge-success">Estável</span></td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">email</span></td>
+                <td><span style="font-size: 12px; color: var(--text-s);">HubSpot</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--accent);">TOKENIZADO</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--text-m);">v2</span></td>
+                <td><span class="badge badge-success">Estável</span></td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">cpf_cnpj</span></td>
+                <td><span style="font-size: 12px; color: var(--text-s);">Omie</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--accent);">TOKENIZADO</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--text-m);">v1</span></td>
+                <td><span class="badge badge-success">Estável</span></td>
+              </tr>
+              <tr>
+                <td><span class="mono" style="font-size: 12px; color: var(--text-p);">revenue_total</span></td>
+                <td><span style="font-size: 12px; color: var(--text-s);">Omie</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--data);">DECIMAL(12,2)</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--text-m);">v1</span></td>
+                <td><span class="badge badge-success">Estável</span></td>
+              </tr>
+              <tr style="background: rgba(245,158,11,0.04);">
+                <td><span class="mono" style="font-size: 12px; color: var(--warning);">contact_email*</span></td>
+                <td><span style="font-size: 12px; color: var(--text-s);">HubSpot</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--data);">STRING</span></td>
+                <td><span class="mono" style="font-size: 11px; color: var(--warning);">v4</span></td>
+                <td><span class="badge badge-warning"><i data-lucide="alert-circle" style="width:11px;height:11px;"></i>Mudança</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding: 12px 20px; background: rgba(245,158,11,0.05); border-top: 1px solid rgba(245,158,11,0.15);">
+          <div style="display: flex; align-items: flex-start; gap: 8px;">
+            <i data-lucide="alert-triangle" style="width: 14px; height: 14px; color: var(--warning); flex-shrink: 0; margin-top: 1px;"></i>
+            <div>
+              <span style="font-size: 13px; color: var(--warning); font-weight: 500;">Campo 'email' renomeado para 'contact_email' detectado no HubSpot</span>
+              <div style="font-size: 12px; color: var(--text-m); margin-top: 2px;">Impacto: 3 modelos dbt downstream · Ação recomendada: revisar <span class="mono" style="font-size: 11px; color: var(--data);">models/silver/customer_unified.sql</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('cortex-theme', next);
+      document.getElementById('sun-icon').style.display = next === 'light' ? 'inline-block' : 'none';
+      document.getElementById('moon-icon').style.display = next === 'dark' ? 'inline-block' : 'none';
+    }
+    const saved = localStorage.getItem('cortex-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('sun-icon').style.display = saved === 'light' ? 'inline-block' : 'none';
+    document.getElementById('moon-icon').style.display = saved === 'dark' ? 'inline-block' : 'none';
+  </script>
+</body>
+</html>

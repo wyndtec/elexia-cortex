@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segurança — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 10; }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 14px 12px 6px; }
+    .badge-success { background: var(--success-d); color: var(--success); border: 1px solid rgba(34,197,94,0.2); display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 4px; }
+
+    /* Pyramid layer styles */
+    .crypto-layer {
+      border-radius: 8px;
+      border: 1px solid;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      transition: background 0.2s;
+    }
+    .crypto-layer:hover { filter: brightness(1.05); }
+    .layer-5 { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.18); }
+    .layer-4 { background: rgba(34,197,94,0.09); border-color: rgba(34,197,94,0.22); }
+    .layer-3 { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.26); }
+    .layer-2 { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.30); }
+    .layer-1 { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.35); }
+    .layer-bar-track { height: 4px; background: rgba(34,197,94,0.12); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+    .layer-bar-fill { height: 100%; background: var(--success); border-radius: 3px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead th { text-align: left; padding: 9px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-sub); }
+    .data-table tbody td { padding: 11px 16px; color: var(--text-s); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border);">
+      <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
+    </div>
+    <nav style="flex: 1; padding: 8px 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="intelligence.html" class="nav-item"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="data-fabric.html" class="nav-item"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item active"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
+    </nav>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
+      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="padding: 18px 28px; border-bottom: 1px solid var(--border); background: var(--bg-s1); position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <span style="font-size: 15px; font-weight: 600; color: var(--text-p);">Arquitetura de Segurança</span>
+        <span style="font-size: 13px; color: var(--text-m); margin-left: 10px;">5 Camadas Ativas</span>
+      </div>
+      <span class="badge-success"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--success);"></span>5/5 camadas ativas · 0 alertas</span>
+    </div>
+
+    <div style="padding: 28px;">
+
+      <!-- Cryptographic Pyramid -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 20px;">PIRÂMIDE CRIPTOGRÁFICA — 5 CAMADAS</div>
+
+        <!-- Layer 5 (top — narrowest conceptually, but displayed as full row) -->
+        <div class="crypto-layer layer-5">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--success);">5</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">Invalidação por contexto</div>
+              <div style="font-size: 12px; color: var(--text-s); margin-top: 2px;">Contrato encerrado → crypto-shredding em menos de 60 segundos. Dados tornam-se irrecuperáveis.</div>
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 120px;">
+            <span class="badge-success" style="margin-bottom: 4px; display: inline-flex;">Ativo</span>
+            <div style="font-size: 10px; color: var(--text-m);">Invalidação &lt; 60s</div>
+          </div>
+        </div>
+
+        <!-- Layer 4 -->
+        <div class="crypto-layer layer-4">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--success);">4</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">Hardware-bound keys (HSM/TPM)</div>
+              <div style="font-size: 12px; color: var(--text-s); margin-top: 2px;">Chaves NUNCA saem do hardware. Operações criptográficas executadas dentro do HSM. FIPS 140-3.</div>
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 120px;">
+            <span class="badge-success" style="margin-bottom: 4px; display: inline-flex;">Ativo</span>
+            <div style="font-size: 10px; color: var(--text-m);">FIPS 140-3</div>
+          </div>
+        </div>
+
+        <!-- Layer 3 -->
+        <div class="crypto-layer layer-3">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--success);">3</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">Proteção no cruzamento (PPRL)</div>
+              <div style="font-size: 12px; color: var(--text-s); margin-top: 2px;">Privacy-Preserving Record Linkage + Differential Privacy. Joins entre tenants via hash — sem exposição de dados reais.</div>
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 120px;">
+            <span class="badge-success" style="margin-bottom: 4px; display: inline-flex;">Ativo</span>
+            <div style="font-size: 10px; color: var(--text-m);">PPRL + DP</div>
+          </div>
+        </div>
+
+        <!-- Layer 2 -->
+        <div class="crypto-layer layer-2">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--success);">2</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">Criptografia por campo (tokenização)</div>
+              <div style="font-size: 12px; color: var(--text-s); margin-top: 2px;">2.847 campos PII tokenizados com DEK/KEK por tenant. Detokenização requer Owner + MFA explícito.</div>
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 120px;">
+            <span class="badge-success" style="margin-bottom: 4px; display: inline-flex;">Ativo</span>
+            <div style="font-size: 10px; color: var(--text-m);">2.847 campos</div>
+          </div>
+        </div>
+
+        <!-- Layer 1 (base — widest) -->
+        <div class="crypto-layer layer-1" style="margin-bottom: 0;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--success);">1</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">TDE — Transparent Data Encryption (base)</div>
+              <div style="font-size: 12px; color: var(--text-s); margin-top: 2px;">AES-256 em disco. Chave mestra no KMS gerenciado (AWS KMS). Crypto-shredding pronto: destruir chave = destruir dados.</div>
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 120px;">
+            <span class="badge-success" style="margin-bottom: 4px; display: inline-flex;">Ativo</span>
+            <div style="font-size: 10px; color: var(--text-m);">AES-256</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+
+        <!-- Data Residency -->
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--accent);"></i>
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-p);">Residência de Dados</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-size: 12px; font-weight: 500; color: var(--text-p);">Seus dados (padrão)</span>
+                <span class="badge-success" style="font-size: 10px;">LGPD by design</span>
+              </div>
+              <div class="mono" style="font-size: 11px; color: var(--text-m);">São Paulo · AWS sa-east-1 · VPC privada</div>
+            </div>
+            <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px;">
+              <div style="font-size: 12px; font-weight: 500; color: var(--text-p); margin-bottom: 4px;">Dados EU (quando necessário)</div>
+              <div class="mono" style="font-size: 11px; color: var(--text-m);">Frankfurt · AWS eu-central-1 · GDPR</div>
+            </div>
+            <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px;">
+              <div style="font-size: 12px; font-weight: 500; color: var(--text-p); margin-bottom: 4px;">Dados US (quando necessário)</div>
+              <div class="mono" style="font-size: 11px; color: var(--text-m);">Virginia · AWS us-east-1 · SOC 2</div>
+            </div>
+          </div>
+          <div style="margin-top: 12px; padding: 10px 12px; background: var(--accent-d); border: 1px solid rgba(217,119,6,0.2); border-radius: 6px;">
+            <div style="font-size: 12px; color: var(--accent-l); font-style: italic;">"Nenhum dado cruza jurisdições sem sua autorização explícita"</div>
+          </div>
+        </div>
+
+        <!-- DLP -->
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <i data-lucide="eye-off" style="width: 15px; height: 15px; color: var(--data);"></i>
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-p);">DLP — Proteção Ativa</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Canary records</div>
+                <div style="font-size: 11px; color: var(--text-m); margin-top: 2px;">Registros armadilha para detectar vazamentos</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="mono" style="font-size: 14px; font-weight: 700; color: var(--text-p);">47</div>
+                <div style="font-size: 10px; color: var(--success);">0 alertas</div>
+              </div>
+            </div>
+            <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Digital watermarks</div>
+                <div style="font-size: 11px; color: var(--text-m); margin-top: 2px;">Todos os exports carregam ID rastreável</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 11px; color: var(--success);">Ativo em todos</div>
+              </div>
+            </div>
+            <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 12px; font-weight: 500; color: var(--text-p);">UEBA</div>
+                <div style="font-size: 11px; color: var(--text-m); margin-top: 2px;">Detecção de anomalias de comportamento</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 11px; color: var(--text-s);">3 usuários</div>
+                <div style="font-size: 10px; color: var(--success);">0 anomalias</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Watermarked Exports -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+        <div style="padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="tag" style="width: 14px; height: 14px; color: var(--accent);"></i>
+          <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">Exportações recentes com watermark</span>
+        </div>
+        <div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="background: var(--bg-s2); border: 1px solid var(--border-sub); border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="mono" style="font-size: 12px; color: var(--data);">WM-WYNDSON-20260525-A7F3</div>
+            <div style="display: flex; align-items: center; gap: 20px; font-size: 12px; color: var(--text-m);">
+              <span><span class="mono" style="color: var(--text-s);">247</span> registros</span>
+              <span>14:22</span>
+              <span style="color: var(--success); display: flex; align-items: center; gap: 4px;"><i data-lucide="check-circle" style="width:12px;height:12px;"></i>Rastreável</span>
+            </div>
+          </div>
+          <div style="background: var(--bg-s2); border: 1px solid var(--border-sub); border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="mono" style="font-size: 12px; color: var(--data);">WM-ANA-20260524-B2C1</div>
+            <div style="display: flex; align-items: center; gap: 20px; font-size: 12px; color: var(--text-m);">
+              <span><span class="mono" style="color: var(--text-s);">89</span> registros</span>
+              <span>11:08 (ontem)</span>
+              <span style="color: var(--success); display: flex; align-items: center; gap: 4px;"><i data-lucide="check-circle" style="width:12px;height:12px;"></i>Rastreável</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('cortex-theme', next);
+      document.getElementById('sun-icon').style.display = next === 'light' ? 'inline-block' : 'none';
+      document.getElementById('moon-icon').style.display = next === 'dark' ? 'inline-block' : 'none';
+    }
+    const saved = localStorage.getItem('cortex-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('sun-icon').style.display = saved === 'light' ? 'inline-block' : 'none';
+    document.getElementById('moon-icon').style.display = saved === 'dark' ? 'inline-block' : 'none';
+  </script>
+</body>
+</html>
