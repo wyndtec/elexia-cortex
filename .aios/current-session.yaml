@@ -11,20 +11,32 @@ session:
     current_task: "Fundação do projeto — documentação de visão e arquitetura"
 
   decisions:
-    - "Nome do projeto: elexia-cortex (referência ao córtex analítico)"
-    - "Arquitetura em 3 camadas: Data Lake (L1) → Data Warehouse (L2) → AI Engine (L3)"
-    - "Federated learning para saúde: dados de pacientes nunca saem do ambiente do município"
-    - "Stack: Kafka/Redpanda + MinIO + DuckDB + MLflow + Flower + Hono.js API"
-    - "Posicionamento público: AI governance framework para LatAm (LGPD-first)"
-    - "Serve todos os produtos Elexia como infraestrutura cross-cutting"
-    - "Prioridade de integração: Platform + Events (Fase 1) → MaisVIDA (Fase 2)"
-    - "Origem da demanda: projeto MaisVIDA Anderson revelou necessidade de Cosmos-BR"
+    - "Reposicionamento: de infra interna Elexia para plataforma B2B horizontal de dados + IA"
+    - "Arquitetura em 4 camadas: Data Fabric (L1) → Lakehouse Customer360 (L2) → AI Engine (L3) → Semantic+Experience (L4)"
+    - "MaisVIDA REMOVIDO do escopo central — é apenas um exemplo entre muitos ICPs/verticais"
+    - "ICPs prioritários: CRM/Vendas, Varejo/E-commerce, SaaS B2B, Eventos, Financeiro"
+    - "Stack: Airbyte (conectores) + DuckDB/ClickHouse + dbt + Cube.dev (semantic) + MLflow + Flower + Hono.js"
+    - "Conectores Wave 1: HubSpot, TOTVS, Salesforce, Shopify, QuickBooks/Omie"
+    - "Modelo multicloud: Managed (BR/US/EU) + BYOC + On-Premise"
+    - "Pricing: fixo mensal previsível — Starter R$1.990 → Growth R$4.990 → Scale R$9.990 → Enterprise custom"
+    - "Semantic Layer: Cube.dev (open-source, TypeScript, REST+GraphQL, self-hostable)"
+    - "GTM: Brasil primeiro até $1M ARR → depois EUA. Primeiros 10 clientes da base Elexia"
+    - "Compliance roadmap: LGPD (launch) → SOC2 Type I (Q2 2027) → SOC2 Type II (Q4 2027) → GDPR (2028)"
 
   files_touched:
     - "README.md"
     - "docs/architecture/overview.md"
     - "docs/ai-principles/responsible-ai.md"
     - "docs/integrations/elexia-ecosystem.md"
+    - "docs/strategy/strategic-assessment-v1.md"
+    - "docs/strategy/gaps-research-pre-prd.md"
+    - "docs/strategy/advisory-council.md"
+    - "docs/strategy/security-architecture.md"
+    - "docs/strategy/council-session-full-vision.md"
+    - "docs/strategy/icp-personas-go-to-market.md"
+    - "docs/strategy/prd-cortex-v1.md"
+
+  next_step: "PRD concluído (prd-cortex-v1.md). Próximos passos: (1) stories técnicas para Fase 0, (2) design system L4, (3) contratação do time comercial, (4) DPA/SCCs com escritório jurídico"
 
   blockers: []
 

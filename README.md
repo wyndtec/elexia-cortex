@@ -20,11 +20,11 @@ Elexia Cortex é a infraestrutura de dados e IA que fica abaixo de todos os prod
 
 ## Por que existe
 
-Cada produto Elexia gera dados. Hoje esses dados ficam siloed: a Plataforma não sabe o que o Events viu, o Kivo Trading não se beneficia de padrões do Luminis, o MaisVIDA não tem benchmarks de outros municípios.
+Cada produto Elexia gera dados. Hoje esses dados ficam siloed: a Plataforma não sabe o que o Events viu, o Kivo Trading não se beneficia de padrões do Luminis, o Luminis não tem benchmarks de outros assessments.
 
-O Cortex resolve isso sem violar privacidade — usando federated learning e anonimização por design.
+O Cortex resolve isso sem violar privacidade — anonimização e consentimento por design, em todas as camadas.
 
-**Resultado:** cada produto fica mais inteligente com o crescimento de todos os outros.
+**Resultado:** cada produto fica mais inteligente com o crescimento de todos os outros. E cada cliente externo do Cortex tem uma visão 360 do próprio negócio — unificando ERP, CRM, e-commerce, marketing e atendimento numa inteligência única.
 
 ---
 
@@ -34,7 +34,6 @@ O Cortex resolve isso sem violar privacidade — usando federated learning e ano
 |---------|-----------------|----------------------|
 | Elexia Platform (CRM/WhatsApp) | Conversas, conversões, churn signals | Scoring de leads, predição de churn |
 | Elexia Events | Check-ins, networking, presença | Padrões de engajamento, ROI de eventos |
-| MaisVIDA | Dados clínicos SUS, indicadores | Predição de risco, otimização de repasses |
 | Luminis | Assessments comportamentais | Correlações assessment → performance |
 | Kivo Trading | Dados de mercado, execuções | Padrões de mercado, risk scoring |
 | Elexia Uno | Transações, serviços, freelancers | Matching inteligente, pricing sugerido |

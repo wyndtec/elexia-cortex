@@ -43,14 +43,14 @@ lake/
       quarantine/ — falhas de validação
 ```
 
-### Retenção por Produto
-| Produto | Raw | Validated | Motivo |
-|---------|-----|-----------|--------|
-| MaisVIDA | 10 anos | 10 anos | Regulação CFM |
-| Plataforma CRM | 5 anos | 5 anos | LGPD padrão |
-| Events | 3 anos | 5 anos | Analytics histórico |
-| Kivo Trading | 7 anos | 7 anos | Regulação CVM |
-| Luminis | 5 anos | 5 anos | Consentimento assessments |
+### Retenção por Categoria
+| Categoria de dado | Raw | Validated | Motivo |
+|------------------|-----|-----------|--------|
+| Dados financeiros / trading | 7 anos | 7 anos | Regulação CVM / SOX |
+| Dados de CRM / conversacional | 5 anos | 5 anos | LGPD padrão |
+| Dados de eventos / presença | 3 anos | 5 anos | Analytics histórico |
+| Assessments / comportamental | 5 anos | 5 anos | Consentimento explícito |
+| Dados de cliente externo | Configurável por cliente | Configurável | Contrato + LGPD/CCPA/GDPR |
 
 ---
 
@@ -61,11 +61,11 @@ Transformar dados do lake em modelos analíticos por vertical, prontos para cons
 
 ### Modelos por Vertical
 
-**Health (MaisVIDA)**
+**Customer 360 (cross-vertical — base para todos)**
 ```
-dim_municipio, dim_estabelecimento, dim_procedimento_sus
-fact_atendimento, fact_indicador_idsus, fact_faturamento_sus
-mart_risco_populacional, mart_otimizacao_repasse
+dim_customer, dim_touchpoint, dim_channel, dim_source
+fact_journey_event, fact_conversion, fact_churn_signal
+mart_customer_360, mart_ltv_projection, mart_journey_timeline
 ```
 
 **CRM / Conversacional (Plataforma)**
@@ -82,11 +82,25 @@ fact_checkin, fact_networking_match, fact_engajamento
 mart_roi_evento, mart_perfil_audiencia
 ```
 
-**Assessments (Luminis)**
+**Assessments / Comportamental (Luminis)**
 ```
 dim_perfil_comportamental, dim_zona_genialidade
 fact_assessment, fact_correlacao_performance
 mart_genius_zone_insights
+```
+
+**E-commerce / Varejo**
+```
+dim_produto, dim_categoria, dim_loja
+fact_pedido, fact_devolucao, fact_carrinho_abandonado
+mart_previsao_demanda, mart_recomendacao_produto
+```
+
+**Financeiro / Trading**
+```
+dim_ativo, dim_estrategia, dim_conta
+fact_transacao, fact_posicao, fact_execucao
+mart_risk_scoring, mart_performance_attribution
 ```
 
 ### Camadas de Transform
@@ -108,41 +122,50 @@ gold/   — agregações, métricas de negócio, prontos para BI e AI
 ### Responsabilidade
 Treinar, servir e monitorar modelos proprietários por vertical, sem expor dados brutos.
 
-### Modelos Planejados por Vertical
+### Modelos Cross-Vertical (disponíveis para todos os clientes)
 
-**Health**
 | Modelo | Tipo | Input | Output |
 |--------|------|-------|--------|
-| `risk-pop-v1` | Classificação | Histórico clínico anonimizado | Risco hospitalização 30 dias |
-| `repasse-optimizer` | Regressão | Indicadores IDSUS atuais | Ações de maior impacto em repasse |
-| `glosa-predictor` | Classificação | Procedimento + CID + estabelecimento | Probabilidade de glosa DATASUS |
-| `ambient-doc-br` | NLP/ASR | Áudio consulta | Prontuário estruturado FHIR |
+| `churn-predictor` | Sobrevivência | Engagement signals + histórico | Probabilidade churn 30/60/90 dias |
+| `lead-scorer` | Classificação | Comportamento + touchpoints | Score 0–100 de conversão |
+| `best-next-action` | RL | Histórico de interações do cliente | Próxima ação recomendada |
+| `ltv-projector` | Regressão | Histórico de compras + comportamento | LTV projetado 6/12/24 meses |
+| `demand-forecaster` | Time-series | Histórico de vendas + sazonalidade | Previsão de demanda 30/90 dias |
+| `sentiment-analyzer` | NLP | Conversas, tickets, reviews | Score de satisfação + alertas |
 
-**CRM**
-| Modelo | Tipo | Input | Output |
-|--------|------|-------|--------|
-| `lead-scorer` | Classificação | Comportamento conversacional | Score 0–100 de conversão |
-| `churn-predictor` | Sobrevivência | Engagement signals | Probabilidade churn 30/60/90 dias |
-| `best-next-action` | RL | Histórico de interações | Próxima ação recomendada |
+### Modelos por Vertical (fine-tuned no setor)
 
-### Federated Learning — Saúde
+Cada vertical contratada recebe modelos pré-treinados no setor e depois fine-tuned nos dados do próprio cliente:
+
+| Vertical | Modelos disponíveis |
+|---------|-------------------|
+| Varejo / E-commerce | Recomendação de produto, previsão de demanda, detecção de fraude |
+| CRM / Vendas | Lead scoring, churn, best next action, win probability |
+| Eventos | ROI por evento, perfil de audiência, previsão de presença |
+| Financeiro / Trading | Risk scoring, anomaly detection, performance attribution |
+| Assessments / RH | Predição de performance, correlação perfil → resultado |
+| SaaS B2B | Health score, expansion revenue prediction, NPS predictor |
+
+### Privacy-Preserving ML (clientes BYOC e dados sensíveis)
+
+Para clientes no modelo BYOC onde dados não podem sair do ambiente próprio, o Cortex suporta treinamento federado: o modelo global melhora com os padrões de N clientes sem que dados individuais sejam expostos.
 
 ```
-Município A (ambiente isolado)
+Cliente A (ambiente isolado)
   → treina update local do modelo
   → envia apenas gradientes (não dados)
     ↓
 Cortex Aggregator
-  → agrega gradientes de N municípios
-  → gera modelo global melhorado
+  → agrega gradientes de N clientes do mesmo setor
+  → gera modelo global melhorado para aquela vertical
     ↓
-Cada município recebe modelo atualizado
-  → predições locais mais precisas
-  → benchmark nacional disponível
+Cada cliente recebe modelo atualizado
+  → predições mais precisas com benchmark do setor
+  → dados individuais nunca expostos
 ```
 
-**Framework:** Flower (flwr) — open-source, battle-tested em healthcare
-**Garantia:** nenhum dado de paciente sai do ambiente do município em nenhuma etapa
+**Framework:** Flower (flwr) — open-source, production-ready
+**Quando ativar:** clientes BYOC, setores regulados (financeiro, jurídico), dados contratuais sensíveis
 
 ### Ciclo de Vida dos Modelos
 ```
