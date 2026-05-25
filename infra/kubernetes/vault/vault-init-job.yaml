@@ -97,7 +97,7 @@ spec:
               echo "====================================================================="
               echo " ACAO OBRIGATORIA: delete o Secret apos salvar o root token:"
               echo "   kubectl delete secret vault-init-keys -n cortex-infra"
-              echo " Em producao: revogar root token apos bootstrap de auth methods."
+              echo " Em producao: revogar root token apos bootstrap de auth methods (vault token revoke)."
               echo "====================================================================="
               echo "Vault inicializado com sucesso."
       volumes: []

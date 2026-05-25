@@ -70,7 +70,7 @@ _tokenizer: Tokenizer | None = None
 async def lifespan(app: FastAPI):
     global _tokenizer
     if not HMAC_KEY:
-        raise RuntimeError("TOKENIZATION_HMAC_KEY não configurada — servico nao pode iniciar")
+        raise RuntimeError("TOKENIZATION_HMAC_KEY não configurada — serviço não pode iniciar")
     _tokenizer = Tokenizer(db_path=DB_PATH, hmac_key=HMAC_KEY)
     logger.info("Tokenizer inicializado — db=%s", DB_PATH)
     yield
