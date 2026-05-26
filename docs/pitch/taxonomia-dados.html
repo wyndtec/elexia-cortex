@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexia Cortex — Hierarquia e Taxonomia de Dados</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #0A0E17;
+    --surface: #111827;
+    --surface-2: #1A2235;
+    --surface-3: #232D42;
+    --border: #2A3550;
+    --text: #E8ECF4;
+    --text-muted: #8B95A8;
+    --text-dim: #5A6478;
+    --accent: #D97706;
+    --accent-soft: rgba(217,119,6,0.10);
+    --gold: #F59E0B;
+    --gold-soft: rgba(245,158,11,0.09);
+    --green: #10B981;
+    --green-soft: rgba(16,185,129,0.08);
+    --red: #EF4444;
+    --red-soft: rgba(239,68,68,0.08);
+    --purple: #8B5CF6;
+    --purple-soft: rgba(139,92,246,0.1);
+    --cyan: #22D3EE;
+    --cyan-soft: rgba(34,211,238,0.09);
+    --blue: #3B82F6;
+    --blue-soft: rgba(59,130,246,0.10);
+    --orange: #F97316;
+    --orange-soft: rgba(249,115,22,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .container { max-width: 920px; margin: 0 auto; padding: 60px 32px; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, #94A3B8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header p { font-size: 14px; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+  /* Section */
+  .section { margin-bottom: 52px; }
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0;
+  }
+  .section-title { font-size: 20px; font-weight: 700; }
+  .section-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 16px;
+  }
+  .card-sm {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px; margin-bottom: 12px;
+  }
+  .card-accent { background: var(--accent-soft); border: 1px solid rgba(217,119,6,0.25); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-gold { background: var(--gold-soft); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-green { background: var(--green-soft); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-red { background: var(--red-soft); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-cyan { background: var(--cyan-soft); border: 1px solid rgba(34,211,238,0.2); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-purple { background: var(--purple-soft); border: 1px solid rgba(139,92,246,0.2); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-blue { background: var(--blue-soft); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+
+  .label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .label-accent { color: var(--accent); }
+  .label-red { color: var(--red); }
+  .label-green { color: var(--green); }
+  .label-gold { color: var(--gold); }
+  .label-purple { color: var(--purple); }
+  .label-cyan { color: var(--cyan); }
+  .label-blue { color: var(--blue); }
+  .label-orange { color: var(--orange); }
+
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .card-text { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+  .card-text strong { color: var(--text); font-weight: 600; }
+
+  /* Layer stack — elemento principal */
+  .layer-stack { position: relative; margin-bottom: 8px; }
+
+  .layer {
+    border-radius: 10px; padding: 18px 22px;
+    margin-bottom: 4px; display: flex; align-items: center; gap: 18px;
+    position: relative;
+  }
+  .layer::after {
+    content: '↓';
+    position: absolute; bottom: -16px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px; color: var(--text-dim); z-index: 1;
+  }
+  .layer:last-child::after { display: none; }
+
+  .layer-num {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #fff;
+  }
+  .layer-body { flex: 1; }
+  .layer-name { font-size: 14px; font-weight: 700; margin-bottom: 1px; }
+  .layer-tech { font-size: 10px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+  .layer-desc { font-size: 12px; color: var(--text-muted); }
+  .layer-pitch { font-size: 11px; font-style: italic; margin-top: 4px; }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* Table */
+  .table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-dim); text-align: left; padding: 12px 18px;
+    border-bottom: 1px solid var(--border); background: var(--surface-2);
+  }
+  td {
+    font-size: 12px; padding: 12px 18px;
+    border-bottom: 1px solid rgba(42,53,80,0.4); color: var(--text-muted);
+    vertical-align: top;
+  }
+  td:first-child { color: var(--text); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+
+  /* Quote */
+  .quote {
+    font-size: 14px; font-weight: 500; line-height: 1.7; font-style: italic;
+    color: var(--text); border-left: 3px solid var(--accent);
+    padding: 14px 20px; margin: 14px 0; background: var(--surface);
+    border-radius: 0 10px 10px 0;
+  }
+
+  /* Bullet */
+  .bullet {
+    font-size: 13px; color: var(--text-muted); line-height: 1.6;
+    margin-bottom: 8px; padding-left: 14px; position: relative;
+  }
+  .bullet::before {
+    content: ''; position: absolute; left: 0; top: 8px;
+    width: 4px; height: 4px; border-radius: 50%;
+  }
+  .bullet-accent::before { background: var(--accent); }
+  .bullet-green::before { background: var(--green); }
+  .bullet-red::before { background: var(--red); }
+  .bullet-cyan::before { background: var(--cyan); }
+  .bullet-blue::before { background: var(--blue); }
+  .bullet strong { color: var(--text); font-weight: 600; }
+
+  /* Script block */
+  .script {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-left: 3px solid var(--green); border-radius: 0 10px 10px 0;
+    padding: 16px 20px; margin-bottom: 12px;
+  }
+  .script-who { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+  .script-text { font-size: 13px; color: var(--text-muted); line-height: 1.7; font-style: italic; }
+  .script-text strong { color: var(--text); font-style: normal; }
+
+  /* Objection */
+  .objection {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--red); border-radius: 0 12px 12px 0;
+    padding: 18px 22px; margin-bottom: 12px;
+  }
+  .objection-title { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
+  .objection-trigger { font-size: 10px; font-weight: 600; color: var(--gold); margin-bottom: 8px; letter-spacing: 0.5px; }
+  .objection-response { font-size: 12px; color: var(--text-muted); line-height: 1.7; font-style: italic; }
+  .objection-response strong { color: var(--text); font-style: normal; }
+
+  /* Sequence */
+  .sequence-step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+  .sequence-num {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  .sequence-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .sequence-desc { font-size: 11px; color: var(--text-dim); }
+
+  /* Analogy block */
+  .analogy {
+    background: var(--surface-3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 8px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .analogy-icon {
+    font-size: 20px; flex-shrink: 0; line-height: 1;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  }
+  .analogy-term { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .analogy-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+  .analogy-text strong { color: var(--text); font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding-top: 40px; margin-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .footer p { font-size: 11px; color: var(--text-dim); line-height: 1.8; }
+
+  @media (max-width: 700px) {
+    .container { padding: 32px 16px; }
+    .header h1 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-label">Elexia Cortex · Guia de Demo — Uso Interno</div>
+    <h1>Hierarquia e Taxonomia de Dados</h1>
+    <p>Como classificar, nomear e explicar cada camada da arquitetura de dados — do bruto ao inteligente. Scripts por público, analogias e respostas a objeções para a demonstração.</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 1: O MAPA COMPLETO -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--accent), #B45309);">M</div>
+      <div>
+        <div class="section-title">O Mapa Completo — Da Fonte ao Insight</div>
+        <div class="section-sub">6 camadas em ordem de refinamento — cada uma com um papel único</div>
+      </div>
+    </div>
+
+    <div class="card-accent" style="margin-bottom: 24px;">
+      <div class="label label-accent">Princípio fundamental</div>
+      <div class="card-text"><strong>Dados não têm valor no bruto. O valor está na capacidade de acessar, entender e agir.</strong> Cada camada adiciona um nível de refinamento — de bits crus a decisões de negócio. O Cortex implementa todas as 6 camadas numa plataforma unificada.</div>
+    </div>
+
+    <!-- Layer stack visual -->
+    <div class="layer-stack">
+
+      <div class="layer" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);">
+        <div class="layer-num" style="background: linear-gradient(135deg, #991B1B, var(--red));">6</div>
+        <div class="layer-body">
+          <div class="layer-name">Camada de Apresentação <span style="font-size:10px;color:var(--text-dim);font-weight:400;">— Dashboard / BI</span></div>
+          <div class="layer-tech">apps/web · design/preview/</div>
+          <div class="layer-desc">O que o usuário final vê e interage. KPIs, gráficos, alertas, chat com IA. Transforma números em decisão.</div>
+          <div class="layer-pitch" style="color: var(--red);">"O painel que o seu time abre de manhã."</div>
+        </div>
+      </div>
+
+      <div class="layer" style="background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); margin-top: 20px;">
+        <div class="layer-num" style="background: linear-gradient(135deg, #5B21B6, var(--purple));">5</div>
+        <div class="layer-body">
+          <div class="layer-name">Camada de Inteligência <span style="font-size:10px;color:var(--text-dim);font-weight:400;">— AI Engine / LLM</span></div>
+          <div class="layer-tech">services/ai-engine · intelligence.html</div>
+          <div class="layer-desc">Modelos de ML e LLMs rodando sobre dados já curados. Geração de insights, anomalias, previsões, linguagem natural.</div>
+          <div class="layer-pitch" style="color: var(--purple);">"A IA que responde suas perguntas de negócio."</div>
+        </div>
+      </div>
+
+      <div class="layer" style="background: rgba(34,211,238,0.07); border: 1px solid rgba(34,211,238,0.2); margin-top: 20px;">
+        <div class="layer-num" style="background: linear-gradient(135deg, #164E63, var(--cyan));">4</div>
+        <div class="layer-body">
+          <div class="layer-name">Camada Semântica <span style="font-size:10px;color:var(--text-dim);font-weight:400;">— Metric Catalog</span></div>
+          <div class="layer-tech">metrics.html · dbt metrics · cube.dev</div>
+          <div class="layer-desc">Onde colunas técnicas viram métricas de negócio. <span class="mono" style="font-size:11px;">orders.sum(amount)</span> → "Receita Líquida". Define a fonte única de verdade para cada número.</div>
+          <div class="layer-pitch" style="color: var(--cyan);">"O dicionário oficial dos números da empresa."</div>
+        </div>
+      </div>
+
+      <div class="layer" style="background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2); margin-top: 20px;">
+        <div class="layer-num" style="background: linear-gradient(135deg, #064E3B, var(--green));">3</div>
+        <div class="layer-body">
+          <div class="layer-name">Data Lakehouse <span style="font-size:10px;color:var(--text-dim);font-weight:400;">— Storage + Compute</span></div>
+          <div class="layer-tech">lakehouse.html · Apache Iceberg · Delta Lake · DuckDB</div>
+          <div class="layer-desc">Dados transformados, limpos e indexados. Combina o custo de storage de um lake com a performance de query de um warehouse. O coração computacional da plataforma.</div>
+          <div class="layer-pitch" style="color: var(--green);">"O motor que processa tudo em segundos."</div>
+        </div>
+      </div>
+
+      <div class="layer" style="background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.2); margin-top: 20px;">
+        <div class="layer-num" style="background: linear-gradient(135deg, #1E3A5F, var(--blue));">2</div>
+        <div class="layer-body">
+          <div class="layer-name">Data Fabric <span style="font-size:10px;color:var(--text-dim);font-weight:400;">— Integração + Governança</span></div>
+          <div class="layer-tech">data-fabric.html · linhagem · qualidade · políticas</div>
+          <div class="layer-desc">A malha que conecta todas as fontes com governança, linhagem e catálogo de dados. Não é onde os dados ficam — é o que garante que eles chegam certos e rastreáveis.</div>
+          <div class="layer-pitch" style="color: var(--blue);">"A logística inteligente que conecta tudo."</div>
+        </div>
+      </div>
+
+      <div class="layer" style="background: rgba(217,119,6,0.07); border: 1px solid rgba(217,119,6,0.2); margin-top: 20px;">
+        <div class="layer-num" style="background: linear-gradient(135deg, #78350F, var(--accent));">1</div>
+        <div class="layer-body">
+          <div class="layer-name">Camada de Ingestão <span style="font-size:10px;color:var(--text-dim);font-weight:400;">— Conectores / Data Lake</span></div>
+          <div class="layer-tech">connectors.html · HubSpot · Shopify · Omie · APIs · CSV</div>
+          <div class="layer-desc">Tudo que chega, bruto, sem transformação. Logs, eventos, transações, JSONs, planilhas. Preservação completa do histórico. Custo mínimo de storage (object storage).</div>
+          <div class="layer-pitch" style="color: var(--accent);">"O depósito onde tudo começa."</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 2: DEFINIÇÕES LADO A LADO -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--blue), #1D4ED8);">D</div>
+      <div>
+        <div class="section-title">Definições — O Que Cada Termo Significa</div>
+        <div class="section-sub">Glossário técnico mapeado para linguagem de negócio</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Termo</th>
+            <th>Definição técnica</th>
+            <th>Analogia de negócio</th>
+            <th>Problema que resolve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--accent);">Data Lake</td>
+            <td>Storage bruto de dados em qualquer formato (structured, semi, unstructured). Imutável, append-only.</td>
+            <td>Reservatório de água bruta. Tudo flui pra dentro sem filtro.</td>
+            <td>Nunca perder dado histórico. Custo mínimo.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--cyan);">Data Warehouse</td>
+            <td>Dados estruturados, modelados em esquema relacional. Otimizado para queries OLAP.</td>
+            <td>Arquivo organizado com gavetas etiquetadas. Fácil de buscar.</td>
+            <td>Queries rápidas em dados históricos limpos.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--green);">Data Lakehouse</td>
+            <td>Arquitetura híbrida: object storage + table format (Iceberg/Delta) + query engine. Melhor dos dois mundos.</td>
+            <td>Armazém moderno: escala de depósito, organização de escritório.</td>
+            <td>Custo de lake + performance de warehouse.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue);">Data Fabric</td>
+            <td>Arquitetura de integração distribuída com governança, catálogo e linhagem centralizados.</td>
+            <td>Malha logística da empresa — conecta todo mundo com rastreamento.</td>
+            <td>Silos de dados. Qualidade inconsistente. Sem rastreabilidade.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--purple);">Data Mesh</td>
+            <td>Paradigma organizacional: dados como produto, domínios autônomos, plataforma self-service.</td>
+            <td>Descentralização — cada área é dona dos seus dados.</td>
+            <td>Gargalo central. Times de dados sobrecarregados.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--gold);">Semantic Layer</td>
+            <td>Camada de abstração que mapeia lógica de negócio sobre SQL/modelos físicos. Single source of truth para métricas.</td>
+            <td>Dicionário oficial da empresa. "Receita" significa a mesma coisa para todos.</td>
+            <td>Números diferentes na mesma reunião. Planilhas conflitantes.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--red);">ETL / ELT</td>
+            <td>Extract-Transform-Load (ou Load-then-Transform). Pipeline de movimentação e transformação de dados.</td>
+            <td>A esteira de produção que processa a matéria-prima.</td>
+            <td>Dado cru não tem valor direto. Precisa ser processado.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--cyan);">Data Lineage</td>
+            <td>Rastreabilidade completa: de onde cada dado veio, como foi transformado, onde foi consumido.</td>
+            <td>Nota fiscal de rastreabilidade de produto. Sabe exatamente a origem.</td>
+            <td>Auditorias. LGPD. "Esse número veio de onde?"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 3: ANALOGIAS POR SETOR -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--gold), #B45309);">A</div>
+      <div>
+        <div class="section-title">Analogias por Setor — Fale a Língua do Cliente</div>
+        <div class="section-sub">A mesma arquitetura explicada com metáforas do mundo de cada cliente</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 16px;">
+
+      <div>
+        <div class="label label-accent" style="margin-bottom: 12px;">PARA VAREJO / ATACADO</div>
+        <div class="analogy">
+          <div class="analogy-icon">🏭</div>
+          <div>
+            <div class="analogy-term">Data Lake = Armazém bruto</div>
+            <div class="analogy-text">Toda mercadoria chega e é empilhada. <strong>Volume máximo, organização mínima.</strong> Barato de manter, lento de encontrar algo específico.</div>
+          </div>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">📦</div>
+          <div>
+            <div class="analogy-term">Lakehouse = Centro de distribuição</div>
+            <div class="analogy-text">Mercadoria organizada por SKU, separada por categoria, <strong>pronta para expedição imediata.</strong> Rápido de achar, rápido de entregar.</div>
+          </div>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">🔍</div>
+          <div>
+            <div class="analogy-term">Semantic Layer = Código de barras</div>
+            <div class="analogy-text">"Café 500g Torrado" significa a mesma coisa no estoque, no caixa e no relatório de compras. <strong>Uma definição, zero ambiguidade.</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="label label-blue" style="margin-bottom: 12px;">PARA SAAS / FINANCEIRO</div>
+        <div class="analogy">
+          <div class="analogy-icon">🏦</div>
+          <div>
+            <div class="analogy-term">Data Lake = Core bancário bruto</div>
+            <div class="analogy-text">Cada transação registrada em log imutável. <strong>Auditoria completa.</strong> Nenhum dado deletado jamais.</div>
+          </div>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">📊</div>
+          <div>
+            <div class="analogy-term">Lakehouse = Ledger processado</div>
+            <div class="analogy-text">Transações agrupadas, conciliadas, disponíveis para análise em tempo real. <strong>De raw log para demonstrativo em segundos.</strong></div>
+          </div>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">📋</div>
+          <div>
+            <div class="analogy-term">Data Fabric = Sistema de compliance</div>
+            <div class="analogy-text">Toda movimentação de dado rastreada. <strong>LGPD, BACEN, CVM</strong> — cada acesso, cada transformação, auditável por lei.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-gold">
+      <div class="label label-gold">Analogia universal — funciona para qualquer setor</div>
+      <div class="card-text">
+        <strong>Data Lake</strong> = garimpo (tudo bruto na terra) ·
+        <strong>Lakehouse</strong> = mineradora (processa e refina) ·
+        <strong>Semantic Layer</strong> = joalheria (transforma em produto com valor) ·
+        <strong>Dashboard</strong> = vitrine (o cliente vê e compra a decisão)
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 4: SCRIPTS POR PÚBLICO -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--green), #059669);">S</div>
+      <div>
+        <div class="section-title">Scripts por Público — O Que Dizer e Para Quem</div>
+        <div class="section-sub">Mesma arquitetura, três formas de apresentar — adapte pelo cargo do interlocutor</div>
+      </div>
+    </div>
+
+    <div class="card-green" style="margin-bottom: 8px;">
+      <div class="label label-green">Quando usar</div>
+      <div class="card-text">Identifique o cargo antes de abrir a boca. CEO/CFO = linguagem de resultado. Diretor operacional = linguagem de processo. CTO/Dev = linguagem técnica. <strong>Nunca misture os três num único pitch linear.</strong></div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <div class="label" style="color: var(--text-dim); margin-bottom: 12px;">NÍVEL 1 — C-LEVEL · CEO, CFO, SÓCIO (30 segundos)</div>
+      <div class="script">
+        <div class="script-who">Script de abertura</div>
+        <div class="script-text">"<strong>Hoje vocês têm dado em 5 sistemas diferentes. Nenhum conversa com o outro. A reunião de segunda começa com 20 minutos debatendo qual número é o certo.</strong> O Cortex conecta tudo e entrega um único número, sempre atual, que todo mundo confia. Do HubSpot, do Shopify, do Omie — num só lugar. <strong>Você toma a decisão. A plataforma garante que a base está correta.</strong>"</div>
+      </div>
+      <div class="script">
+        <div class="script-who">Se perguntarem "como funciona?"</div>
+        <div class="script-text">"<strong>Por baixo tem uma camada que puxa os dados dos seus sistemas automaticamente.</strong> Limpa, organiza e coloca num painel. Você não precisa saber os detalhes — o seu time de TI entende. O que importa pra você é que <strong>o número que aparece aqui é o mesmo que qualquer pessoa na empresa vai ver.</strong>"</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <div class="label" style="color: var(--text-dim); margin-bottom: 12px;">NÍVEL 2 — GERENTE / DIRETOR OPERACIONAL (2 minutos)</div>
+      <div class="script">
+        <div class="script-who">Script de processo</div>
+        <div class="script-text">"<strong>O Cortex funciona em três etapas.</strong> Primeiro: conectamos suas fontes — HubSpot, Shopify, Omie, o que vocês usam. Os dados chegam aqui em tempo real, sem intervenção manual. Segundo: <strong>passam por um processo automático de limpeza e padronização</strong> — isso é o Lakehouse. Registros duplicados, formatos diferentes, campos faltando — tratados automaticamente. Terceiro: você acessa o resultado no dashboard. <strong>A diferença do que você tem hoje é que qualquer relatório que você puxar vai ter o mesmo número na mesma base.</strong>"</div>
+      </div>
+      <div class="script">
+        <div class="script-who">Se perguntarem sobre o Data Fabric</div>
+        <div class="script-text">"<strong>O Data Fabric é a camada de governança.</strong> Imagine que cada dado que passa pela plataforma tem um rastro — de onde veio, quando chegou, quem acessou, como foi transformado. Isso serve pra dois cenários: <strong>auditoria interna</strong> (o diretor pergunta de onde veio aquele número) e <strong>compliance regulatório</strong> (LGPD, por exemplo, exige que você saiba onde estão os dados dos seus clientes e quem acessou)."</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="color: var(--text-dim); margin-bottom: 12px;">NÍVEL 3 — TÉCNICO · CTO, ENGENHEIRO, DBA (sem limite)</div>
+      <div class="script">
+        <div class="script-who">Script técnico</div>
+        <div class="script-text">"A ingestão acontece via conectores REST + webhook. Dado cai no Raw Zone em object storage (S3/GCS) no formato original — <strong>imutável, append-only.</strong> O pipeline ELT (dbt + Airflow) processa em batch ou near-realtime e escreve no Lakehouse com Apache Iceberg como table format. <strong>Queries via DuckDB para OLAP rápido.</strong> Em cima disso, uma semantic layer expõe as métricas curadas — mesma definição de receita pra todo mundo. O dashboard consome via API REST e GraphQL. <strong>Data lineage com OpenLineage, qualidade com Great Expectations.</strong>"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 5: COMO MOSTRAR NA DEMO -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--cyan), #0891B2);">N</div>
+      <div>
+        <div class="section-title">Narrativa da Demo — Sequência Recomendada</div>
+        <div class="section-sub">Percurso pelas telas que comunica a arquitetura sem precisar explicá-la</div>
+      </div>
+    </div>
+
+    <div class="card-cyan" style="margin-bottom: 20px;">
+      <div class="label label-cyan">Regra de ouro da demo</div>
+      <div class="card-text"><strong>Nunca explique a arquitetura antes de mostrar o problema.</strong> Primeiro mostre o resultado (dashboard), depois revele como chegou lá. O cliente compra o resultado, não a tecnologia.</div>
+    </div>
+
+    <div>
+      <div class="sequence-step">
+        <div class="sequence-num" style="background: var(--accent-soft); color: var(--accent);">1</div>
+        <div>
+          <div class="sequence-title">Abrir no Dashboard Vertical (resultado)</div>
+          <div class="sequence-desc">dashboard-crm.html ou o vertical do cliente. "Isso é o que você vai ver todo dia de manhã." Deixar o número impactar. Não explicar nada ainda.</div>
+        </div>
+      </div>
+      <div class="sequence-step">
+        <div class="sequence-num" style="background: var(--accent-soft); color: var(--accent);">2</div>
+        <div>
+          <div class="sequence-title">Navegar para Conectores (a origem)</div>
+          <div class="sequence-desc">connectors.html. "Esses são seus sistemas conectados. Tudo que apareceu no painel anterior veio daqui, automaticamente." Mostrar HubSpot + Shopify + Omie sincronizando.</div>
+        </div>
+      </div>
+      <div class="sequence-step">
+        <div class="sequence-num" style="background: var(--accent-soft); color: var(--accent);">3</div>
+        <div>
+          <div class="sequence-title">Mostrar Data Fabric (a governança)</div>
+          <div class="sequence-desc">data-fabric.html. "Aqui você vê de onde cada número veio. Se o auditor perguntar, você tem a resposta em dois cliques." Mencionar LGPD apenas se o cliente tocar no assunto.</div>
+        </div>
+      </div>
+      <div class="sequence-step">
+        <div class="sequence-num" style="background: var(--accent-soft); color: var(--accent);">4</div>
+        <div>
+          <div class="sequence-title">Lakehouse (se técnico perguntar)</div>
+          <div class="sequence-desc">lakehouse.html. Só abrir se o CTO estiver na sala. "Aqui é onde os dados vivem processados. Queries em milissegundos, histórico de 3 anos, custo de storage mínimo."</div>
+        </div>
+      </div>
+      <div class="sequence-step">
+        <div class="sequence-num" style="background: var(--accent-soft); color: var(--accent);">5</div>
+        <div>
+          <div class="sequence-title">Intelligence / AI Engine (o diferencial)</div>
+          <div class="sequence-desc">intelligence.html. "E aqui você pergunta em português. A IA tem acesso a todos esses dados e responde com o contexto completo do seu negócio." Fazer uma pergunta ao vivo.</div>
+        </div>
+      </div>
+      <div class="sequence-step">
+        <div class="sequence-num" style="background: var(--accent-soft); color: var(--accent);">6</div>
+        <div>
+          <div class="sequence-title">Perfil de Cliente (prova de profundidade)</div>
+          <div class="sequence-desc">customer-profile.html. "Esse é o Grupo Tavares. Cada cliente tem esse perfil — histórico, comportamento, saúde, contatos, tudo unificado de todas as suas fontes."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 6: OBJEÇÕES SOBRE A ARQUITETURA -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--red), #B91C1C);">O</div>
+      <div>
+        <div class="section-title">Objeções Sobre Arquitetura — Como Responder</div>
+        <div class="section-sub">As dúvidas técnicas que viram bloqueio de venda — com respostas diretas</div>
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-title">"Já tenho um BI. Por que preciso de Lakehouse?"</div>
+      <div class="objection-trigger">Gatilho: cliente usa Power BI, Tableau ou Looker isolado</div>
+      <div class="objection-response">"<strong>BI é a vitrine. Lakehouse é o estoque.</strong> O Power BI que você usa hoje está consumindo dados de onde? De planilhas? De exports manuais do ERP? O Lakehouse garante que o dado que alimenta o seu BI é <strong>automático, padronizado e histórico.</strong> Você continua com o dashboard que quer — a diferença é que o número passa a ser confiável."</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-title">"Data Fabric parece complicado demais para minha empresa"</div>
+      <div class="objection-trigger">Gatilho: empresa pequena ou média, sem time de dados</div>
+      <div class="objection-response">"<strong>Data Fabric é o conceito. O Cortex é a implementação prática.</strong> Você não precisa entender a arquitetura — ela já vem configurada. O que você vai notar na prática é: qualquer número que aparecer no dashboard tem origem rastreável, e qualquer dado de cliente está catalogado para fins de LGPD. <strong>É compliance automático, não uma segunda área para gerir.</strong>"</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-title">"Nossos dados já estão no ERP. Para que duplicar?"</div>
+      <div class="objection-trigger">Gatilho: cliente com ERP forte (SAP, TOTVS, Omie)</div>
+      <div class="objection-response">"O ERP foi feito para <strong>registrar operações</strong>, não para análise. Ele é excelente no que faz. O Cortex não substitui o ERP — <strong>ele consome o ERP</strong> junto com todas as outras fontes (CRM, e-commerce, planilhas) e cria uma visão unificada que o ERP sozinho nunca vai ter. É como adicionar uma central de inteligência ao lado do seu motor operacional."</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-title">"Por que não simplesmente conectar direto no banco de dados?"</div>
+      <div class="objection-trigger">Gatilho: CTO sugere acesso direto via SQL</div>
+      <div class="objection-response">"<strong>Pode fazer isso. Mas três problemas vão aparecer:</strong> 1) Performance — queries analíticas pesadas no banco operacional travam o sistema. 2) Qualidade — dado bruto sem transformação gera inconsistências. 3) Histórico — bancos operacionais não guardam histórico de mudanças. O Lakehouse resolve os três sem tocar na sua infra atual."</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-title">"O que é exatamente 'camada semântica'? Parece abstrato demais"</div>
+      <div class="objection-trigger">Gatilho: cliente técnico ou financeiro questionando o termo</div>
+      <div class="objection-response">"<strong>Exemplo concreto:</strong> sua área de vendas calcula receita excluindo devoluções. O financeiro inclui devoluções até o boleto ser emitido. O CEO quer saber a receita líquida confirmada. São três cálculos diferentes para a mesma palavra. A camada semântica <strong>define uma vez, para todos:</strong> 'Receita = X'. Todo relatório, todo dashboard, toda query da empresa usa essa mesma definição. Acabou a briga de número em reunião."</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SEÇÃO 7: CORTEX vs CONCORRENTES -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: linear-gradient(135deg, var(--purple), #6D28D9);">C</div>
+      <div>
+        <div class="section-title">Cortex vs Abordagens Alternativas</div>
+        <div class="section-sub">Por que uma plataforma unificada ganha de soluções pontuais</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Abordagem</th>
+            <th>O que entrega</th>
+            <th>O que falta</th>
+            <th>Custo real</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Planilhas + BI manual</td>
+            <td>Relatório mensal, análise pontual</td>
+            <td>Tempo real, automação, histórico, confiabilidade</td>
+            <td>40h/mês de analista + inconsistências</td>
+          </tr>
+          <tr>
+            <td>ERP com módulo BI</td>
+            <td>Dados operacionais estruturados</td>
+            <td>Outras fontes (CRM, e-com), IA, customer 360</td>
+            <td>Silos. Não enxerga o cliente completo.</td>
+          </tr>
+          <tr>
+            <td>Snowflake + dbt + Looker</td>
+            <td>Stack técnico robusto</td>
+            <td>Time de engenharia, 6-12 meses de setup</td>
+            <td>R$ 30-80k/mês + engenheiros sênior</td>
+          </tr>
+          <tr>
+            <td>BigQuery + Looker Studio</td>
+            <td>Escala de Google, BI básico</td>
+            <td>Integração com ERPs brasileiros, suporte local</td>
+            <td>Complexidade alta para PMEs</td>
+          </tr>
+          <tr>
+            <td style="color: var(--accent);">Elexia Cortex</td>
+            <td style="color: var(--green);">Todas as camadas integradas, conectores brasileiros, IA nativa, onboarding em dias</td>
+            <td style="color: var(--text-muted);">—</td>
+            <td style="color: var(--accent);">Fração do custo. Resultado em semanas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>
+      Elexia Cortex · Guia de Demo — Uso Interno<br>
+      Hierarquia e Taxonomia de Dados · v1.0 · Mai 2026<br>
+      <span style="color: var(--accent);">docs/pitch/taxonomia-dados.html</span>
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
