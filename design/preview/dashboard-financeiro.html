@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financeiro — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body { background: var(--bg-base); color: var(--text-p); transition: background 0.3s, color 0.3s; display: flex; }
+    .sidebar { width: 220px; background: var(--bg-s1); border-right: 1px solid var(--border); position: fixed; height: 100vh; display: flex; flex-direction: column; z-index: 10; overflow-y: auto; }
+    .main { margin-left: 220px; flex: 1; min-height: 100vh; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 6px; font-size: 13px; color: var(--text-m); text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { color: var(--text-s); background: var(--bg-s2); }
+    .nav-item.active { color: var(--text-p); background: var(--bg-s3); border-left: 2px solid var(--accent); padding-left: 10px; }
+    .nav-item.active i { color: var(--accent); }
+    .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-m); padding: 12px 12px 4px; }
+    .kpi { background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+    .kpi-val { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 700; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table thead th { text-align: left; padding: 10px 14px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-sub); transition: background 0.15s; }
+    .data-table tbody tr:hover { background: var(--bg-s2); }
+    .data-table tbody td { padding: 11px 14px; color: var(--text-s); }
+    .data-table tbody td:first-child { color: var(--text-p); font-weight: 500; }
+    .badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 3px; }
+    .badge-success { background: var(--success-d); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+    .badge-warning { background: var(--warning-d); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-danger { background: var(--danger-d); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+    .badge-data { background: var(--data-d); color: var(--data); border: 1px solid rgba(34,211,238,0.2); }
+    .badge-accent { background: var(--accent-d); color: var(--accent-l); border: 1px solid rgba(217,119,6,0.3); }
+    .badge-neutral { background: var(--bg-s3); color: var(--text-s); border: 1px solid var(--border); }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div style="padding: 18px 16px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0;">
+      <a href="index.html" style="text-decoration: none;">
+        <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+        <div style="font-size: 10px; color: var(--text-m); margin-top: 2px;">Enterprise Data Platform</div>
+      </a>
+    </div>
+    <nav style="flex: 1; padding: 8px; overflow-y: auto;">
+      <div class="nav-label">NEGÓCIO</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard" style="width:15px;height:15px;flex-shrink:0;"></i>Customer 360</a>
+      <a href="customers.html" class="nav-item"><i data-lucide="users" style="width:15px;height:15px;flex-shrink:0;"></i>Clientes</a>
+      <a href="customer-profile.html" class="nav-item"><i data-lucide="user-circle" style="width:15px;height:15px;flex-shrink:0;"></i>Perfil de Cliente</a>
+      <a href="intelligence.html" class="nav-item"><i data-lucide="message-square" style="width:15px;height:15px;flex-shrink:0;"></i>Intelligence</a>
+      <div class="nav-label">PLATAFORMA</div>
+      <a href="connectors.html" class="nav-item"><i data-lucide="plug" style="width:15px;height:15px;flex-shrink:0;"></i>Conectores</a>
+      <a href="data-fabric.html" class="nav-item"><i data-lucide="git-branch" style="width:15px;height:15px;flex-shrink:0;"></i>Data Fabric</a>
+      <a href="lakehouse.html" class="nav-item"><i data-lucide="database" style="width:15px;height:15px;flex-shrink:0;"></i>Lakehouse</a>
+      <a href="metrics.html" class="nav-item"><i data-lucide="bar-chart-2" style="width:15px;height:15px;flex-shrink:0;"></i>Metric Catalog</a>
+      <a href="ai-engine.html" class="nav-item"><i data-lucide="cpu" style="width:15px;height:15px;flex-shrink:0;"></i>AI Engine</a>
+      <div class="nav-label">GOVERNANÇA</div>
+      <a href="compliance.html" class="nav-item"><i data-lucide="shield" style="width:15px;height:15px;flex-shrink:0;"></i>Compliance</a>
+      <a href="lineage.html" class="nav-item"><i data-lucide="git-merge" style="width:15px;height:15px;flex-shrink:0;"></i>Data Lineage</a>
+      <a href="security.html" class="nav-item"><i data-lucide="lock" style="width:15px;height:15px;flex-shrink:0;"></i>Segurança</a>
+      <div class="nav-label">VERTICAIS</div>
+      <a href="dashboard-crm.html" class="nav-item"><i data-lucide="trending-up" style="width:15px;height:15px;flex-shrink:0;"></i>CRM / Vendas</a>
+      <a href="dashboard-varejo.html" class="nav-item"><i data-lucide="shopping-cart" style="width:15px;height:15px;flex-shrink:0;"></i>Varejo / E-com</a>
+      <a href="dashboard-saas.html" class="nav-item"><i data-lucide="layers" style="width:15px;height:15px;flex-shrink:0;"></i>SaaS B2B</a>
+      <a href="dashboard-financeiro.html" class="nav-item active"><i data-lucide="landmark" style="width:15px;height:15px;flex-shrink:0;"></i>Financeiro</a>
+    </nav>
+    <div style="padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-d); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--accent);">GT</div>
+        <div><div style="font-size: 12px; font-weight: 500; color: var(--text-p);">Grupo Tavares</div><div style="font-size: 10px; color: var(--text-m);">Admin</div></div>
+      </div>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m); padding: 4px;">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="padding: 16px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg-s1); position: sticky; top: 0; z-index: 5;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <i data-lucide="landmark" style="width: 16px; height: 16px; color: var(--accent);"></i>
+        <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">Financeiro</span>
+        <span style="font-size: 13px; color: var(--text-m);">· Grupo Tavares Alimentos</span>
+        <span style="background: var(--success-d); border: 1px solid rgba(34,197,94,0.2); color: var(--success); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px;">ao vivo</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <select style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
+          <option>Este mês</option><option>Último trimestre</option><option>Este ano</option>
+        </select>
+        <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 12px; padding: 6px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="download" style="width:13px;height:13px;"></i> Exportar
+        </button>
+      </div>
+    </div>
+
+    <div style="padding: 28px;">
+
+      <!-- KPIs -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px;">
+        <div class="kpi">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">RECEITA TOTAL</span>
+            <i data-lucide="trending-up" style="width:15px;height:15px;color:var(--success);"></i>
+          </div>
+          <div class="kpi-val" style="color: var(--accent);">R$ 8,4M</div>
+          <div style="font-size: 12px; color: var(--success); margin-top: 8px;">+14,2% vs mês anterior</div>
+        </div>
+        <div class="kpi">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">INADIMPLÊNCIA</span>
+            <i data-lucide="alert-triangle" style="width:15px;height:15px;color:var(--warning);"></i>
+          </div>
+          <div class="kpi-val" style="color: var(--warning);">4,2%</div>
+          <div style="font-size: 12px; color: var(--text-m); margin-top: 8px;">R$ 352k em atraso</div>
+        </div>
+        <div class="kpi">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">CAC MÉDIO</span>
+            <i data-lucide="user-plus" style="width:15px;height:15px;color:var(--data);"></i>
+          </div>
+          <div class="kpi-val" style="color: var(--data);">R$ 1,2k</div>
+          <div style="font-size: 12px; color: var(--text-m); margin-top: 8px;">−8% vs trimestre</div>
+        </div>
+        <div class="kpi">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">LTV / CAC</span>
+            <i data-lucide="bar-chart-3" style="width:15px;height:15px;color:var(--success);"></i>
+          </div>
+          <div class="kpi-val" style="color: var(--success);">8,3×</div>
+          <div style="font-size: 12px; color: var(--success); margin-top: 8px;">Excelente (meta: 5×)</div>
+        </div>
+      </div>
+
+      <!-- A/R Aging + DRE lado a lado -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px;">
+
+        <!-- A/R Aging -->
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+          <div style="padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">Aging de Contas a Receber</div>
+              <div style="font-size: 11px; color: var(--text-m); margin-top: 2px;">Exposição total: R$ 2,1M</div>
+            </div>
+            <span class="badge badge-warning">4 vencidos</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>FAIXA</th>
+                <th>CLIENTES</th>
+                <th>VALOR</th>
+                <th>% DO TOTAL</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A vencer</td>
+                <td style="color:var(--text-s);">312</td>
+                <td class="mono" style="color:var(--text-p);">R$ 1.482k</td>
+                <td style="color:var(--success);">70,6%</td>
+                <td><span class="badge badge-success">Regular</span></td>
+              </tr>
+              <tr>
+                <td>1–30 dias</td>
+                <td style="color:var(--text-s);">47</td>
+                <td class="mono" style="color:var(--warning);">R$ 248k</td>
+                <td style="color:var(--warning);">11,8%</td>
+                <td><span class="badge badge-warning">Atenção</span></td>
+              </tr>
+              <tr>
+                <td>31–60 dias</td>
+                <td style="color:var(--text-s);">18</td>
+                <td class="mono" style="color:var(--warning);">R$ 194k</td>
+                <td style="color:var(--warning);">9,2%</td>
+                <td><span class="badge badge-warning">Atenção</span></td>
+              </tr>
+              <tr>
+                <td>61–90 dias</td>
+                <td style="color:var(--text-s);">9</td>
+                <td class="mono" style="color:var(--danger);">R$ 112k</td>
+                <td style="color:var(--danger);">5,3%</td>
+                <td><span class="badge badge-danger">Crítico</span></td>
+              </tr>
+              <tr>
+                <td>+90 dias</td>
+                <td style="color:var(--text-s);">4</td>
+                <td class="mono" style="color:var(--danger);">R$ 64k</td>
+                <td style="color:var(--danger);">3,1%</td>
+                <td><span class="badge badge-danger">Perda</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- DRE Snapshot -->
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+          <div style="padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">DRE — Demonstração de Resultado</div>
+              <div style="font-size: 11px; color: var(--text-m); margin-top: 2px;">Maio 2026 · Competência</div>
+            </div>
+            <span class="badge badge-data">Parcial</span>
+          </div>
+          <div style="padding: 6px 0;">
+            <!-- DRE rows -->
+            <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-sub);">
+              <span style="font-size: 13px; color: var(--text-p); font-weight: 500;">Receita Bruta</span>
+              <span class="mono" style="font-size: 13px; color: var(--success);">R$ 8.400.000</span>
+            </div>
+            <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-sub);">
+              <span style="font-size: 13px; color: var(--text-s); padding-left: 12px;">( − ) Deduções</span>
+              <span class="mono" style="font-size: 13px; color: var(--danger);">− R$ 924.000</span>
+            </div>
+            <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-s2); border-bottom: 1px solid var(--border);">
+              <span style="font-size: 13px; color: var(--text-p); font-weight: 600;">Receita Líquida</span>
+              <span class="mono" style="font-size: 13px; color: var(--accent); font-weight: 700;">R$ 7.476.000</span>
+            </div>
+            <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-sub);">
+              <span style="font-size: 13px; color: var(--text-s); padding-left: 12px;">( − ) CMV</span>
+              <span class="mono" style="font-size: 13px; color: var(--danger);">− R$ 4.936.000</span>
+            </div>
+            <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-s2); border-bottom: 1px solid var(--border);">
+              <span style="font-size: 13px; color: var(--text-p); font-weight: 600;">Lucro Bruto</span>
+              <span class="mono" style="font-size: 13px; color: var(--success); font-weight: 700;">R$ 2.540.000</span>
+            </div>
+            <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-sub);">
+              <span style="font-size: 13px; color: var(--text-s); padding-left: 12px;">( − ) Despesas Op.</span>
+              <span class="mono" style="font-size: 13px; color: var(--danger);">− R$ 1.480.000</span>
+            </div>
+            <div style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--accent-d);">
+              <span style="font-size: 13px; color: var(--accent-l); font-weight: 700;">EBITDA</span>
+              <span class="mono" style="font-size: 15px; color: var(--accent-l); font-weight: 700;">R$ 1.060.000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fluxo de Caixa + Alertas -->
+      <div style="display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-bottom: 28px;">
+
+        <!-- Fluxo de Caixa projeção mensal -->
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 4px;">Fluxo de Caixa — Projeção 6 Meses</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-bottom: 20px;">Entradas vs. Saídas previstas (R$ mil)</div>
+          <!-- Barras mensais -->
+          <div style="display: flex; gap: 12px; align-items: flex-end; height: 120px; margin-bottom: 12px;">
+            <!-- Fev -->
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 2px; justify-content: flex-end; height: 100px;">
+                <div style="background: var(--success); opacity: 0.7; border-radius: 3px 3px 0 0; height: 74px;"></div>
+                <div style="background: var(--danger); opacity: 0.6; border-radius: 0 0 3px 3px; height: 58px; margin-top: 2px;"></div>
+              </div>
+              <span style="font-size: 10px; color: var(--text-m);">Dez</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 2px; justify-content: flex-end; height: 100px;">
+                <div style="background: var(--success); opacity: 0.7; border-radius: 3px 3px 0 0; height: 68px;"></div>
+                <div style="background: var(--danger); opacity: 0.6; border-radius: 0 0 3px 3px; height: 54px; margin-top: 2px;"></div>
+              </div>
+              <span style="font-size: 10px; color: var(--text-m);">Jan</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 2px; justify-content: flex-end; height: 100px;">
+                <div style="background: var(--success); opacity: 0.7; border-radius: 3px 3px 0 0; height: 80px;"></div>
+                <div style="background: var(--danger); opacity: 0.6; border-radius: 0 0 3px 3px; height: 60px; margin-top: 2px;"></div>
+              </div>
+              <span style="font-size: 10px; color: var(--text-m);">Fev</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 2px; justify-content: flex-end; height: 100px;">
+                <div style="background: var(--success); opacity: 0.7; border-radius: 3px 3px 0 0; height: 76px;"></div>
+                <div style="background: var(--danger); opacity: 0.6; border-radius: 0 0 3px 3px; height: 62px; margin-top: 2px;"></div>
+              </div>
+              <span style="font-size: 10px; color: var(--text-m);">Mar</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 2px; justify-content: flex-end; height: 100px;">
+                <div style="background: var(--success); opacity: 0.7; border-radius: 3px 3px 0 0; height: 84px;"></div>
+                <div style="background: var(--danger); opacity: 0.6; border-radius: 0 0 3px 3px; height: 64px; margin-top: 2px;"></div>
+              </div>
+              <span style="font-size: 10px; color: var(--text-m);">Abr</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 2px; justify-content: flex-end; height: 100px; opacity: 0.5;">
+                <div style="background: var(--success); border-radius: 3px 3px 0 0; height: 90px; border: 1px dashed var(--success);"></div>
+                <div style="background: var(--danger); border-radius: 0 0 3px 3px; height: 70px; margin-top: 2px; border: 1px dashed var(--danger);"></div>
+              </div>
+              <span style="font-size: 10px; color: var(--text-m);">Mai ·</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-s);">
+              <div style="width: 10px; height: 10px; border-radius: 2px; background: var(--success); opacity: 0.7;"></div>Entradas
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-s);">
+              <div style="width: 10px; height: 10px; border-radius: 2px; background: var(--danger); opacity: 0.6;"></div>Saídas
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-m);">
+              <div style="width: 10px; height: 10px; border-radius: 2px; border: 1px dashed var(--text-m);"></div>Projeção
+            </div>
+          </div>
+          <!-- Saldo projetado -->
+          <div style="margin-top: 16px; padding: 14px 16px; background: var(--bg-s2); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: var(--text-s);">Saldo projetado — Mai 2026</div>
+            <div class="mono" style="font-size: 16px; font-weight: 700; color: var(--success);">+ R$ 412k</div>
+          </div>
+        </div>
+
+        <!-- Alertas Financeiros -->
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 0;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 16px;">Alertas Financeiros</div>
+
+          <!-- Alerta 1 — Danger -->
+          <div style="border-radius: 8px; border: 1px solid rgba(239,68,68,0.25); background: var(--danger-d); padding: 14px 16px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <i data-lucide="alert-octagon" style="width:15px;height:15px;color:var(--danger);flex-shrink:0;margin-top:1px;"></i>
+              <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-p); margin-bottom: 4px;">Inadimplência acima do limite</div>
+                <div style="font-size: 11px; color: var(--text-s); line-height: 1.5;">4 clientes com +90 dias totalizando R$ 64k. Risco de write-off sem intervenção.</div>
+                <div style="margin-top: 8px; font-size: 11px; color: var(--danger); font-weight: 500;">→ Acionar jurídico</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta 2 — Warning -->
+          <div style="border-radius: 8px; border: 1px solid rgba(245,158,11,0.25); background: var(--warning-d); padding: 14px 16px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <i data-lucide="calendar-clock" style="width:15px;height:15px;color:var(--warning);flex-shrink:0;margin-top:1px;"></i>
+              <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-p); margin-bottom: 4px;">Vencimento tributário em 3 dias</div>
+                <div style="font-size: 11px; color: var(--text-s); line-height: 1.5;">DARF/PIS-COFINS R$ 87k vence em 28/mai. Saldo disponível suficiente.</div>
+                <div style="margin-top: 8px; font-size: 11px; color: var(--warning); font-weight: 500;">→ Confirmar pagamento</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta 3 — Success -->
+          <div style="border-radius: 8px; border: 1px solid rgba(34,197,94,0.25); background: var(--success-d); padding: 14px 16px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <i data-lucide="trending-up" style="width:15px;height:15px;color:var(--success);flex-shrink:0;margin-top:1px;"></i>
+              <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-p); margin-bottom: 4px;">Margem bruta acima da meta</div>
+                <div style="font-size: 11px; color: var(--text-s); line-height: 1.5;">34% de margem bruta em Mai vs. meta de 30%. Melhor resultado do ano.</div>
+                <div style="margin-top: 8px; font-size: 11px; color: var(--success); font-weight: 500;">→ Analisar drivers</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta 4 — Data/Info -->
+          <div style="border-radius: 8px; border: 1px solid rgba(34,211,238,0.2); background: var(--data-d); padding: 14px 16px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <i data-lucide="sparkles" style="width:15px;height:15px;color:var(--data);flex-shrink:0;margin-top:1px;"></i>
+              <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-p); margin-bottom: 4px;">IA detectou padrão sazonal</div>
+                <div style="font-size: 11px; color: var(--text-s); line-height: 1.5;">Histórico indica queda de 12% nas vendas em Jun. Recomenda reforço de caixa preventivo.</div>
+                <div style="margin-top: 8px; font-size: 11px; color: var(--data); font-weight: 500;">→ Ver análise completa</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top devedores -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+        <div style="padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text-p);">Maiores Contas a Receber em Atraso</div>
+            <div style="font-size: 11px; color: var(--text-m); margin-top: 2px;">Clientes com vencimentos pendentes — ordenados por valor</div>
+          </div>
+          <button style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 11px; padding: 5px 12px; border-radius: 6px; cursor: pointer;">Ver todos</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>CLIENTE</th>
+              <th>SEGMENTO</th>
+              <th>VALOR EM ATRASO</th>
+              <th>DIAS EM ATRASO</th>
+              <th>TOTAL C/A RECEBER</th>
+              <th>RISCO</th>
+              <th>ÚLTIMO CONTATO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Supermercados Bom Preço</td>
+              <td style="color:var(--text-s);">Varejo</td>
+              <td class="mono" style="color:var(--danger);">R$ 42.800</td>
+              <td style="color:var(--danger);">97 dias</td>
+              <td class="mono">R$ 156.000</td>
+              <td><span class="badge badge-danger">Crítico</span></td>
+              <td style="color:var(--text-m);">há 21 dias</td>
+            </tr>
+            <tr>
+              <td>Distribuidora Central Ltda</td>
+              <td style="color:var(--text-s);">Distribuição</td>
+              <td class="mono" style="color:var(--danger);">R$ 21.400</td>
+              <td style="color:var(--danger);">104 dias</td>
+              <td class="mono">R$ 89.000</td>
+              <td><span class="badge badge-danger">Crítico</span></td>
+              <td style="color:var(--text-m);">há 8 dias</td>
+            </tr>
+            <tr>
+              <td>Mercado São Roque</td>
+              <td style="color:var(--text-s);">Varejo</td>
+              <td class="mono" style="color:var(--warning);">R$ 18.200</td>
+              <td style="color:var(--warning);">58 dias</td>
+              <td class="mono">R$ 42.000</td>
+              <td><span class="badge badge-warning">Alto</span></td>
+              <td style="color:var(--text-m);">há 3 dias</td>
+            </tr>
+            <tr>
+              <td>Atacadão do Povo</td>
+              <td style="color:var(--text-s);">Atacado</td>
+              <td class="mono" style="color:var(--warning);">R$ 14.600</td>
+              <td style="color:var(--warning);">45 dias</td>
+              <td class="mono">R$ 210.000</td>
+              <td><span class="badge badge-warning">Médio</span></td>
+              <td style="color:var(--text-m);">há 1 dia</td>
+            </tr>
+            <tr>
+              <td>Redes Aliadas S/A</td>
+              <td style="color:var(--text-s);">Varejo</td>
+              <td class="mono" style="color:var(--warning);">R$ 9.800</td>
+              <td style="color:var(--warning);">32 dias</td>
+              <td class="mono">R$ 380.000</td>
+              <td><span class="badge badge-success">Baixo</span></td>
+              <td style="color:var(--text-m);">hoje</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /padding -->
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('sun-icon').style.display = isDark ? 'block' : 'none';
+      document.getElementById('moon-icon').style.display = isDark ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>

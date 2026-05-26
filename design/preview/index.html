@@ -142,7 +142,7 @@
     <!-- Seção: Negócio -->
     <div style="margin-bottom: 40px;">
       <div class="section-label">NEGÓCIO</div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
         <a href="dashboard.html" class="nav-card">
           <i data-lucide="layout-dashboard" class="card-icon" style="width: 20px; height: 20px;"></i>
           <div class="card-title">Customer 360</div>
@@ -161,6 +161,15 @@
             23 clientes em risco alto
           </div>
         </a>
+        <a href="customer-profile.html" class="nav-card">
+          <i data-lucide="user-circle" class="card-icon" style="width: 20px; height: 20px;"></i>
+          <div class="card-title">Perfil de Cliente</div>
+          <div class="card-desc">Visão 360° individual: jornada, financeiro, comportamento, scores e ações recomendadas.</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--data);"></span>
+            Demo: Grupo Rossi Atacadista
+          </div>
+        </a>
         <a href="intelligence.html" class="nav-card">
           <i data-lucide="message-square" class="card-icon" style="width: 20px; height: 20px;"></i>
           <div class="card-title">Intelligence</div>
@@ -176,7 +185,16 @@
     <!-- Seção: Plataforma -->
     <div style="margin-bottom: 40px;">
       <div class="section-label">PLATAFORMA</div>
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;">
+        <a href="connectors.html" class="nav-card">
+          <i data-lucide="plug" class="card-icon" style="width: 20px; height: 20px;"></i>
+          <div class="card-title">Conectores</div>
+          <div class="card-desc">HubSpot, Shopify, Omie, Salesforce e QuickBooks. CDC + batch via Airbyte.</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--success);"></span>
+            3 ativos · 2 disponíveis
+          </div>
+        </a>
         <a href="data-fabric.html" class="nav-card">
           <i data-lucide="git-branch" class="card-icon" style="width: 20px; height: 20px;"></i>
           <div class="card-title">Data Fabric</div>
@@ -250,12 +268,61 @@
       </div>
     </div>
 
-    <!-- Color Study link -->
-    <div style="padding-top: 24px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-      <a href="color-study.html" style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-m); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-s1);">
-        <i data-lucide="palette" style="width: 14px; height: 14px;"></i>
-        Ver Color Study
-      </a>
+    <!-- Seção: Verticais -->
+    <div style="margin-bottom: 48px;">
+      <div class="section-label">VERTICAIS — DASHBOARDS PRÉ-CONSTRUÍDOS</div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+        <a href="dashboard-crm.html" class="nav-card">
+          <i data-lucide="trending-up" class="card-icon" style="width: 20px; height: 20px;"></i>
+          <div class="card-title">CRM / Vendas</div>
+          <div class="card-desc">Pipeline, funil de vendas, conversão, ticket médio e oportunidades ativas.</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--accent);"></span>
+            Pipeline R$ 4.2M · 18 oportunidades
+          </div>
+        </a>
+        <a href="dashboard-varejo.html" class="nav-card">
+          <i data-lucide="shopping-cart" class="card-icon" style="width: 20px; height: 20px;"></i>
+          <div class="card-title">Varejo / E-commerce</div>
+          <div class="card-desc">GMV, pedidos, conversão, abandono de carrinho e top SKUs em tempo real.</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--accent);"></span>
+            GMV R$ 2.1M · 1.247 pedidos hoje
+          </div>
+        </a>
+        <a href="dashboard-saas.html" class="nav-card">
+          <i data-lucide="layers" class="card-icon" style="width: 20px; height: 20px;"></i>
+          <div class="card-title">SaaS B2B</div>
+          <div class="card-desc">MRR, ARR, churn rate, NPS, health score e adoção de features por conta.</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--accent);"></span>
+            MRR R$ 482k · churn 2.1%
+          </div>
+        </a>
+        <a href="dashboard-financeiro.html" class="nav-card">
+          <i data-lucide="landmark" class="card-icon" style="width: 20px; height: 20px;"></i>
+          <div class="card-title">Financeiro</div>
+          <div class="card-desc">Receita, inadimplência, CAC, LTV/CAC ratio e contas a receber vencidas.</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--accent);"></span>
+            Receita R$ 8.4M · inadimplência 4.2%
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding-top: 24px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="color-study.html" style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-m); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-s1);">
+          <i data-lucide="palette" style="width: 14px; height: 14px;"></i>
+          Color Study
+        </a>
+        <a href="onboarding.html" style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--accent); text-decoration: none; padding: 8px 14px; border: 1px solid rgba(217,119,6,0.3); border-radius: 6px; background: var(--accent-d);">
+          <i data-lucide="play-circle" style="width: 14px; height: 14px;"></i>
+          Simular Onboarding
+        </a>
+      </div>
       <span class="mono" style="font-size: 11px; color: var(--text-m);">Elexia Cortex v0.1 · Design Preview</span>
     </div>
 

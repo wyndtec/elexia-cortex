@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboarding — Elexia Cortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; margin: 0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #09090B; --bg-s1: #111113; --bg-s2: #18181B; --bg-s3: #222226;
+      --border: #2A2A30; --border-sub: #1E1E23;
+      --text-p: #F4F4F5; --text-s: #A1A1AA; --text-m: #71717A;
+      --accent: #D97706; --accent-l: #F59E0B; --accent-d: rgba(69,26,3,0.4);
+      --data: #22D3EE; --data-d: rgba(8,51,68,0.5);
+      --success: #22C55E; --success-d: rgba(5,46,22,0.5);
+      --warning: #F59E0B; --warning-d: rgba(69,26,3,0.4);
+      --danger: #EF4444; --danger-d: rgba(69,10,10,0.5);
+    }
+    [data-theme="light"] {
+      --bg-base: #FAFAFA; --bg-s1: #F4F4F5; --bg-s2: #EBEBEC; --bg-s3: #E4E4E7;
+      --border: #D4D4D8; --border-sub: #E4E4E7;
+      --text-p: #09090B; --text-s: #52525B; --text-m: #A1A1AA;
+      --accent: #B45309; --accent-l: #D97706; --accent-d: rgba(254,243,199,0.7);
+      --data: #0891B2; --data-d: rgba(224,247,250,0.7);
+      --success: #16A34A; --success-d: rgba(220,252,231,0.7);
+      --warning: #D97706; --warning-d: rgba(254,249,195,0.7);
+      --danger: #DC2626; --danger-d: rgba(254,226,226,0.7);
+    }
+    body {
+      background: var(--bg-base); color: var(--text-p);
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* Step indicator */
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-s3); border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .step-dot.active { background: var(--accent); border-color: var(--accent); width: 24px; border-radius: 4px; }
+    .step-dot.done { background: var(--success); border-color: var(--success); }
+
+    /* Vertical card */
+    .v-card {
+      background: var(--bg-s1); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .v-card:hover { border-color: var(--accent); background: var(--bg-s2); }
+    .v-card.selected { border-color: var(--accent); background: var(--accent-d); }
+    .v-card.selected .v-icon { color: var(--accent-l); }
+
+    /* Connector card */
+    .conn-card {
+      background: var(--bg-s1); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 20px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .conn-card:hover { border-color: var(--accent); }
+    .conn-card.selected { border-color: var(--accent); background: var(--accent-d); }
+
+    /* KPI selection card */
+    .kpi-card {
+      background: var(--bg-s1); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .kpi-card:hover { border-color: var(--text-m); }
+    .kpi-card.selected { border-color: var(--accent); background: var(--accent-d); }
+    .kpi-card.selected .check-icon { display: flex !important; }
+
+    /* Progress bar */
+    .prog-bar { height: 3px; background: var(--bg-s3); border-radius: 2px; overflow: hidden; }
+    .prog-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.5s ease; }
+
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header style="padding: 18px 40px; border-bottom: 1px solid var(--border); background: var(--bg-s1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+    <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+      <div class="mono" style="font-size: 18px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent);">CORTEX</div>
+      <div style="font-size: 11px; color: var(--text-m); border-left: 1px solid var(--border); padding-left: 10px;">Configuração inicial</div>
+    </a>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <!-- Step dots -->
+      <div style="display: flex; align-items: center; gap: 6px;" id="step-dots">
+        <div class="step-dot active" id="dot-1"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-dot" id="dot-3"></div>
+        <div class="step-dot" id="dot-4"></div>
+        <div class="step-dot" id="dot-5"></div>
+      </div>
+      <span style="font-size: 12px; color: var(--text-m);" id="step-label">Passo 1 de 5</span>
+      <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; color: var(--text-m);">
+        <i data-lucide="sun" id="sun-icon" style="width:14px;height:14px;display:none;"></i>
+        <i data-lucide="moon" id="moon-icon" style="width:14px;height:14px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Progress bar -->
+  <div class="prog-bar" style="flex-shrink:0;">
+    <div class="prog-fill" id="prog-fill" style="width: 20%;"></div>
+  </div>
+
+  <!-- Main content area -->
+  <main style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 48px 40px; max-width: 860px; margin: 0 auto; width: 100%;">
+
+    <!-- ===== STEP 1: Escolha a vertical ===== -->
+    <div id="step-1" class="step-content">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 22px; font-weight: 700; color: var(--text-p); margin-bottom: 10px;">Qual é o seu segmento?</div>
+        <div style="font-size: 14px; color: var(--text-s); max-width: 480px; margin: 0 auto; line-height: 1.6;">O Cortex vai pré-configurar métricas, conectores e dashboards específicos para o seu negócio.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%;">
+        <div class="v-card selected" onclick="selectVertical(this, 'crm')" id="v-crm">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--accent-d); border: 1px solid rgba(217,119,6,0.3); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="trending-up" class="v-icon" style="width:18px;height:18px;color:var(--accent-l);"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">CRM / Vendas</div>
+              <div style="font-size: 11px; color: var(--text-m);">Pipeline, leads, conversão</div>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-s); line-height: 1.5;">Pipeline de vendas, funil de conversão, previsão de receita, performance de equipe.</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">HubSpot</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Salesforce</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Omie</span>
+          </div>
+        </div>
+        <div class="v-card" onclick="selectVertical(this, 'varejo')" id="v-varejo">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--data-d); border: 1px solid rgba(34,211,238,0.2); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="shopping-cart" class="v-icon" style="width:18px;height:18px;color:var(--data);"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">Varejo / E-commerce</div>
+              <div style="font-size: 11px; color: var(--text-m);">GMV, estoque, conversão</div>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-s); line-height: 1.5;">GMV, ruptura de estoque, comportamento do cliente, abandono de carrinho e SKUs.</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Shopify</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">WooCommerce</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">VTEX</span>
+          </div>
+        </div>
+        <div class="v-card" onclick="selectVertical(this, 'saas')" id="v-saas">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--success-d); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="layers" class="v-icon" style="width:18px;height:18px;color:var(--success);"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">SaaS B2B</div>
+              <div style="font-size: 11px; color: var(--text-m);">MRR, churn, health score</div>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-s); line-height: 1.5;">MRR/ARR, churn, health score, expansão de receita, análise de tier e CSM.</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Stripe</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">ChartMogul</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Segment</span>
+          </div>
+        </div>
+        <div class="v-card" onclick="selectVertical(this, 'financeiro')" id="v-financeiro">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--warning-d); border: 1px solid rgba(245,158,11,0.2); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="landmark" class="v-icon" style="width:18px;height:18px;color:var(--warning);"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">Financeiro</div>
+              <div style="font-size: 11px; color: var(--text-m);">DRE, A/R, fluxo de caixa</div>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-s); line-height: 1.5;">Receita, inadimplência, CAC, LTV, DRE, aging de contas a receber e fluxo de caixa.</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">QuickBooks</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Omie</span>
+            <span style="font-size: 10px; color: var(--text-m); background: var(--bg-s3); padding: 2px 8px; border-radius: 3px;">Conta Azul</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STEP 2: Conector ou Demo ===== -->
+    <div id="step-2" class="step-content" style="display:none;">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 22px; font-weight: 700; color: var(--text-p); margin-bottom: 10px;">Como deseja começar?</div>
+        <div style="font-size: 14px; color: var(--text-s); max-width: 480px; margin: 0 auto; line-height: 1.6;">Conecte sua fonte de dados real ou explore com dados de demonstração — você pode migrar depois.</div>
+      </div>
+
+      <!-- Modo Demo -->
+      <div class="conn-card selected" style="margin-bottom: 12px;" onclick="selectMode(this, 'demo')">
+        <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--accent-d); border: 1px solid rgba(217,119,6,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i data-lucide="play-circle" style="width:20px;height:20px;color:var(--accent-l);"></i>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-p);">Modo demonstração</span>
+            <span style="background: var(--accent-d); color: var(--accent-l); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(217,119,6,0.3);">Recomendado</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-s);">Dados fictícios pré-carregados. Acesso imediato, sem configuração. Ideal para explorar o produto.</div>
+        </div>
+        <i data-lucide="check-circle-2" style="width:18px;height:18px;color:var(--accent);flex-shrink:0;" class="mode-check" id="check-demo"></i>
+      </div>
+
+      <!-- Divider -->
+      <div style="display: flex; align-items: center; gap: 12px; margin: 20px 0;">
+        <div style="flex:1; height:1px; background: var(--border);"></div>
+        <span style="font-size: 11px; color: var(--text-m);">ou conecte uma fonte real</span>
+        <div style="flex:1; height:1px; background: var(--border);"></div>
+      </div>
+
+      <!-- Conectores reais -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <div class="conn-card" onclick="selectMode(this, 'hubspot')">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="users" style="width:16px;height:16px;color:var(--data);"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-p);">HubSpot CRM</div>
+            <div style="font-size: 11px; color: var(--text-m);">Contatos, deals, pipeline</div>
+          </div>
+          <i data-lucide="check-circle-2" style="width:16px;height:16px;color:var(--accent);flex-shrink:0;display:none;" class="mode-check-real"></i>
+        </div>
+        <div class="conn-card" onclick="selectMode(this, 'shopify')">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="shopping-bag" style="width:16px;height:16px;color:var(--success);"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-p);">Shopify</div>
+            <div style="font-size: 11px; color: var(--text-m);">Pedidos, produtos, clientes</div>
+          </div>
+          <i data-lucide="check-circle-2" style="width:16px;height:16px;color:var(--accent);flex-shrink:0;display:none;" class="mode-check-real"></i>
+        </div>
+        <div class="conn-card" onclick="selectMode(this, 'omie')">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="file-text" style="width:16px;height:16px;color:var(--warning);"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-p);">Omie ERP</div>
+            <div style="font-size: 11px; color: var(--text-m);">Financeiro, NF, pedidos</div>
+          </div>
+          <i data-lucide="check-circle-2" style="width:16px;height:16px;color:var(--accent);flex-shrink:0;display:none;" class="mode-check-real"></i>
+        </div>
+        <div class="conn-card" onclick="selectMode(this, 'outro')">
+          <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="plug" style="width:16px;height:16px;color:var(--text-m);"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-p);">Outro conector</div>
+            <div style="font-size: 11px; color: var(--text-m);">API, CSV, PostgreSQL…</div>
+          </div>
+          <i data-lucide="check-circle-2" style="width:16px;height:16px;color:var(--accent);flex-shrink:0;display:none;" class="mode-check-real"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STEP 3: Preview de dados ===== -->
+    <div id="step-3" class="step-content" style="display:none;">
+      <div style="text-align: center; margin-bottom: 36px;">
+        <div style="font-size: 22px; font-weight: 700; color: var(--text-p); margin-bottom: 10px;">Dados carregados com sucesso</div>
+        <div style="font-size: 14px; color: var(--text-s); max-width: 480px; margin: 0 auto; line-height: 1.6;">Encontramos estes dados na sua fonte. Confirme se tudo parece correto antes de continuar.</div>
+      </div>
+
+      <!-- Resumo de dados encontrados -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; width: 100%; margin-bottom: 20px;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></div>
+          <span style="font-size: 13px; font-weight: 600; color: var(--text-p);">Fonte: Demo — Grupo Rossi Atacadista</span>
+          <span style="margin-left: auto; font-size: 11px; color: var(--text-m);">Atualizado agora</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;">
+          <div style="padding: 20px; border-right: 1px solid var(--border);">
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 8px;">REGISTROS</div>
+            <div class="mono" style="font-size: 22px; font-weight: 700; color: var(--accent);">12.847</div>
+            <div style="font-size: 11px; color: var(--text-m); margin-top: 4px;">Clientes únicos</div>
+          </div>
+          <div style="padding: 20px; border-right: 1px solid var(--border);">
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 8px;">TRANSAÇÕES</div>
+            <div class="mono" style="font-size: 22px; font-weight: 700; color: var(--data);">284k</div>
+            <div style="font-size: 11px; color: var(--text-m); margin-top: 4px;">Últimos 12 meses</div>
+          </div>
+          <div style="padding: 20px; border-right: 1px solid var(--border);">
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 8px;">PERÍODO</div>
+            <div class="mono" style="font-size: 22px; font-weight: 700; color: var(--text-p);">3 anos</div>
+            <div style="font-size: 11px; color: var(--text-m); margin-top: 4px;">Jun 2023 – Mai 2026</div>
+          </div>
+          <div style="padding: 20px;">
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); margin-bottom: 8px;">QUALIDADE</div>
+            <div class="mono" style="font-size: 22px; font-weight: 700; color: var(--success);">96%</div>
+            <div style="font-size: 11px; color: var(--success); margin-top: 4px;">Excelente</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview de linhas -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; width: 100%;">
+        <div style="padding: 14px 20px; border-bottom: 1px solid var(--border);">
+          <span style="font-size: 12px; font-weight: 600; color: var(--text-p);">Amostra de dados</span>
+          <span style="font-size: 11px; color: var(--text-m); margin-left: 8px;">5 de 12.847 registros</span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding: 10px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border);">EMPRESA</th>
+                <th style="text-align:left; padding: 10px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border);">SEGMENTO</th>
+                <th style="text-align:left; padding: 10px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border);">RECEITA LTM</th>
+                <th style="text-align:left; padding: 10px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border);">ÚLTIMA COMPRA</th>
+                <th style="text-align:left; padding: 10px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m); border-bottom: 1px solid var(--border);">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-sub);">
+                <td style="padding: 10px 16px; color: var(--text-p); font-weight: 500;">Redes Aliadas S/A</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">Varejo</td>
+                <td style="padding: 10px 16px; color: var(--accent); font-family: 'JetBrains Mono', monospace;">R$ 1.24M</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">há 2 dias</td>
+                <td style="padding: 10px 16px;"><span style="background: var(--success-d); color: var(--success); font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(34,197,94,0.2);">Ativo</span></td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-sub);">
+                <td style="padding: 10px 16px; color: var(--text-p); font-weight: 500;">Distribuidora Central</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">Distribuição</td>
+                <td style="padding: 10px 16px; color: var(--accent); font-family: 'JetBrains Mono', monospace;">R$ 892k</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">há 1 semana</td>
+                <td style="padding: 10px 16px;"><span style="background: var(--success-d); color: var(--success); font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(34,197,94,0.2);">Ativo</span></td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-sub);">
+                <td style="padding: 10px 16px; color: var(--text-p); font-weight: 500;">Mercado São Roque</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">Varejo</td>
+                <td style="padding: 10px 16px; color: var(--warning); font-family: 'JetBrains Mono', monospace;">R$ 148k</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">há 43 dias</td>
+                <td style="padding: 10px 16px;"><span style="background: var(--warning-d); color: var(--warning); font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(245,158,11,0.2);">Em risco</span></td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-sub);">
+                <td style="padding: 10px 16px; color: var(--text-p); font-weight: 500;">Atacadão do Povo</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">Atacado</td>
+                <td style="padding: 10px 16px; color: var(--accent); font-family: 'JetBrains Mono', monospace;">R$ 2.1M</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">hoje</td>
+                <td style="padding: 10px 16px;"><span style="background: var(--success-d); color: var(--success); font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(34,197,94,0.2);">Ativo</span></td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 16px; color: var(--text-p); font-weight: 500;">Supermercados Bom Preço</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">Varejo</td>
+                <td style="padding: 10px 16px; color: var(--danger); font-family: 'JetBrains Mono', monospace;">R$ 62k</td>
+                <td style="padding: 10px 16px; color: var(--text-s);">há 4 meses</td>
+                <td style="padding: 10px 16px;"><span style="background: var(--danger-d); color: var(--danger); font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(239,68,68,0.2);">Inativo</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STEP 4: KPIs prioritários ===== -->
+    <div id="step-4" class="step-content" style="display:none;">
+      <div style="text-align: center; margin-bottom: 36px;">
+        <div style="font-size: 22px; font-weight: 700; color: var(--text-p); margin-bottom: 10px;">Quais métricas mais importam?</div>
+        <div style="font-size: 14px; color: var(--text-s); max-width: 480px; margin: 0 auto; line-height: 1.6;">Selecione os KPIs que seu dashboard vai destacar. Você pode alterar a qualquer momento.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%;">
+
+        <!-- KPI 1: Receita Total -->
+        <div class="kpi-card selected" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--accent-d); border: 1px solid rgba(217,119,6,0.3); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="trending-up" style="width:16px;height:16px;color:var(--accent-l);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Receita Total</div>
+          <div style="font-size: 11px; color: var(--text-m);">Receita bruta e líquida do período</div>
+        </div>
+
+        <!-- KPI 2: Inadimplência -->
+        <div class="kpi-card selected" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--danger-d); border: 1px solid rgba(239,68,68,0.2); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--danger);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Inadimplência</div>
+          <div style="font-size: 11px; color: var(--text-m);">% de clientes e valor em atraso</div>
+        </div>
+
+        <!-- KPI 3: Ticket Médio -->
+        <div class="kpi-card selected" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--data-d); border: 1px solid rgba(34,211,238,0.2); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="receipt" style="width:16px;height:16px;color:var(--data);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Ticket Médio</div>
+          <div style="font-size: 11px; color: var(--text-m);">Valor médio por pedido ou cliente</div>
+        </div>
+
+        <!-- KPI 4: LTV/CAC -->
+        <div class="kpi-card selected" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--success-d); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="bar-chart-3" style="width:16px;height:16px;color:var(--success);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">LTV / CAC</div>
+          <div style="font-size: 11px; color: var(--text-m);">Retorno sobre custo de aquisição</div>
+        </div>
+
+        <!-- KPI 5: Churn -->
+        <div class="kpi-card" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="user-minus" style="width:16px;height:16px;color:var(--text-m);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;display:none;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Churn de Clientes</div>
+          <div style="font-size: 11px; color: var(--text-m);">Clientes perdidos no período</div>
+        </div>
+
+        <!-- KPI 6: NPS -->
+        <div class="kpi-card" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="star" style="width:16px;height:16px;color:var(--text-m);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;display:none;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">NPS</div>
+          <div style="font-size: 11px; color: var(--text-m);">Net Promoter Score de clientes</div>
+        </div>
+
+        <!-- KPI 7: Margem Bruta -->
+        <div class="kpi-card" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="percent" style="width:16px;height:16px;color:var(--text-m);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;display:none;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Margem Bruta</div>
+          <div style="font-size: 11px; color: var(--text-m);">Percentual de lucro bruto</div>
+        </div>
+
+        <!-- KPI 8: Pedidos -->
+        <div class="kpi-card" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="package" style="width:16px;height:16px;color:var(--text-m);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;display:none;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Volume de Pedidos</div>
+          <div style="font-size: 11px; color: var(--text-m);">Total e variação de pedidos</div>
+        </div>
+
+        <!-- KPI 9: Fluxo de Caixa -->
+        <div class="kpi-card" onclick="toggleKpi(this)">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: var(--bg-s3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="waves" style="width:16px;height:16px;color:var(--text-m);"></i>
+            </div>
+            <div class="check-icon" style="width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;display:none;">
+              <i data-lucide="check" style="width:11px;height:11px;color:#fff;"></i>
+            </div>
+          </div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-p); margin-bottom: 3px;">Fluxo de Caixa</div>
+          <div style="font-size: 11px; color: var(--text-m);">Projeção de entradas e saídas</div>
+        </div>
+
+      </div>
+      <div style="margin-top: 16px; font-size: 12px; color: var(--text-m); text-align: center;">4 de 9 selecionados · <span style="color: var(--accent); cursor: pointer;">Selecionar todos</span></div>
+    </div>
+
+    <!-- ===== STEP 5: Dashboard pronto ===== -->
+    <div id="step-5" class="step-content" style="display:none;">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <!-- Ícone de sucesso -->
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--success-d); border: 2px solid var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+          <i data-lucide="check" style="width:32px;height:32px;color:var(--success);"></i>
+        </div>
+        <div style="font-size: 26px; font-weight: 700; color: var(--text-p); margin-bottom: 10px;">Seu Cortex está pronto</div>
+        <div style="font-size: 14px; color: var(--text-s); max-width: 480px; margin: 0 auto; line-height: 1.6;">Dashboard configurado com os dados da sua vertical e os KPIs que você selecionou. Tudo atualizado em tempo real.</div>
+      </div>
+
+      <!-- Resumo da configuração -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; margin-bottom: 32px;">
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <i data-lucide="trending-up" style="width:15px;height:15px;color:var(--accent);"></i>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">VERTICAL</span>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">CRM / Vendas</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 3px;">Dashboard configurado</div>
+        </div>
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <i data-lucide="database" style="width:15px;height:15px;color:var(--data);"></i>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">FONTE</span>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">Demo — Grupo Rossi</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 3px;">12.847 registros</div>
+        </div>
+        <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <i data-lucide="bar-chart-2" style="width:15px;height:15px;color:var(--success);"></i>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text-m);">KPIs</span>
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-p);">4 selecionados</div>
+          <div style="font-size: 11px; color: var(--text-m); margin-top: 3px;">Receita, Inadim., Ticket, LTV</div>
+        </div>
+      </div>
+
+      <!-- Preview do dashboard -->
+      <div style="background: var(--bg-s1); border: 1px solid var(--border); border-radius: 12px; padding: 20px; width: 100%; margin-bottom: 28px;">
+        <div style="font-size: 12px; color: var(--text-m); margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="eye" style="width:13px;height:13px;"></i>
+          Pré-visualização do seu dashboard
+        </div>
+        <!-- Mini KPIs preview -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;">
+          <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-m); margin-bottom: 6px;">Receita Total</div>
+            <div class="mono" style="font-size: 16px; font-weight: 700; color: var(--accent);">R$ 8,4M</div>
+            <div style="font-size: 10px; color: var(--success); margin-top: 4px;">+14,2%</div>
+          </div>
+          <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-m); margin-bottom: 6px;">Inadimplência</div>
+            <div class="mono" style="font-size: 16px; font-weight: 700; color: var(--warning);">4,2%</div>
+            <div style="font-size: 10px; color: var(--text-m); margin-top: 4px;">R$ 352k</div>
+          </div>
+          <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-m); margin-bottom: 6px;">Ticket Médio</div>
+            <div class="mono" style="font-size: 16px; font-weight: 700; color: var(--data);">R$ 28,4k</div>
+            <div style="font-size: 10px; color: var(--text-m); margin-top: 4px;">por cliente</div>
+          </div>
+          <div style="background: var(--bg-s2); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-m); margin-bottom: 6px;">LTV / CAC</div>
+            <div class="mono" style="font-size: 16px; font-weight: 700; color: var(--success);">8,3×</div>
+            <div style="font-size: 10px; color: var(--success); margin-top: 4px;">Excelente</div>
+          </div>
+        </div>
+        <!-- Barra de "carregando mais" -->
+        <div style="text-align: center; padding: 10px 0; border-top: 1px solid var(--border-sub);">
+          <span style="font-size: 11px; color: var(--text-m);">+ tabelas, gráficos e alertas inteligentes no dashboard completo</span>
+        </div>
+      </div>
+
+      <!-- CTA primário -->
+      <div style="text-align: center;">
+        <a href="dashboard-crm.html" style="display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; padding: 14px 32px; border-radius: 8px; text-decoration: none; transition: all 0.15s;">
+          <i data-lucide="layout-dashboard" style="width:16px;height:16px;"></i>
+          Acessar meu dashboard
+          <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
+        </a>
+        <div style="margin-top: 14px; font-size: 12px; color: var(--text-m);">
+          <a href="index.html" style="color: var(--text-m); text-decoration: none;">← Voltar ao início</a>
+          <span style="margin: 0 10px;">·</span>
+          <a href="connectors.html" style="color: var(--text-m); text-decoration: none;">Configurar conectores reais</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer navigation -->
+  <footer style="padding: 20px 40px; border-top: 1px solid var(--border); background: var(--bg-s1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; max-width: 100%;">
+    <button id="btn-anterior" onclick="prevStep()" style="background: var(--bg-s2); border: 1px solid var(--border); color: var(--text-s); font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.15s; visibility: hidden;">
+      <i data-lucide="arrow-left" style="width:14px;height:14px;"></i>
+      Anterior
+    </button>
+    <div style="font-size: 12px; color: var(--text-m);" id="footer-hint">Selecione sua vertical para continuar</div>
+    <button id="btn-proximo" onclick="nextStep()" style="background: var(--accent); border: none; color: #fff; font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.15s;">
+      Próximo
+      <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+    </button>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    let currentStep = 1;
+    const totalSteps = 5;
+    const hints = [
+      'Selecione sua vertical para continuar',
+      'Escolha uma fonte de dados',
+      'Confirme os dados encontrados',
+      'Selecione pelo menos 1 KPI',
+      'Seu dashboard está pronto!'
+    ];
+    const progressWidths = ['20%', '40%', '60%', '80%', '100%'];
+
+    function updateUI() {
+      // Step dots
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.className = 'step-dot';
+        if (i < currentStep) dot.classList.add('done');
+        else if (i === currentStep) dot.classList.add('active');
+      }
+      document.getElementById('step-label').textContent = 'Passo ' + currentStep + ' de ' + totalSteps;
+      document.getElementById('prog-fill').style.width = progressWidths[currentStep - 1];
+      document.getElementById('footer-hint').textContent = hints[currentStep - 1];
+
+      // Show/hide step content
+      for (let i = 1; i <= totalSteps; i++) {
+        const el = document.getElementById('step-' + i);
+        el.style.display = (i === currentStep) ? 'block' : 'none';
+      }
+
+      // Anterior button
+      document.getElementById('btn-anterior').style.visibility = (currentStep > 1) ? 'visible' : 'hidden';
+
+      // Próximo button on last step
+      const btnProx = document.getElementById('btn-proximo');
+      if (currentStep === totalSteps) {
+        btnProx.style.display = 'none';
+      } else {
+        btnProx.style.display = 'flex';
+        btnProx.innerHTML = 'Próximo <i data-lucide="arrow-right" style="width:14px;height:14px;margin-left:8px;"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) { currentStep++; updateUI(); window.scrollTo(0,0); }
+    }
+    function prevStep() {
+      if (currentStep > 1) { currentStep--; updateUI(); window.scrollTo(0,0); }
+    }
+
+    function selectVertical(el, id) {
+      document.querySelectorAll('.v-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectMode(el, id) {
+      // Demo card
+      const demoCard = document.querySelector('.conn-card');
+      demoCard.classList.remove('selected');
+      document.getElementById('check-demo').style.display = 'none';
+      // Real cards
+      document.querySelectorAll('.mode-check-real').forEach(c => c.style.display = 'none');
+      document.querySelectorAll('.conn-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      if (id === 'demo') {
+        document.getElementById('check-demo').style.display = 'block';
+      } else {
+        el.querySelector('.mode-check-real').style.display = 'block';
+      }
+    }
+
+    function toggleKpi(el) {
+      el.classList.toggle('selected');
+      const check = el.querySelector('.check-icon');
+      if (el.classList.contains('selected')) {
+        check.style.display = 'flex';
+      } else {
+        check.style.display = 'none';
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('sun-icon').style.display = isDark ? 'block' : 'none';
+      document.getElementById('moon-icon').style.display = isDark ? 'none' : 'block';
+    }
+
+    updateUI();
+  </script>
+</body>
+</html>
