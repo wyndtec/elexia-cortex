@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexia Cortex — Contexto Estrategico</title>
+<style>
+  :root {
+    --bg: #0A1020;
+    --bg-card: #111827;
+    --bg-card-2: #162032;
+    --accent: #D97706;
+    --accent-l: #F59E0B;
+    --accent-glow: rgba(217,119,6,0.12);
+    --data: #22D3EE;
+    --data-glow: rgba(34,211,238,0.10);
+    --green: #10B981;
+    --green-glow: rgba(16,185,129,0.10);
+    --red: #EF4444;
+    --red-glow: rgba(239,68,68,0.08);
+    --purple: #8B5CF6;
+    --purple-glow: rgba(139,92,246,0.10);
+    --text: #F9FAFB;
+    --text-m: #9CA3AF;
+    --text-d: #6B7280;
+    --border: rgba(255,255,255,0.07);
+    --border-a: rgba(217,119,6,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-snap-type: y mandatory; overflow-y: scroll; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    position: relative;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+  .inner { width: 100%; max-width: 1100px; margin: 0 auto; }
+
+  /* NAV */
+  .nav-dots {
+    position: fixed; right: 28px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 10px; z-index: 100;
+  }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer; transition: all 0.3s; border: none; padding: 0;
+    position: relative;
+  }
+  .nav-dot.active { background: var(--accent); transform: scale(1.4); }
+  .nav-dot:hover { background: rgba(217,119,6,0.5); }
+  .nav-dot .tip {
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-m); font-size: 10px; white-space: nowrap;
+    padding: 4px 10px; border-radius: 6px;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .nav-dot:hover .tip { opacity: 1; }
+
+  /* TYPOGRAPHY */
+  .tag {
+    display: inline-block;
+    background: var(--accent-glow); border: 1px solid var(--border-a);
+    color: var(--accent-l); font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .tag-data { background: var(--data-glow); border-color: rgba(34,211,238,0.25); color: var(--data); }
+  .tag-green { background: var(--green-glow); border-color: rgba(16,185,129,0.25); color: var(--green); }
+  .tag-purple { background: var(--purple-glow); border-color: rgba(139,92,246,0.25); color: var(--purple); }
+  .tag-red { background: var(--red-glow); border-color: rgba(239,68,68,0.25); color: var(--red); }
+
+  h1 { font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800; line-height: 1.1; }
+  h2 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 800; line-height: 1.15; }
+  h3 { font-size: 1rem; font-weight: 700; }
+  .sub { font-size: 1.05rem; color: var(--text-m); margin-top: 14px; max-width: 700px; line-height: 1.7; }
+  .accent { color: var(--accent); }
+  .data-c { color: var(--data); }
+  .green-c { color: var(--green); }
+  .red-c { color: var(--red); }
+  .purple-c { color: var(--purple); }
+  .muted { color: var(--text-m); }
+  .dim { color: var(--text-d); }
+  .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 22px; position: relative; overflow: hidden;
+  }
+  .card-top { height: 2px; position: absolute; top: 0; left: 0; right: 0; }
+  .card-top-accent { background: linear-gradient(90deg, var(--accent), transparent); }
+  .card-top-data { background: linear-gradient(90deg, var(--data), transparent); }
+  .card-top-green { background: linear-gradient(90deg, var(--green), transparent); }
+  .card-top-red { background: linear-gradient(90deg, var(--red), transparent); }
+  .card-top-purple { background: linear-gradient(90deg, var(--purple), transparent); }
+
+  .card h3 { margin-bottom: 10px; }
+  .card p { font-size: 0.84rem; color: var(--text-m); line-height: 1.6; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  /* SCORE BAR */
+  .score-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .score-row:last-child { border-bottom: none; }
+  .score-label { font-size: 0.82rem; color: var(--text-m); width: 200px; flex-shrink: 0; }
+  .score-bar-bg {
+    flex: 1; height: 8px; background: rgba(255,255,255,0.05);
+    border-radius: 4px; overflow: hidden; position: relative;
+  }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .score-val { font-size: 0.85rem; font-weight: 700; width: 40px; text-align: right; flex-shrink: 0; }
+
+  /* TABLES */
+  .tbl { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .tbl th {
+    font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-d); font-weight: 600; text-align: left;
+    padding: 8px 14px; border-bottom: 1px solid var(--border);
+  }
+  .tbl td {
+    font-size: 0.84rem; color: var(--text-m); padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .tbl tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* FLOW DIAGRAM */
+  .flow { display: flex; align-items: center; gap: 0; margin-top: 28px; flex-wrap: wrap; justify-content: center; }
+  .flow-node {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px; text-align: center; min-width: 120px;
+  }
+  .flow-node-label { font-size: 0.7rem; color: var(--text-d); letter-spacing: 1px; text-transform: uppercase; }
+  .flow-node-name { font-size: 0.9rem; font-weight: 700; margin-top: 4px; }
+  .flow-arrow { color: var(--accent); font-size: 1.1rem; opacity: 0.4; padding: 0 6px; flex-shrink: 0; }
+  .flow-node.highlight { border-color: var(--accent); background: var(--accent-glow); }
+  .flow-node.highlight-data { border-color: var(--data); background: var(--data-glow); }
+  .flow-node.highlight-green { border-color: var(--green); background: var(--green-glow); }
+
+  /* OPTIONS */
+  .option-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 24px; position: relative;
+  }
+  .option-card.winner {
+    border-color: var(--green);
+    background: linear-gradient(135deg, rgba(16,185,129,0.06) 0%, var(--bg-card) 60%);
+  }
+  .option-badge {
+    position: absolute; top: -10px; right: 20px;
+    background: var(--green); color: #000; font-size: 10px;
+    font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 4px 14px; border-radius: 20px;
+  }
+  .option-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; }
+  .option-desc { font-size: 0.84rem; color: var(--text-m); line-height: 1.7; }
+  .option-list { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .option-list li { font-size: 0.82rem; color: var(--text-m); display: flex; gap: 8px; align-items: flex-start; }
+
+  /* JOURNEY */
+  .journey-row { display: flex; gap: 4px; margin-top: 28px; }
+  .journey-phase {
+    flex: 1; text-align: center; padding: 14px 8px; border-radius: 8px;
+    position: relative; transition: transform 0.2s;
+  }
+  .journey-phase:hover { transform: translateY(-4px); }
+  .journey-num { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+  .journey-name { font-size: 0.68rem; font-weight: 600; margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .journey-sub { font-size: 0.62rem; color: rgba(255,255,255,0.5); margin-top: 3px; }
+
+  /* CONSENSUS */
+  .consensus-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .consensus-item:last-child { border-bottom: none; }
+  .consensus-num {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 800;
+    background: var(--accent-glow); color: var(--accent); border: 1px solid var(--border-a);
+  }
+  .consensus-text { font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+  .consensus-text strong { color: var(--accent-l); }
+
+  /* QUESTION CARDS */
+  .q-card {
+    background: var(--bg-card-2); border: 1px solid rgba(217,119,6,0.15);
+    border-radius: 12px; padding: 22px 24px; margin-bottom: 12px;
+    border-left: 3px solid var(--accent);
+  }
+  .q-num { font-size: 0.7rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .q-text { font-size: 0.95rem; font-weight: 600; }
+  .q-context { font-size: 0.82rem; color: var(--text-m); margin-top: 6px; }
+
+  /* STAT */
+  .stat-big { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+  .stat-label { font-size: 0.75rem; color: var(--text-d); margin-top: 4px; }
+
+  /* SEPARATOR */
+  .sep { height: 1px; background: var(--border); margin: 28px 0; }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    border-radius: 12px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .highlight-box.amber { background: var(--accent-glow); border: 1px solid var(--border-a); }
+  .highlight-box.cyan { background: var(--data-glow); border: 1px solid rgba(34,211,238,0.2); }
+  .highlight-box.green { background: var(--green-glow); border: 1px solid rgba(16,185,129,0.2); }
+  .highlight-box.red { background: var(--red-glow); border: 1px solid rgba(239,68,68,0.2); }
+  .highlight-box.purple { background: var(--purple-glow); border: 1px solid rgba(139,92,246,0.2); }
+  .highlight-box-text { font-size: 0.92rem; font-weight: 600; }
+
+  /* SPECIALIST */
+  .spec-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 20px; height: 100%;
+  }
+  .spec-role { font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+  .spec-key { font-size: 0.84rem; color: var(--text-m); line-height: 1.7; margin-top: 10px; }
+  .spec-quote {
+    font-size: 0.82rem; font-style: italic; color: var(--text-m);
+    margin-top: 12px; padding: 12px 16px;
+    background: rgba(255,255,255,0.02); border-left: 2px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* CLUSTER */
+  .cluster-bar {
+    display: flex; align-items: center; gap: 12px; padding: 8px 0;
+  }
+  .cluster-name { font-size: 0.82rem; color: var(--text-m); width: 160px; flex-shrink: 0; }
+  .cluster-fill-bg {
+    flex: 1; height: 24px; background: rgba(255,255,255,0.04);
+    border-radius: 6px; overflow: hidden; position: relative;
+  }
+  .cluster-fill {
+    height: 100%; border-radius: 6px;
+    display: flex; align-items: center; padding-left: 10px;
+    font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.9);
+  }
+  .cluster-vol { font-size: 0.78rem; color: var(--text-d); width: 70px; text-align: right; flex-shrink: 0; }
+
+  /* WIDE CARD */
+  .wide-card {
+    grid-column: 1 / -1;
+    background: var(--bg-card-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px;
+    display: flex; gap: 32px; align-items: center;
+  }
+
+  /* ARCH DIAGRAM */
+  .arch-stack { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; }
+  .arch-layer {
+    display: flex; align-items: center; gap: 16px;
+    border-radius: 10px; padding: 14px 20px;
+  }
+  .arch-layer-tag {
+    font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase;
+    font-weight: 700; width: 90px; flex-shrink: 0;
+  }
+  .arch-layer-content { font-size: 0.85rem; color: var(--text-m); flex: 1; }
+  .arch-layer-tech { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; opacity: 0.7; }
+
+  .arch-connector {
+    text-align: center; padding: 6px 0;
+    font-size: 0.7rem; color: var(--text-d); letter-spacing: 1px;
+  }
+
+  /* TWO COL COMPARE */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .compare-col { border-radius: 12px; padding: 24px 22px; }
+  .compare-col.left { background: rgba(107,114,128,0.06); border: 1px solid rgba(107,114,128,0.12); }
+  .compare-col.right { background: var(--green-glow); border: 1px solid rgba(16,185,129,0.2); }
+  .compare-col-label {
+    font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .compare-list li { font-size: 0.84rem; color: var(--text-m); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<nav class="nav-dots">
+  <button class="nav-dot active" onclick="go(0)"><span class="tip">Visao Geral</span></button>
+  <button class="nav-dot" onclick="go(1)"><span class="tip">Scorecard</span></button>
+  <button class="nav-dot" onclick="go(2)"><span class="tip">Especialistas</span></button>
+  <button class="nav-dot" onclick="go(3)"><span class="tip">Ecossistema</span></button>
+  <button class="nav-dot" onclick="go(4)"><span class="tip">Opcao C</span></button>
+  <button class="nav-dot" onclick="go(5)"><span class="tip">Jornada Universal</span></button>
+  <button class="nav-dot" onclick="go(6)"><span class="tip">Platform + Cortex</span></button>
+  <button class="nav-dot" onclick="go(7)"><span class="tip">Congressy Case</span></button>
+  <button class="nav-dot" onclick="go(8)"><span class="tip">Consensos</span></button>
+  <button class="nav-dot" onclick="go(9)"><span class="tip">Decisoes</span></button>
+</nav>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 0: VISAO GERAL -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s0" style="background: radial-gradient(ellipse at 60% 40%, rgba(217,119,6,0.08) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(34,211,238,0.04) 0%, transparent 50%), var(--bg);">
+  <div class="inner">
+    <span class="tag">Contexto Estrategico</span>
+    <h1>Elexia <span class="accent">Cortex</span></h1>
+    <p class="sub">Avaliacao completa de estrategia, posicionamento, arquitetura de ecossistema e decisoes pendentes. Baseado em conselho de 7 especialistas + analise de dados reais.</p>
+
+    <div style="display: flex; gap: 48px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border);">
+      <div>
+        <div class="stat-big accent">7</div>
+        <div class="stat-label">Especialistas consultados</div>
+      </div>
+      <div>
+        <div class="stat-big data-c">4</div>
+        <div class="stat-label">Documentos estrategicos</div>
+      </div>
+      <div>
+        <div class="stat-big green-c">200K+</div>
+        <div class="stat-label">Pessoas no case Congressy</div>
+      </div>
+      <div>
+        <div class="stat-big purple-c">7</div>
+        <div class="stat-label">Consensos unanimes</div>
+      </div>
+    </div>
+
+    <div class="highlight-box amber" style="margin-top: 36px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="highlight-box-text" style="color: var(--accent-l);">4 decisoes estrategicas aguardam posicionamento do founder</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 1: SCORECARD -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s1" style="background: radial-gradient(ellipse at 30% 50%, rgba(139,92,246,0.06) 0%, transparent 55%), var(--bg);">
+  <div class="inner">
+    <span class="tag tag-purple">Avaliacao V1</span>
+    <h2>Scorecard <span class="purple-c">Consolidado</span></h2>
+    <p class="sub">Nota de 4 especialistas em 8 dimensoes criticas.</p>
+
+    <div class="card" style="margin-top: 28px;">
+      <div class="score-row">
+        <span class="score-label">Seguranca / Compliance</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 90%; background: var(--green);"></div></div>
+        <span class="score-val green-c">9/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Timing de mercado</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 90%; background: var(--green);"></div></div>
+        <span class="score-val green-c">9/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Jornada Universal</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 90%; background: var(--green);"></div></div>
+        <span class="score-val green-c">9/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Arquitetura tecnica</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 80%; background: var(--data);"></div></div>
+        <span class="score-val data-c">8/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Data moat potencial</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 70%; background: var(--data);"></div></div>
+        <span class="score-val data-c">7/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Inovacao proprietaria</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 50%; background: var(--accent);"></div></div>
+        <span class="score-val accent">5/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Posicionamento</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 40%; background: var(--red);"></div></div>
+        <span class="score-val red-c">4/10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">Go-to-market</span>
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width: 30%; background: var(--red);"></div></div>
+        <span class="score-val red-c">3/10</span>
+      </div>
+    </div>
+
+    <div class="highlight-box red" style="margin-top: 20px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--red); flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span class="highlight-box-text" style="color: var(--red);">GTM e o maior risco. Zero clientes, zero vendedores, zero design partners.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 2: ESPECIALISTAS -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s2" style="background: radial-gradient(ellipse at 70% 30%, rgba(217,119,6,0.06) 0%, transparent 50%), var(--bg);">
+  <div class="inner">
+    <span class="tag">Conselho V1</span>
+    <h2>4 <span class="accent">Especialistas</span></h2>
+    <p class="sub">Cada um avaliou de sua perspectiva. Principais pontos.</p>
+
+    <div class="g2" style="margin-top: 24px; gap: 18px;">
+
+      <div class="spec-card">
+        <div class="card-top card-top-red"></div>
+        <div class="spec-role red-c">Estrategista de Mercado</div>
+        <h3>Posicionar por PROBLEMA, nao analogia</h3>
+        <p class="spec-key">"Palantir + SAP Data Intelligence" e fraco e perigoso. Palantir assusta (USD 10M+). SAP Data Intelligence foi descontinuado.</p>
+        <div class="spec-quote">"Customer Intelligence Platform com IA preditiva e governanca nativa"</div>
+        <p class="spec-key" style="margin-top: 10px;"><strong class="accent">Mudanca #1:</strong> Demo em 30 dias, nao 90. 1 vertical perfeita > 4 mediocres.</p>
+      </div>
+
+      <div class="spec-card">
+        <div class="card-top card-top-data"></div>
+        <div class="spec-role data-c">Dados & IA</div>
+        <h3>Jornada Universal = 9/10</h3>
+        <p class="spec-key">80% do Cortex e composicao de OSS. O que e genuinamente forte: PPRL (Bloom Filters), audit hash-chain, tokenizacao HMAC-SHA256.</p>
+        <div class="spec-quote">"Voce esta subestimando o quanto a Jornada Universal diferencia. Lock-in cognitivo — quando o cliente pensa em 'taxa da fase 3 pra 4', usa SEU framework."</div>
+        <p class="spec-key" style="margin-top: 10px;"><strong class="accent">Mudanca #1:</strong> Jornada Universal como camada semantica primaria do Customer 360.</p>
+      </div>
+
+      <div class="spec-card">
+        <div class="card-top card-top-accent"></div>
+        <div class="spec-role accent">Product Strategist</div>
+        <h3>Resultado, nao infraestrutura</h3>
+        <p class="spec-key">Ninguem acorda pensando "preciso de Data Fabric". Acordam pensando "perdi 30% dos clientes". Complexo demais para BR tal como esta.</p>
+        <div class="spec-quote">"Se time-to-value nao for HORAS, o produto morre antes de nascer."</div>
+        <p class="spec-key" style="margin-top: 10px;"><strong class="accent">Cortar 40%:</strong> AI Chat, On-Premise, ML generico, 5+ verticais, DLP ativo.</p>
+      </div>
+
+      <div class="spec-card">
+        <div class="card-top card-top-green"></div>
+        <div class="spec-role green-c">Growth & GTM</div>
+        <h3>R$1-2M ARR (nao R$4-8M)</h3>
+        <p class="spec-key">PMF no ecossistema (Platform + Cortex + Events). R$1.990 Starter e barato demais — sinaliza inferior. 5 tiers = confusao.</p>
+        <div class="spec-quote">"Projecao R$4-8M ARR Ano 1 e irrealista. R$1-2M e crivel e ja seria excelente."</div>
+        <p class="spec-key" style="margin-top: 10px;"><strong class="accent">Pricing:</strong> 3 tiers — Free (7 dias), Professional R$4.990, Enterprise custom.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 3: ECOSSISTEMA — PERGUNTA CENTRAL -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s3" style="background: radial-gradient(ellipse at 50% 60%, rgba(34,211,238,0.06) 0%, transparent 55%), var(--bg);">
+  <div class="inner">
+    <span class="tag tag-data">Decisao Arquitetural</span>
+    <h2>Dois produtos ou <span class="data-c">um com dois pontos de entrada</span>?</h2>
+    <p class="sub">3 especialistas avaliaram 3 opcoes para a arquitetura do ecossistema Elexia.</p>
+
+    <div class="g3" style="margin-top: 28px; gap: 18px;">
+
+      <div class="option-card">
+        <div class="option-title muted">Opcao A</div>
+        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 10px;">Dois Produtos Separados</div>
+        <ul class="option-list">
+          <li><span class="dim">-</span> Cortex = standalone dados/IA</li>
+          <li><span class="dim">-</span> Platform = CRM standalone</li>
+          <li><span class="dim">-</span> Integracao API publica</li>
+          <li><span class="dim">-</span> Branding e venda separados</li>
+        </ul>
+        <div style="margin-top: 14px; font-size: 0.78rem; color: var(--red);">Desperdicaria a integracao nativa</div>
+      </div>
+
+      <div class="option-card">
+        <div class="option-title muted">Opcao B</div>
+        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 10px;">Um Produto Monolitico</div>
+        <ul class="option-list">
+          <li><span class="dim">-</span> Uma plataforma, duas UIs</li>
+          <li><span class="dim">-</span> Banco compartilhado</li>
+          <li><span class="dim">-</span> Mesmo contrato e tenant</li>
+          <li><span class="dim">-</span> Deploy monolitico</li>
+        </ul>
+        <div style="margin-top: 14px; font-size: 0.78rem; color: var(--red);">Limitaria mercado — quem ja tem CRM nao troca</div>
+      </div>
+
+      <div class="option-card winner">
+        <div class="option-badge">Unanime</div>
+        <div class="option-title green-c">Opcao C</div>
+        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 10px;">Open Core + Cliente Privilegiado</div>
+        <ul class="option-list">
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Cortex aceita QUALQUER sistema</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Platform = cliente privilegiado</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Events = canal PLG</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Land & Expand sem friccao</li>
+        </ul>
+        <div style="margin-top: 14px; font-size: 0.78rem; color: var(--green);">3/3 especialistas votaram Opcao C</div>
+      </div>
+    </div>
+
+    <div class="highlight-box cyan" style="margin-top: 24px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--data); flex-shrink: 0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="highlight-box-text" style="color: var(--data);">"O Cortex deve ser o cerebro que QUALQUER corpo pode usar. A Platform e o corpo perfeito — mas nao o unico."</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 4: OPCAO C — DETALHES -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s4" style="background: radial-gradient(ellipse at 40% 30%, rgba(16,185,129,0.06) 0%, transparent 55%), var(--bg);">
+  <div class="inner">
+    <span class="tag tag-green">Opcao C</span>
+    <h2>Arquitetura <span class="green-c">Open Core</span></h2>
+    <p class="sub">Cortex aberto para qualquer sistema. Platform como integracao privilegiada.</p>
+
+    <!-- Architecture diagram -->
+    <div class="arch-stack" style="margin-top: 24px;">
+      <div class="arch-layer" style="background: var(--data-glow); border: 1px solid rgba(34,211,238,0.2);">
+        <span class="arch-layer-tag data-c">Conectores</span>
+        <span class="arch-layer-content">HubSpot, Salesforce, TOTVS, PostgreSQL, MySQL, APIs REST, Webhooks</span>
+        <span class="arch-layer-tech data-c">Airbyte</span>
+      </div>
+
+      <div class="arch-connector">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-d)" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="arch-layer" style="background: var(--purple-glow); border: 1px solid rgba(139,92,246,0.2);">
+        <span class="arch-layer-tag purple-c">Identity</span>
+        <span class="arch-layer-content">Identity Resolution + PPRL (Bloom Filters) — funciona standalone, sem Platform</span>
+        <span class="arch-layer-tech purple-c">HMAC-SHA256</span>
+      </div>
+
+      <div class="arch-connector">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-d)" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="arch-layer" style="background: var(--accent-glow); border: 1px solid var(--border-a);">
+        <span class="arch-layer-tag accent">Semantica</span>
+        <span class="arch-layer-content">Jornada Universal (7 fases) como dimensao primaria de TODOS os cubes</span>
+        <span class="arch-layer-tech accent">Cube.dev</span>
+      </div>
+
+      <div class="arch-connector">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-d)" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="arch-layer" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
+        <span class="arch-layer-tag" style="color: var(--text-m);">AI Engine</span>
+        <span class="arch-layer-content">Churn prediction, clustering, next best action, anomaly detection</span>
+        <span class="arch-layer-tech" style="color: var(--text-d);">MLflow</span>
+      </div>
+
+      <div class="arch-connector">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-d)" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="arch-layer" style="background: var(--green-glow); border: 1px solid rgba(16,185,129,0.2);">
+        <span class="arch-layer-tag green-c">APIs</span>
+        <span class="arch-layer-content">API publica do Cortex — qualquer cliente consome</span>
+        <span class="arch-layer-tech green-c">REST + GraphQL</span>
+      </div>
+    </div>
+
+    <!-- Platform privilege table -->
+    <div style="margin-top: 28px;">
+      <h3 style="margin-bottom: 4px;">Platform vs Outros CRMs como clientes do Cortex</h3>
+      <table class="tbl">
+        <tr><th>Capacidade</th><th style="color: var(--green);">Platform (nativa)</th><th>Outros CRMs</th></tr>
+        <tr><td>Sincronizacao</td><td style="color: var(--green);">CDC real-time (&lt;1min)</td><td>Batch (15-60 min)</td></tr>
+        <tr><td>Jornada Universal</td><td style="color: var(--green);">Integrada na UI</td><td>Dashboard Cortex apenas</td></tr>
+        <tr><td>Automacoes por IA</td><td style="color: var(--green);">Pre-configuradas</td><td>Manual setup</td></tr>
+        <tr><td>Feedback loop</td><td style="color: var(--green);">Bidirecional automatico</td><td>Unidirecional</td></tr>
+        <tr><td>Playbooks prescritos</td><td style="color: var(--green);">Auto-gerados</td><td>Nao disponivel</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 5: JORNADA UNIVERSAL -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s5" style="background: radial-gradient(ellipse at 50% 40%, rgba(217,119,6,0.07) 0%, transparent 55%), var(--bg);">
+  <div class="inner">
+    <span class="tag">Diferencial Real</span>
+    <h2>Jornada Universal do <span class="accent">Cliente</span></h2>
+    <p class="sub">Score 9/10. Framework semantico que organiza dados de QUALQUER fonte em 7 fases. Consenso: deve viver no Cortex, nao na Platform.</p>
+
+    <div class="journey-row">
+      <div class="journey-phase" style="background: rgba(52,211,153,0.10); border: 1px solid rgba(52,211,153,0.25);">
+        <div class="journey-num" style="color: #34D399;">1</div>
+        <div class="journey-name" style="color: #34D399;">Atracao</div>
+        <div class="journey-sub">Ads, SEO, eventos</div>
+      </div>
+      <div class="journey-phase" style="background: rgba(34,211,238,0.10); border: 1px solid rgba(34,211,238,0.25);">
+        <div class="journey-num" style="color: #22D3EE;">2</div>
+        <div class="journey-name" style="color: #22D3EE;">Captacao</div>
+        <div class="journey-sub">Lead capture</div>
+      </div>
+      <div class="journey-phase" style="background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.25);">
+        <div class="journey-num" style="color: #FBBF24;">3</div>
+        <div class="journey-name" style="color: #FBBF24;">Qualificacao</div>
+        <div class="journey-sub">Scoring, BSQL</div>
+      </div>
+      <div class="journey-phase" style="background: rgba(217,119,6,0.10); border: 1px solid rgba(217,119,6,0.25);">
+        <div class="journey-num" style="color: #D97706;">4</div>
+        <div class="journey-name" style="color: #D97706;">Conversao</div>
+        <div class="journey-sub">Deal fechado</div>
+      </div>
+      <div class="journey-phase" style="background: rgba(139,92,246,0.10); border: 1px solid rgba(139,92,246,0.25);">
+        <div class="journey-num" style="color: #8B5CF6;">5</div>
+        <div class="journey-name" style="color: #8B5CF6;">Entrega</div>
+        <div class="journey-sub">Onboarding</div>
+      </div>
+      <div class="journey-phase" style="background: rgba(236,72,153,0.10); border: 1px solid rgba(236,72,153,0.25);">
+        <div class="journey-num" style="color: #EC4899;">6</div>
+        <div class="journey-name" style="color: #EC4899;">Retencao</div>
+        <div class="journey-sub">CS, health score</div>
+      </div>
+      <div class="journey-phase" style="background: rgba(99,102,241,0.10); border: 1px solid rgba(99,102,241,0.25);">
+        <div class="journey-num" style="color: #6366F1;">7</div>
+        <div class="journey-name" style="color: #6366F1;">Expansao</div>
+        <div class="journey-sub">Upsell, referral</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-col left">
+        <div class="compare-col-label dim">Hoje (Platform)</div>
+        <ul class="compare-list">
+          <li><span style="color: var(--text-d);">-</span> Scorecard 0-100 por fase</li>
+          <li><span style="color: var(--text-d);">-</span> Diagnosticos automaticos por IA</li>
+          <li><span style="color: var(--text-d);">-</span> Transicoes com Sankey diagram</li>
+          <li><span style="color: var(--text-d);">-</span> Limitada a dados da Platform</li>
+          <li><span style="color: var(--text-d);">-</span> "Alma da plataforma" (Epic 5)</li>
+        </ul>
+      </div>
+      <div class="compare-col right">
+        <div class="compare-col-label green-c">Proposta (Cortex)</div>
+        <ul class="compare-list">
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Camada semantica primaria do Cube.dev</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Aplicada a dados de QUALQUER fonte</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Lock-in cognitivo proprietario</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Diferencia de "mais um data platform"</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg> Cria categoria propria no mercado</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 6: PLATFORM + CORTEX FLUXOS -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s6" style="background: radial-gradient(ellipse at 60% 60%, rgba(34,211,238,0.05) 0%, transparent 50%), var(--bg);">
+  <div class="inner">
+    <span class="tag tag-data">Sinergia</span>
+    <h2>Platform <span class="data-c">+</span> Cortex</h2>
+    <p class="sub">Fluxos de dados bidirecionais. Platform envia operacional, Cortex devolve inteligencia.</p>
+
+    <div class="g2" style="margin-top: 24px; gap: 20px;">
+      <div class="card">
+        <div class="card-top card-top-accent"></div>
+        <h3 style="color: var(--accent-l);">Platform &rarr; Cortex</h3>
+        <p style="font-size: 0.78rem; color: var(--text-d); margin-bottom: 12px;">Ingestao de dados operacionais</p>
+        <ul class="option-list">
+          <li><span class="accent">CRM</span> <span class="dim">&mdash;</span> Deals, calls, emails, conversas</li>
+          <li><span class="accent">Aquisicao</span> <span class="dim">&mdash;</span> Campanhas + resultados</li>
+          <li><span class="accent">Behavioral</span> <span class="dim">&mdash;</span> BSQL profiles, buyer avatars</li>
+          <li><span class="accent">Data quality</span> <span class="dim">&mdash;</span> Dedup scores, cleaning ops</li>
+          <li><span class="accent">Automacao</span> <span class="dim">&mdash;</span> Execucoes de fluxos e playbooks</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-top card-top-data"></div>
+        <h3 style="color: var(--data);">Cortex &rarr; Platform</h3>
+        <p style="font-size: 0.78rem; color: var(--text-d); margin-bottom: 12px;">Inteligencia preditiva</p>
+        <ul class="option-list">
+          <li><span class="data-c">Churn score</span> <span class="dim">&mdash;</span> &rarr; ReactivationScore</li>
+          <li><span class="data-c">Clusters</span> <span class="dim">&mdash;</span> &rarr; segmentRules (EmailCampaign)</li>
+          <li><span class="data-c">Next Best Action</span> <span class="dim">&mdash;</span> &rarr; PlaybookExecution</li>
+          <li><span class="data-c">Lead scoring ML</span> <span class="dim">&mdash;</span> &rarr; LeadScore enriquecido</li>
+          <li><span class="data-c">Anomalias</span> <span class="dim">&mdash;</span> &rarr; WeeklyPulse alertas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wide-card" style="margin-top: 20px;">
+      <div style="flex-shrink: 0;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <h3 style="color: var(--purple);">Ecossistema Integrado</h3>
+        <p style="font-size: 0.84rem; color: var(--text-m); margin-top: 4px;">Platform (maos) + Cortex (cerebro) + Events (canal de aquisicao) = ninguem no Brasil tem. O cerebro alimenta as maos, as maos geram dados pro cerebro. Feedback loop continuo.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h3 style="margin-bottom: 4px;">Platform: 32 modulos API, ~100 modelos Prisma</h3>
+      <table class="tbl">
+        <tr><th>Dominio</th><th>Modulos-chave</th><th>Conexao Cortex</th></tr>
+        <tr><td>CRM nativo</td><td style="color: var(--text);">CrmContact, CrmDeal, Pipeline</td><td style="color: var(--data);">Customer 360</td></tr>
+        <tr><td>Behavioral</td><td style="color: var(--text);">BehavioralProfile, BSQL, 10 avatars</td><td style="color: var(--data);">Clustering ML</td></tr>
+        <tr><td>Lead scoring</td><td style="color: var(--text);">LeadScore, ScoringModel</td><td style="color: var(--data);">Scoring preditivo</td></tr>
+        <tr><td>CS Intelligence</td><td style="color: var(--text);">Churn, HealthScore, Retention</td><td style="color: var(--data);">Churn prediction</td></tr>
+        <tr><td>Aquisicao</td><td style="color: var(--text);">AcqCampaign (9 canais incl. event)</td><td style="color: var(--data);">Atribuicao multi-touch</td></tr>
+        <tr><td>Automacao</td><td style="color: var(--text);">AutomationFlow, Playbook</td><td style="color: var(--data);">Playbooks prescritos IA</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 7: CONGRESSY CASE -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s7" style="background: radial-gradient(ellipse at 30% 70%, rgba(139,92,246,0.06) 0%, transparent 55%), var(--bg);">
+  <div class="inner">
+    <span class="tag tag-purple">Case Real</span>
+    <h2>Congressy <span class="purple-c">Data</span></h2>
+    <p class="sub">Primeiro dataset real para validar a V1. 2 bases de dados, ~200K pessoas, ~490K inscricoes. Dados de 2017-2021.</p>
+
+    <div class="g4" style="margin-top: 24px;">
+      <div class="card" style="text-align: center;">
+        <div class="stat-big purple-c mono">200K+</div>
+        <div class="stat-label">Pessoas unicas</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="stat-big data-c mono">490K</div>
+        <div class="stat-label">Inscricoes</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="stat-big accent mono">2.5K</div>
+        <div class="stat-label">Eventos</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="stat-big green-c mono">R$4M</div>
+        <div class="stat-label">Receita total</div>
+      </div>
+    </div>
+
+    <!-- Clusters -->
+    <h3 style="margin-top: 28px; margin-bottom: 14px;">Clusters profissionais identificados</h3>
+    <div class="cluster-bar">
+      <span class="cluster-name">Religioso</span>
+      <div class="cluster-fill-bg"><div class="cluster-fill" style="width: 55%; background: linear-gradient(90deg, rgba(139,92,246,0.6), rgba(139,92,246,0.2));">~40-50K</div></div>
+    </div>
+    <div class="cluster-bar">
+      <span class="cluster-name">Agronegocio</span>
+      <div class="cluster-fill-bg"><div class="cluster-fill" style="width: 25%; background: linear-gradient(90deg, rgba(16,185,129,0.6), rgba(16,185,129,0.2));">~15-20K</div></div>
+    </div>
+    <div class="cluster-bar">
+      <span class="cluster-name">Academico</span>
+      <div class="cluster-fill-bg"><div class="cluster-fill" style="width: 18%; background: linear-gradient(90deg, rgba(34,211,238,0.6), rgba(34,211,238,0.2));">~10-15K</div></div>
+    </div>
+    <div class="cluster-bar">
+      <span class="cluster-name">Business</span>
+      <div class="cluster-fill-bg"><div class="cluster-fill" style="width: 10%; background: linear-gradient(90deg, rgba(217,119,6,0.6), rgba(217,119,6,0.2));">~5-8K</div></div>
+    </div>
+    <div class="cluster-bar">
+      <span class="cluster-name">Imobiliario</span>
+      <div class="cluster-fill-bg"><div class="cluster-fill" style="width: 6%; background: linear-gradient(90deg, rgba(251,191,36,0.6), rgba(251,191,36,0.2));">~3-5K</div></div>
+    </div>
+    <div class="cluster-bar">
+      <span class="cluster-name">Tecnologia</span>
+      <div class="cluster-fill-bg"><div class="cluster-fill" style="width: 4%; background: linear-gradient(90deg, rgba(99,102,241,0.6), rgba(99,102,241,0.2));">~2-3K</div></div>
+    </div>
+
+    <!-- Congressy → Jornada -->
+    <div class="wide-card" style="margin-top: 20px;">
+      <div>
+        <h3 style="margin-bottom: 8px;">Congressy mapeado na Jornada Universal</h3>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+          <span style="font-size: 0.78rem; background: rgba(34,211,238,0.08); padding: 4px 12px; border-radius: 6px; color: var(--data);">Inscricao = Captacao</span>
+          <span style="font-size: 0.78rem; background: rgba(217,119,6,0.08); padding: 4px 12px; border-radius: 6px; color: var(--accent);">Confirmacao = Conversao</span>
+          <span style="font-size: 0.78rem; background: rgba(139,92,246,0.08); padding: 4px 12px; border-radius: 6px; color: var(--purple);">Check-in = Entrega</span>
+          <span style="font-size: 0.78rem; background: rgba(236,72,153,0.08); padding: 4px 12px; border-radius: 6px; color: #EC4899;">2+ eventos = Retencao</span>
+          <span style="font-size: 0.78rem; background: rgba(99,102,241,0.08); padding: 4px 12px; border-radius: 6px; color: #6366F1;">Organizacao = Expansao</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-m); margin-top: 10px;">Eventos NAO sao vertical. Sao canal de aquisicao — touchpoints no Customer 360.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <h3 style="margin-bottom: 6px;">Qualidade dos dados (PostgreSQL)</h3>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <span style="font-size: 0.82rem;"><span class="green-c mono">92%</span> <span class="dim">email</span></span>
+        <span style="font-size: 0.82rem;"><span class="data-c mono">76%</span> <span class="dim">telefone</span></span>
+        <span style="font-size: 0.82rem;"><span class="accent mono">61%</span> <span class="dim">CPF</span></span>
+        <span style="font-size: 0.82rem;"><span class="accent mono">49%</span> <span class="dim">nascimento</span></span>
+        <span style="font-size: 0.82rem;"><span class="red-c mono">43%</span> <span class="dim">CEP</span></span>
+        <span style="font-size: 0.82rem;"><span class="red-c mono">21%</span> <span class="dim">instituicao</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 8: CONSENSOS -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s8" style="background: radial-gradient(ellipse at 60% 30%, rgba(217,119,6,0.07) 0%, transparent 55%), var(--bg);">
+  <div class="inner">
+    <span class="tag">Unanimes (4/4)</span>
+    <h2>7 <span class="accent">Consensos</span></h2>
+    <p class="sub">Todos os especialistas concordaram nestes pontos.</p>
+
+    <div class="card" style="margin-top: 24px;">
+      <div class="consensus-item">
+        <div class="consensus-num">1</div>
+        <div class="consensus-text"><strong>Jornada Universal e o diferencial real.</strong> Customer Journey 360 como eixo central do produto, nao feature lateral. Camada semantica que cria categoria propria.</div>
+      </div>
+      <div class="consensus-item">
+        <div class="consensus-num">2</div>
+        <div class="consensus-text"><strong>Cortar 40% do escopo.</strong> 1 vertical perfeita > 4 mediocres. Demo em 30 dias, nao 90. Foco absoluto.</div>
+      </div>
+      <div class="consensus-item">
+        <div class="consensus-num">3</div>
+        <div class="consensus-text"><strong>Time-to-value em HORAS.</strong> Conector PostgreSQL/MySQL generico e pre-requisito existencial para V1. Sem ele, o produto nao conecta em nada.</div>
+      </div>
+      <div class="consensus-item">
+        <div class="consensus-num">4</div>
+        <div class="consensus-text"><strong>Posicionar por RESULTADO, nao infraestrutura.</strong> Ninguem compra "Data Fabric". Compram "veja quem vai churnar no proximo trimestre".</div>
+      </div>
+      <div class="consensus-item">
+        <div class="consensus-num">5</div>
+        <div class="consensus-text"><strong>GTM e o maior risco.</strong> Construir demais e vender de menos = padrao classico de morte. 2 design partners em 60 dias.</div>
+      </div>
+      <div class="consensus-item">
+        <div class="consensus-num">6</div>
+        <div class="consensus-text"><strong>Ecossistema e a forca real.</strong> Platform + Cortex + Events = ninguem no Brasil tem. "Cerebro + maos + canal de aquisicao" integrados.</div>
+      </div>
+      <div class="consensus-item">
+        <div class="consensus-num">7</div>
+        <div class="consensus-text"><strong>Pricing: simplificar para 3 tiers, cobrar por valor.</strong> Free (7 dias full-feature), Professional R$4.990, Enterprise custom. Nao por registros/conectores.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box amber" style="margin-top: 20px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="highlight-box-text" style="color: var(--accent-l);">"Voces querem ser o Databricks brasileiro ou o sistema nervoso central de operacoes orientadas ao cliente?"</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 9: DECISOES PENDENTES -->
+<!-- ═══════════════════════════════════════ -->
+<section class="slide" id="s9" style="background: radial-gradient(ellipse at 40% 50%, rgba(217,119,6,0.08) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.05) 0%, transparent 45%), var(--bg);">
+  <div class="inner">
+    <span class="tag">Aguardando Founder</span>
+    <h2>4 <span class="accent">Decisoes</span> Pendentes</h2>
+    <p class="sub">O conselho entregou pareceres. Estas decisoes dependem do founder para prosseguir.</p>
+
+    <div style="margin-top: 28px;">
+      <div class="q-card">
+        <div class="q-num">Decisao 1</div>
+        <div class="q-text">Aceita Opcao C? <span class="muted" style="font-weight: 400;">(Cortex aberto + Platform como cliente privilegiado)</span></div>
+        <div class="q-context">Conselho votou unanime. Opcao C permite land & expand sem friccao. Cortex conecta em qualquer sistema, Platform tem integracao privilegiada (CDC real-time, automacoes, playbooks).</div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-num">Decisao 2</div>
+        <div class="q-text">Jornada Universal migra pro Cortex? <span class="muted" style="font-weight: 400;">(camada semantica universal)</span></div>
+        <div class="q-context">Hoje vive na Platform (Epic 5 — "alma da plataforma"). Proposta: Jornada Universal como framework do Cortex, aplicada a dados de QUALQUER fonte. Platform consome via API. Score 9/10 do conselho.</div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-num">Decisao 3</div>
+        <div class="q-text">Conector PG/MySQL sobe pra V1? <span class="muted" style="font-weight: 400;">(pre-requisito existencial)</span></div>
+        <div class="q-context">Hoje esta no roadmap Wave 2 (90 dias pos-lancamento). Todos os especialistas: sem conector generico, Cortex nao conecta em nada. Congressy case depende disto. "Se time-to-value nao for horas, o produto morre antes de nascer."</div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-num">Decisao 4</div>
+        <div class="q-text">Prioridade de integracao: Platform-first ou externo-first?</div>
+        <div class="q-context">Platform-first = valida integracao profunda, mas e case interno. Externo-first (Congressy) = valida Opcao C na pratica, prova que Cortex funciona standalone. Conselho sugere: Congressy primeiro (valida), Platform logo depois (aprofunda).</div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div style="text-align: center;">
+      <p style="font-size: 0.9rem; color: var(--text-m);">Apos decisoes, proximos passos:</p>
+      <div class="flow" style="margin-top: 16px;">
+        <div class="flow-node highlight">
+          <div class="flow-node-label" style="color: var(--accent);">Agora</div>
+          <div class="flow-node-name">Decisoes</div>
+        </div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-node">
+          <div class="flow-node-label">Depois</div>
+          <div class="flow-node-name">Atualizar PRD</div>
+        </div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-node">
+          <div class="flow-node-label">Depois</div>
+          <div class="flow-node-name">Novas Stories</div>
+        </div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-node">
+          <div class="flow-node-label">Depois</div>
+          <div class="flow-node-name">Implementar V1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const dots = document.querySelectorAll('.nav-dot');
+const slides = document.querySelectorAll('.slide');
+
+function go(i) {
+  slides[i].scrollIntoView({ behavior: 'smooth' });
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = [...slides].indexOf(e.target);
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, { threshold: 0.5 });
+
+slides.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
