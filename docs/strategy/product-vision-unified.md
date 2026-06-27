@@ -212,7 +212,7 @@ Removidas da v1: Autoconfianca (redundante com Neuroticism do Big Five) e Engaja
 - Cruzamento RFM x Perfil gera acoes especificas (ex: "RFM alto + Executor = renovacao direta")
 - Complementa perfilamento comportamental com dados transacionais
 
-Documento completo: `1-Pesquisas/behavioral-selling/02-FRAMEWORK-BEHAVIORAL-SELLING-v2.md`
+Documento completo: `docs/methodology/behavioral-selling-framework-v2.md`
 
 ### 6.2 O que o perfilamento entrega na pratica
 
@@ -422,7 +422,8 @@ CONSULTORIA / PARTNERSHIP
 
 ### Pesquisa e frameworks
 - Behavioral Selling Framework v2.0 (6 perfis + 2 modificadores, 5 dimensoes, 3 eixos, BSQL, RFM)
-  - Local: `/code/1-Pesquisas/behavioral-selling/02-FRAMEWORK-BEHAVIORAL-SELLING-v2.md`
+  - Local: `docs/methodology/behavioral-selling-framework-v2.md`
+  - System prompt do agente: `docs/methodology/behavioral-profiler-system-prompt-v2.md`
   - Fundamentacao: 8 bases teoricas validadas (Big Five, Kahneman, Schwartz, Cialdini, Fogg, Thaler, Elliot, Hughes)
 - Agentes de Perfilamento Comportamental (vendas + educacao)
   - Local: `/code/1-Pesquisas/agentes-perfilamento/`
