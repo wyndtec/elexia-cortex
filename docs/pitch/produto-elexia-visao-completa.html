@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elexia — Visao Completa do Produto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --navy: #0D1B2A;
+    --navy-light: #1B2838;
+    --navy-mid: #243447;
+    --gold: #D4A017;
+    --gold-light: #E8B84A;
+    --white: #FAFAFA;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-500: #6B7280;
+    --gray-700: #374151;
+    --cyan: #22D3EE;
+    --green: #22C55E;
+    --red: #EF4444;
+    --amber: #F59E0B;
+    --purple: #8B5CF6;
+    --orange: #D97706;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Navigation */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(13,27,42,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(212,160,23,0.15);
+    padding: 0 2rem;
+  }
+
+  nav .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+
+  nav .nav-inner::-webkit-scrollbar { display: none; }
+
+  nav a {
+    color: var(--gray-400);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--gold);
+    background: rgba(212,160,23,0.1);
+  }
+
+  nav .brand {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--gold);
+    margin-right: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Sections */
+  section {
+    min-height: 100vh;
+    padding: 5rem 2rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--white);
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--gold);
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: var(--gray-400);
+    max-width: 700px;
+    line-height: 1.7;
+  }
+
+  .gold { color: var(--gold); }
+  .cyan { color: var(--cyan); }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .purple { color: var(--purple); }
+  .amber { color: var(--amber); }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .card-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card-grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .card {
+    background: var(--navy-light);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgba(212,160,23,0.3);
+  }
+
+  .card-accent {
+    border-left: 3px solid var(--gold);
+  }
+
+  .card .card-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .card .card-label {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.25rem;
+  }
+
+  .card .card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .card .card-text {
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    line-height: 1.6;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tag-gold { background: rgba(212,160,23,0.15); color: var(--gold); }
+  .tag-cyan { background: rgba(34,211,238,0.15); color: var(--cyan); }
+  .tag-green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .tag-purple { background: rgba(139,92,246,0.15); color: var(--purple); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: var(--navy-mid);
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--gray-200);
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Bars */
+  .bar-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .bar-label {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    width: 110px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 24px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--white);
+    transition: width 1s ease;
+  }
+
+  .bar-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 1.25rem 1.5rem;
+    background: rgba(212,160,23,0.05);
+    border-radius: 0 8px 8px 0;
+    margin: 1.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.7;
+    color: var(--gray-200);
+  }
+
+  /* Leak mockup */
+  .leak-panel {
+    background: var(--navy-light);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .leak-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .leak-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  .leak-loss {
+    text-align: right;
+  }
+
+  .leak-loss .amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  .leak-loss .label {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+  }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+
+  .flow-step {
+    background: var(--navy-light);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .flow-arrow {
+    color: var(--gold);
+    font-size: 1.2rem;
+  }
+
+  /* Wave timeline */
+  .wave-timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-top: 2rem;
+  }
+
+  .wave-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), var(--cyan), var(--purple));
+  }
+
+  .wave-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+  }
+
+  .wave-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: var(--navy);
+  }
+
+  .wave-item:nth-child(2)::before { border-color: var(--cyan); }
+  .wave-item:nth-child(3)::before { border-color: var(--purple); }
+
+  .wave-item h3 { margin-bottom: 0.5rem; }
+
+  /* Comparison matrix */
+  .matrix {
+    display: grid;
+    grid-template-columns: 140px repeat(5, 1fr);
+    gap: 2px;
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+  }
+
+  .matrix-header {
+    background: var(--navy-mid);
+    padding: 0.6rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: center;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .matrix-label {
+    background: var(--navy-light);
+    padding: 0.6rem;
+    font-weight: 500;
+    color: var(--gray-200);
+    display: flex;
+    align-items: center;
+  }
+
+  .matrix-cell {
+    background: var(--navy-light);
+    padding: 0.6rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dot-full { width: 10px; height: 10px; border-radius: 50%; background: var(--green); }
+  .dot-half { width: 10px; height: 10px; border-radius: 50%; background: var(--amber); }
+  .dot-empty { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+
+  /* Section backgrounds */
+  .bg-dark { background: var(--navy); }
+  .bg-darker { background: #0A1628; }
+  .bg-gradient {
+    background: linear-gradient(135deg, var(--navy) 0%, #0A1628 50%, var(--navy-light) 100%);
+  }
+
+  /* Pillar icons */
+  .pillar-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .pillar-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    h1 { font-size: 2rem; }
+    .card-grid-3, .card-grid-5 { grid-template-columns: 1fr; }
+    .matrix { grid-template-columns: 100px repeat(5, 1fr); font-size: 0.65rem; }
+    section { padding: 5rem 1.25rem 3rem; }
+  }
+
+  /* Smooth scroll */
+  html { scroll-behavior: smooth; }
+
+  /* Separator */
+  .sep {
+    width: 60px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Avatar grid */
+  .avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .avatar-card {
+    background: var(--navy-light);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .avatar-card.modifier {
+    border: 1px dashed rgba(212,160,23,0.4);
+    background: rgba(212,160,23,0.05);
+  }
+
+  .avatar-card .avatar-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .avatar-card .avatar-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.3rem;
+  }
+
+  .avatar-card .avatar-trait {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--cyan);
+    margin-top: 0.25rem;
+  }
+
+  .avatar-card .avatar-desc {
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    margin-top: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .avatar-card .avatar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .modifier-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .avatar-grid { grid-template-columns: repeat(2, 1fr); }
+    .modifier-row { grid-template-columns: 1fr; }
+  }
+
+  /* Stack cards */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .stack-card {
+    background: var(--navy-light);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .stack-card .stack-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .stack-card .stack-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .stack-card .stack-icp {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="brand">ELEXIA</span>
+    <a href="#hero">Visao</a>
+    <a href="#problema">Problema</a>
+    <a href="#5-entregas">5 Entregas</a>
+    <a href="#vazamento">Vazamento</a>
+    <a href="#perfilamento">Perfilamento</a>
+    <a href="#atribuicao">Atribuicao</a>
+    <a href="#competidores">Competidores</a>
+    <a href="#mercado">Mercado</a>
+    <a href="#oitavo-dia">Oitavo Dia</a>
+    <a href="#validacao">Validacao</a>
+    <a href="#waves">Waves</a>
+    <a href="#stacks">Stacks BR</a>
+  </div>
+</nav>
+
+<!-- 1. HERO -->
+<section id="hero" class="bg-gradient">
+  <div class="container">
+    <div class="sep"></div>
+    <h1>Seus sistemas nao conversam.<br>Seus leads <span class="gold">somem</span>.<br>Seu dinheiro <span class="red">escorre</span>.</h1>
+    <p class="subtitle">Elexia conecta seus sistemas, unifica seus dados, e mostra — em numeros concretos — onde sua jornada do cliente esta vazando, onde esta forte, e o que fazer agora.</p>
+    <div style="margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <span class="tag tag-gold">Customer Data Intelligence</span>
+      <span class="tag tag-cyan">Jornada Universal</span>
+      <span class="tag tag-green">IA Prescritiva</span>
+      <span class="tag tag-purple">Behavioral Profiling</span>
+    </div>
+    <blockquote style="margin-top: 2.5rem;">
+      "Nao e sobre quantos leads voce gerou. E sobre quantos voce ATENDEU, em quanto tempo, e quantos viraram dinheiro."
+    </blockquote>
+  </div>
+</section>
+
+<!-- 2. PROBLEMA -->
+<section id="problema" class="bg-darker">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>O problema que ninguem resolve</h2>
+    <p class="subtitle">Encontrado em 700+ projetos, em todos os tamanhos de empresa, em 8 paises.</p>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+      <div class="card card-accent">
+        <h3>Sistemas desconectados</h3>
+        <p class="card-text">5 a 15 ferramentas que nao conversam. CRM de um lado, ERP de outro, WhatsApp em outro. Ninguem tem a visao completa.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Leads que somem</h3>
+        <p class="card-text">Telefone nao atendido. DM ignorada. Form do site sem follow-up. Evento sem pos-contato. O dinheiro investido em trafego escorre entre os canais.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Dados sem decisao</h3>
+        <p class="card-text">"Temos 300 metricas e zero decisao." Dashboards que ninguem olha. Relatorios que nao dizem o que fazer. Analytics sem prescricao.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Todos os leads tratados igual</h3>
+        <p class="card-text">Mesmo script, mesmo tom, mesma oferta. 70% dos leads qualificados nao convertem porque a forma de vender nao encaixa na forma como ele decide.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Canais no escuro</h3>
+        <p class="card-text">R$20K/mes em trafego pago. "Qual campanha gerou venda?" Silencio. A agencia fala em cliques. O empresario precisa saber de receita.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Operacao reativa</h3>
+        <p class="card-text">Apagando incendio todo dia. Sem previsibilidade. Sem diagnostico. Sem saber onde esta o buraco. Ate que o cliente vai embora.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. AS 5 ENTREGAS -->
+<section id="5-entregas" class="bg-dark">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>5 entregas de valor</h2>
+    <p class="subtitle">Cada camada gera valor isoladamente. O valor composto e exponencial.</p>
+
+    <div class="card-grid card-grid-5" style="margin-top: 2rem;">
+      <div class="card" style="border-top: 3px solid var(--cyan);">
+        <div class="card-number">01</div>
+        <div class="card-title cyan">CONECTAR</div>
+        <p class="card-text">Seus sistemas agora conversam. Conectores nativos, identity resolution cross-system, data quality, UTM manager.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--amber);">
+        <div class="card-number">02</div>
+        <div class="card-title amber">ENXERGAR</div>
+        <p class="card-text">Sua jornada tem numeros reais. Scorecard por fase, detector de vazamento multicanal, funil com taxas, estimativa de perda em R$.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--purple);">
+        <div class="card-number">03</div>
+        <div class="card-title purple">CONHECER</div>
+        <p class="card-text">Voce sabe quem e cada cliente. 6 perfis de compra + 2 modificadores, BSQL score, 5 dimensoes comportamentais, RFM, enriquecimento de dados.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--green);">
+        <div class="card-number">04</div>
+        <div class="card-title green">AGIR</div>
+        <p class="card-text">Voce sabe o que fazer agora. IA prescritiva, playbooks por perfil, alertas de vazamento, copy adaptada por perfil comportamental.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--gold);">
+        <div class="card-number">05</div>
+        <div class="card-title gold">CRESCER</div>
+        <p class="card-text">Voce encontra os caminhos. Cohort por canal, attribution multi-touch, investment advisor, programa de indicacao.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. DETECTOR DE VAZAMENTO -->
+<section id="vazamento" class="bg-gradient">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Detector de Vazamento Multicanal</h2>
+    <p class="subtitle">O diferencial mais forte: traduz dados complexos em "quanto dinheiro voce esta perdendo por mes".</p>
+
+    <div class="leak-panel">
+      <div class="leak-header">
+        <div>
+          <span class="tag tag-red">FASE: CAPTACAO</span>
+          <div style="margin-top: 0.5rem;">
+            <span class="leak-score red">42</span>
+            <span style="font-size: 1.2rem; color: var(--gray-500);">/100</span>
+          </div>
+        </div>
+        <div class="leak-loss">
+          <div class="amount">R$ 47.200</div>
+          <div class="label">estimativa de perda / mes</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <div class="bar-container">
+          <span class="bar-label">WhatsApp</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 52%; background: var(--amber);">52%</div>
+          </div>
+          <span class="bar-value red">48% vazando</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">Telefone</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 23%; background: var(--red);">23%</div>
+          </div>
+          <span class="bar-value red">77% vazando</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">Instagram</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 68%; background: var(--green);">68%</div>
+          </div>
+          <span class="bar-value" style="color: var(--gray-500);">32% vazando</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">Email</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 41%; background: var(--amber);">41%</div>
+          </div>
+          <span class="bar-value red">59% vazando</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">Forms Site</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 12%; background: var(--red);">12%</div>
+          </div>
+          <span class="bar-value red">88% vazando</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">Eventos</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 8%; background: var(--red);">8%</div>
+          </div>
+          <span class="bar-value red">92% vazando</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.15); border-radius: 8px;">
+        <h3 style="color: var(--green); font-size: 0.85rem;">DIAGNOSTICO IA</h3>
+        <p style="font-size: 0.85rem; color: var(--gray-200); margin-top: 0.5rem;">
+          Seu maior vazamento esta em Forms do Site e Eventos. 88% dos leads do site nunca sao contatados.
+          <strong>Acao:</strong> configurar resposta automatica em menos de 5 minutos e atribuicao automatica por round-robin.
+          <strong>Impacto estimado:</strong> +R$18K/mes em oportunidades recuperadas.
+        </p>
+      </div>
+    </div>
+
+    <blockquote style="margin-top: 2rem;">
+      "Voce esta pagando para trazer gente. E perdendo a maioria porque ninguem atende."
+    </blockquote>
+  </div>
+</section>
+
+<!-- 5. PERFILAMENTO COMPORTAMENTAL -->
+<section id="perfilamento" class="bg-darker">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Inteligencia Comportamental</h2>
+    <p class="subtitle">Framework v2.0 — 6 perfis de compra + 2 modificadores, 5 dimensoes, 3 eixos de decisao. Fundamentado em Big Five (Costa & McCrae), Kahneman, Schwartz, Cialdini, Fogg, Thaler, Elliot e Hughes.</p>
+
+    <h3 style="margin-top: 2rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400);">6 Perfis de Compra</h3>
+    <div class="avatar-grid" style="margin-top: 0.75rem;">
+      <div class="avatar-card"><div class="avatar-num">01</div><div class="avatar-name">Explorador</div><div class="avatar-trait">Openness ALTA</div><div class="avatar-desc">Busca informacao, novidade, quer entender tudo antes de decidir</div></div>
+      <div class="avatar-card"><div class="avatar-num">02</div><div class="avatar-name">Racional</div><div class="avatar-trait">Conscientiousness ALTA</div><div class="avatar-desc">Processo, dados, ROI, previsibilidade. Decide quando os criterios estao atendidos</div></div>
+      <div class="avatar-card"><div class="avatar-num">03</div><div class="avatar-name">Conector</div><div class="avatar-trait">Extraversion + Agreeableness</div><div class="avatar-desc">Prova social, comunidade, pertencimento. Decide quando alguem de confianca valida</div></div>
+      <div class="avatar-card"><div class="avatar-num">04</div><div class="avatar-name">Protetor</div><div class="avatar-trait">Neuroticism ALTO</div><div class="avatar-desc">Seguranca, garantias, zero risco. Espectro: de cauteloso a paralisado</div></div>
+      <div class="avatar-card"><div class="avatar-num">05</div><div class="avatar-name">Executor</div><div class="avatar-trait">Extraversion ALTA + Neuroticism BAIXO</div><div class="avatar-desc">Direto, rapido, sem enrolacao. Decide em minutos se o frame estiver certo</div></div>
+      <div class="avatar-card"><div class="avatar-num">06</div><div class="avatar-name">Criador</div><div class="avatar-trait">Openness MUITO ALTA</div><div class="avatar-desc">Customizacao, co-criacao, singularidade. Nao quer pacote — quer algo feito pra ele</div></div>
+    </div>
+
+    <h3 style="margin-top: 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400);">2 Modificadores (overlay sobre qualquer perfil)</h3>
+    <div class="modifier-row" style="margin-top: 0.75rem;">
+      <div class="avatar-card modifier"><div class="avatar-label">Modificador</div><div class="avatar-name">Decisor Organizacional</div><div class="avatar-desc">Decidindo em nome de grupo/empresa. Foco em impacto coletivo, implementacao, escala. Qualquer perfil pode ter este modificador</div></div>
+      <div class="avatar-card modifier"><div class="avatar-label">Modificador</div><div class="avatar-name">Padrao de Lealdade</div><div class="avatar-desc">Cliente recorrente medido por RFM (Recency, Frequency, Monetary). Abordagem de continuidade, nao de conquista. Medido pos-compra</div></div>
+    </div>
+
+    <div class="card-grid card-grid-3" style="margin-top: 2rem;">
+      <div class="card">
+        <h3>5 Dimensoes</h3>
+        <p class="card-text"><strong>1.</strong> Personalidade (Big Five)<br><strong>2.</strong> Processo de decisao (System 1/2)<br><strong>3.</strong> Motivacao (aproximacao/evitacao)<br><strong>4.</strong> Nivel de consciencia (Schwartz)<br><strong>5.</strong> Barreiras ativas (objecoes)</p>
+      </div>
+      <div class="card">
+        <h3>3 Eixos de Decisao</h3>
+        <p class="card-text"><strong>Velocidade:</strong> Rapido (System 1) — Analitico (System 2)<br><strong>Social:</strong> Individual — Social<br><strong>Motivacao:</strong> Aproximacao — Evitacao</p>
+      </div>
+      <div class="card">
+        <h3>BSQL Score</h3>
+        <p class="card-text">Substitui BANT. 5 fatores com pesos calibrados em 700+ projetos. Score 0-100: frio / morno / quente / pronto. Recomenda tom, copy, sequencia, canal e timing por perfil.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 1rem; border: 1px solid rgba(34,211,238,0.2);">
+      <h3 style="color: var(--cyan);">Camada RFM (clientes existentes)</h3>
+      <p class="card-text">Recency x Frequency x Monetary — segmentacao objetiva de valor. Cruzamento RFM x Perfil gera acoes especificas: "RFM alto + Executor = renovacao direta" / "RFM caindo + Protetor = reativacao gentil". RFM complementa o perfilamento com dados transacionais objetivos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. ATRIBUICAO -->
+<section id="atribuicao" class="bg-dark">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Atribuicao e Growth Channels</h2>
+    <p class="subtitle">O dado que ninguem olha: tempo de conversao por canal. Canais com curva longa parecem ruins em 7 dias mas sao os melhores em 90.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Canal</th>
+          <th>Conv. 7d</th>
+          <th>Conv. 30d</th>
+          <th>Conv. 90d</th>
+          <th>CAC</th>
+          <th>LTV</th>
+          <th>Veredicto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight: 600;">Indicacao</td>
+          <td>31%</td><td>42%</td><td class="green" style="font-weight:700;">52%</td>
+          <td style="font-family: 'JetBrains Mono'; color: var(--green);">R$ 0</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 4.200</td>
+          <td><span class="tag tag-green">ESCALAR</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">YouTube</td>
+          <td class="red">2%</td><td>8%</td><td class="green" style="font-weight:700;">28%</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 85</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 3.800</td>
+          <td><span class="tag tag-green">ESCALAR</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Evento</td>
+          <td>5%</td><td>12%</td><td class="green" style="font-weight:700;">34%</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 150</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 5.100</td>
+          <td><span class="tag tag-cyan">MANTER</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Meta Ads</td>
+          <td>12%</td><td>18%</td><td>21%</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 34</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 1.800</td>
+          <td><span class="tag tag-gold">OTIMIZAR</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Google Ads</td>
+          <td>8%</td><td>14%</td><td>19%</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 48</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 1.600</td>
+          <td><span class="tag tag-red">REVISAR</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Blog SEO</td>
+          <td class="red">1%</td><td>5%</td><td>19%</td>
+          <td style="font-family: 'JetBrains Mono'; color: var(--green);">R$ 12</td>
+          <td style="font-family: 'JetBrains Mono';">R$ 2.900</td>
+          <td><span class="tag tag-green">ESCALAR</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <blockquote style="margin-top: 2rem;">
+      "YouTube parece pessimo na primeira semana (2%). Quem olha so o dashboard de 7 dias corta o investimento. Mas em 90 dias converte 28% — melhor que Google Ads. O canal nao e lento. O lead precisa de mais tempo."
+    </blockquote>
+  </div>
+</section>
+
+<!-- 7. COMPETIDORES -->
+<section id="competidores" class="bg-gradient">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>O gap que ninguem ocupa</h2>
+    <p class="subtitle">Cada concorrente faz 1-2 coisas bem e ignora o resto. Ninguem faz as 5 juntas.</p>
+
+    <div class="matrix" style="margin-top: 2rem;">
+      <div class="matrix-header"></div>
+      <div class="matrix-header">Conectar</div>
+      <div class="matrix-header">Enxergar</div>
+      <div class="matrix-header">Conhecer</div>
+      <div class="matrix-header">Agir</div>
+      <div class="matrix-header">Crescer</div>
+
+      <div class="matrix-label">Segment</div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+
+      <div class="matrix-label">HubSpot</div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+
+      <div class="matrix-label">Gong</div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+
+      <div class="matrix-label">Braze</div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+
+      <div class="matrix-label">RD Station</div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+
+      <div class="matrix-label">6sense</div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-empty"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+      <div class="matrix-cell"><div class="dot-half"></div></div>
+
+      <div class="matrix-label" style="color: var(--gold); font-weight: 700;">ELEXIA</div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+      <div class="matrix-cell"><div class="dot-full"></div></div>
+    </div>
+
+    <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--gray-500); text-align: center;">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--green); vertical-align:middle;"></span> Forte &nbsp;&nbsp;
+      <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--amber); vertical-align:middle;"></span> Parcial &nbsp;&nbsp;
+      <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.1); vertical-align:middle;"></span> Nao faz
+    </p>
+  </div>
+</section>
+
+<!-- 8. MERCADO -->
+<section id="mercado" class="bg-darker">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Tamanho do mercado</h2>
+    <p class="subtitle">A Elexia opera na intersecao de 4 mercados em crescimento acelerado.</p>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+      <div class="card">
+        <div class="card-label">CDP Global</div>
+        <div class="card-number" style="color: var(--cyan);">$10.5B</div>
+        <p class="card-text">2026 — CAGR 28-31%</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Attribution</div>
+        <div class="card-number" style="color: var(--amber);">$2.8B</div>
+        <p class="card-text">2026 — CAGR 14-15%</p>
+      </div>
+      <div class="card">
+        <div class="card-label">RevOps</div>
+        <div class="card-number" style="color: var(--green);">$4.1B</div>
+        <p class="card-text">2025 — projecao $12.3B (2035)</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Journey Orchestration</div>
+        <div class="card-number" style="color: var(--purple);">13.5%</div>
+        <p class="card-text">CAGR — crescimento acelerado por IA</p>
+      </div>
+    </div>
+
+    <div class="card-grid card-grid-3" style="margin-top: 1.5rem;">
+      <div class="card" style="border: 1px solid rgba(212,160,23,0.3);">
+        <div class="card-label">TAM (global)</div>
+        <div class="card-number">$20-25B</div>
+        <p class="card-text">Soma dos mercados adjacentes</p>
+      </div>
+      <div class="card" style="border: 1px solid rgba(34,211,238,0.3);">
+        <div class="card-label">SAM (PME + digital)</div>
+        <div class="card-number" style="color: var(--cyan);">$3-5B</div>
+        <p class="card-text">Segmento nao-enterprise global</p>
+      </div>
+      <div class="card" style="border: 1px solid rgba(34,197,94,0.3);">
+        <div class="card-label">SOM Ano 1 (Brasil)</div>
+        <div class="card-number" style="color: var(--green);">R$3-6M</div>
+        <p class="card-text">50-100 clientes x R$5K/mes</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. OITAVO DIA -->
+<section id="oitavo-dia" class="bg-dark">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Conexao com o Metodo Oitavo Dia</h2>
+    <p class="subtitle">O livro cria a consciencia. O assessment confirma a dor. O produto resolve. A mentoria acompanha.</p>
+
+    <div class="flow" style="margin-top: 2.5rem; justify-content: center;">
+      <div class="flow-step" style="border-color: rgba(212,160,23,0.3);">
+        <div style="font-size: 0.65rem; color: var(--gray-500); margin-bottom: 0.2rem;">CONTEUDO</div>
+        <div style="font-weight: 600;">Palestra / Livro</div>
+        <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 0.2rem;">8 Esferas</div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step" style="border-color: rgba(239,68,68,0.3);">
+        <div style="font-size: 0.65rem; color: var(--gray-500); margin-bottom: 0.2rem;">DIAGNOSTICO</div>
+        <div style="font-weight: 600;">Assessment</div>
+        <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 0.2rem;">Scorecard gratuito</div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step" style="border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.05);">
+        <div style="font-size: 0.65rem; color: var(--green); margin-bottom: 0.2rem;">PRODUTO</div>
+        <div style="font-weight: 600; color: var(--green);">Elexia</div>
+        <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 0.2rem;">Resolve a dor</div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step" style="border-color: rgba(139,92,246,0.3);">
+        <div style="font-size: 0.65rem; color: var(--gray-500); margin-bottom: 0.2rem;">ACOMPANHAMENTO</div>
+        <div style="font-weight: 600;">Mentoria</div>
+        <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 0.2rem;">Oitavo Dia</div>
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2.5rem;">
+      <div class="card">
+        <h3 style="color: var(--amber);">8 Esferas (Diagnostico Macro)</h3>
+        <p class="card-text">Visao / Pessoas / Dinheiro / Protecao / Produto / Maquina / Clientes / Futuro — onde esta o problema no negocio?</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--cyan);">Jornada Universal (Operacao)</h3>
+        <p class="card-text">Atracao / Captacao / Qualificacao / Conversao / Entrega / Retencao / Expansao — como resolver na pratica?</p>
+      </div>
+      <div class="card">
+        <h3 style="color: var(--green);">Esteira de Valor (Monetizacao)</h3>
+        <p class="card-text">Gratuito / Low Ticket / Evento / Programa / Mentoria / Consultoria / Palestra / Partnership</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. VALIDACAO DO FRAMEWORK -->
+<section id="validacao" class="bg-gradient">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Rigor Metodologico do Framework</h2>
+    <p class="subtitle">Framework v2.0 reestruturado com ancoragem em 8 bases teoricas validadas. Credibilidade por fundamentacao, nao apenas por dados empiricos.</p>
+
+    <div class="card-grid card-grid-3" style="margin-top: 2rem;">
+      <div class="card" style="border-top: 3px solid var(--green);">
+        <div class="card-label">Status atual</div>
+        <div class="card-title">Framework v2.0 fundamentado</div>
+        <p class="card-text">6 perfis + 2 modificadores, 5 dimensoes ortogonais, BSQL com pesos documentados, classificacao bayesiana especificada, RFM integrado. Cada componente ancorado em teoria validada.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--cyan);">
+        <div class="card-label">O que mudou da v1</div>
+        <div class="card-title">Reestruturacao critica</div>
+        <p class="card-text">Eliminadas sobreposicoes (Curioso/Analitico fundidos, Cauteloso/Receoso fundidos). Fiel e Influenciador viraram modificadores (eram papel e desfecho, nao perfis). Dimensoes redundantes removidas.</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--gold);">
+        <div class="card-label">Diferencial</div>
+        <div class="card-title">Experiencia + ciencia</div>
+        <p class="card-text">700+ projetos (2008-2026) operacionalizados com rigor metodologico. Nao e academia pura nem achismo — e metodologia validada aplicada por profissional experiente.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 2.5rem;">8 Bases Teoricas</h3>
+
+    <div class="wave-timeline" style="margin-top: 1.5rem;">
+      <div class="wave-item">
+        <h3 style="color: var(--gold);">Big Five (Costa & McCrae, 1992)</h3>
+        <p class="card-text">Motor principal de classificacao. O modelo de personalidade mais validado da psicologia moderna — 3.000+ estudos publicados, estabilidade test-retest superior a 0.7. Cada perfil tem endereco unico no espaco Big Five.</p>
+      </div>
+      <div class="wave-item">
+        <h3 style="color: var(--cyan);">Kahneman (2011) + Schwartz (1966)</h3>
+        <p class="card-text">System 1/2 fundamenta o eixo Velocidade de Decisao. 5 niveis de consciencia de Schwartz (Unaware a Most Aware) fundamentam a dimensao Nivel de Consciencia — pilar do direct response marketing ha 60 anos.</p>
+      </div>
+      <div class="wave-item">
+        <h3 style="color: var(--purple);">Elliot & Covington (2001) + Cialdini (2006)</h3>
+        <p class="card-text">Approach/Avoidance fundamenta o eixo Motivacao Dominante e a distincao entre perfis ofensivos (Executor, Explorador) e defensivos (Protetor). 6 principios de Cialdini informam as estrategias de abordagem.</p>
+      </div>
+      <div class="wave-item">
+        <h3 style="color: var(--green);">Fogg (2009) + Thaler (2008) + Hughes (1994)</h3>
+        <p class="card-text">Behavior Model (Motivacao x Habilidade x Trigger) fundamenta o BSQL e a logica de "nutrir o fator mais fraco". Nudge fundamenta Barreiras Ativas. RFM complementa o perfilamento com segmentacao transacional objetiva.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 1.5rem; border: 1px solid rgba(34,197,94,0.3);">
+      <h3 style="color: var(--green);">Resultado: IP Defensavel</h3>
+      <p class="card-text">Framework com ancoragem em 8 teorias validadas + 700+ projetos de aplicacao = propriedade intelectual que concorrente nao pode replicar. Nao e opiniao qualificada — e metodologia estruturada com fundamentacao cientifica, operacionalizada por profissional com experiencia comprovada.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11. WAVES -->
+<section id="waves" class="bg-darker">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>Waves de Construcao</h2>
+    <p class="subtitle">Ordem de execucao, nao reducao de escopo. A visao completa esta preservada. As waves definem por onde comecar.</p>
+
+    <div class="wave-timeline" style="margin-top: 2rem;">
+      <div class="wave-item">
+        <h3 style="color: var(--gold);">Wave 1 — MVP (dados que ja tem)</h3>
+        <p class="card-text" style="margin-bottom: 0.75rem;"><strong>Fonte:</strong> WhatsApp (WTS/FLW) + Elexia CRM</p>
+        <p class="card-text" style="margin-bottom: 0.75rem;"><strong>Entregavel:</strong> Relatorio de vazamento com 2-3 canais + estimativa de perda em R$/mes</p>
+        <p class="card-text"><strong>Clientes:</strong> Base atual da Elexia Platform</p>
+        <div style="margin-top: 0.75rem;">
+          <span class="tag tag-gold">WhatsApp</span>
+          <span class="tag tag-gold">CRM</span>
+          <span class="tag tag-gold">Pipeline</span>
+        </div>
+      </div>
+      <div class="wave-item">
+        <h3 style="color: var(--cyan);">Wave 2 — Primeiros clientes externos</h3>
+        <p class="card-text" style="margin-bottom: 0.75rem;"><strong>Conectores:</strong> Omie + RD Station + Hotmart/Kiwify</p>
+        <p class="card-text" style="margin-bottom: 0.75rem;"><strong>Entregavel:</strong> Detector de vazamento multi-stack + scorecard basico da jornada</p>
+        <p class="card-text"><strong>Clientes:</strong> PME servicos + infoprodutores</p>
+        <div style="margin-top: 0.75rem;">
+          <span class="tag tag-cyan">Omie</span>
+          <span class="tag tag-cyan">RD Station</span>
+          <span class="tag tag-cyan">Hotmart</span>
+          <span class="tag tag-cyan">Kiwify</span>
+        </div>
+      </div>
+      <div class="wave-item">
+        <h3 style="color: var(--purple);">Wave 3 — Plataforma completa</h3>
+        <p class="card-text" style="margin-bottom: 0.75rem;"><strong>Conectores:</strong> HubSpot + TOTVS + PABX + mais</p>
+        <p class="card-text" style="margin-bottom: 0.75rem;"><strong>Entregavel:</strong> 5 entregas completas — Conectar + Enxergar + Conhecer + Agir + Crescer</p>
+        <p class="card-text"><strong>Adiciona:</strong> Attribution/UTMs, cohort, perfilamento comportamental, IA prescritiva</p>
+        <div style="margin-top: 0.75rem;">
+          <span class="tag tag-purple">HubSpot</span>
+          <span class="tag tag-purple">TOTVS</span>
+          <span class="tag tag-purple">PABX</span>
+          <span class="tag tag-purple">Attribution</span>
+          <span class="tag tag-purple">Behavioral AI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. STACKS BR -->
+<section id="stacks" class="bg-dark">
+  <div class="container">
+    <div class="sep"></div>
+    <h2>5 Stacks mais comuns do Brasil</h2>
+    <p class="subtitle">Caminhos de integracao. Cada stack ja tem APIs. O produto pluga, puxa dados, e gera inteligencia.</p>
+
+    <div class="stack-grid" style="margin-top: 2rem;">
+      <div class="stack-card">
+        <div class="stack-num">Stack 01</div>
+        <div class="stack-title">RD Station + Hotmart/Kiwify</div>
+        <div class="stack-icp">Infoprodutor</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-num">Stack 02</div>
+        <div class="stack-title">Omie + WhatsApp Business</div>
+        <div class="stack-icp">PME Servicos</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-num">Stack 03</div>
+        <div class="stack-title">HubSpot + WordPress</div>
+        <div class="stack-icp">Mid-market</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-num">Stack 04</div>
+        <div class="stack-title">TOTVS + PABX</div>
+        <div class="stack-icp">Industria / Varejo</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-num">Stack 05</div>
+        <div class="stack-title">Planilha + Instagram + WhatsApp</div>
+        <div class="stack-icp">Micro</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center; padding: 2rem; border-top: 1px solid rgba(255,255,255,0.06);">
+      <p style="font-size: 0.9rem; color: var(--gray-400);">Visao de Produto Unificado — Elexia</p>
+      <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: 0.5rem;">Wyndson Oliveira — 27/Jun/2026</p>
+      <p style="font-size: 0.7rem; color: var(--gray-500); margin-top: 0.25rem;">Projetos consolidados: elexia-cortex + elexia-platform + Oitavo Dia + elexia-lead-scrap</p>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
